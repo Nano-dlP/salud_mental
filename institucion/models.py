@@ -23,6 +23,7 @@ class Institucion(models.Model):
     domicilio_calle = models.CharField(max_length=50, verbose_name='Domicilio Calle', blank=True, null=True)
     domicilio_numero = models.CharField(max_length=10, verbose_name='Domicilio Número', blank=True, null=True)
     domicilio_piso = models.CharField(max_length=10, verbose_name='Domicilio Piso', blank=True, null=True)
+    domicilio_depto = models.CharField(max_length=10, verbose_name='Domicilio Depto', blank=True, null=True)
     localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE, verbose_name='Localidad', blank=True, null=True, related_name='institucion_localidad', default=None)
     telefono = models.CharField(max_length=20, verbose_name='Teléfono', blank=True, null=True)
     email = models.EmailField(max_length=254, verbose_name='Email', blank=True, null=True)

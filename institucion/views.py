@@ -10,7 +10,7 @@ from .forms import InstitucionForm
 
 
 
-class InstitucionCreate(LoginRequiredMixin, CreateView):
+class InstitucionCreateView(LoginRequiredMixin, CreateView):
     model = Institucion
     template_name = 'institucion/institucion_form.html'
     form_class = InstitucionForm
@@ -35,7 +35,7 @@ class InstitucionListView(LoginRequiredMixin, ListView):
         return Institucion.objects.all().order_by('institucion')
     
 
-class InstitucionEditar(LoginRequiredMixin, UpdateView):
+class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
     model = Institucion
     template_name = 'institucion/institucion_form.html'
     form_class = InstitucionForm

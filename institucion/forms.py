@@ -1,5 +1,5 @@
 from django import forms
-from .models import Institucion, TipoInstitucion
+from .models import Institucion
 
 class InstitucionForm(forms.ModelForm):
     class Meta:
@@ -10,6 +10,7 @@ class InstitucionForm(forms.ModelForm):
             'domicilio_calle', 
             'domicilio_numero', 
             'domicilio_piso', 
+            'domicilio_depto',  # Added field for department
             'localidad', 
             'telefono', 
             'email', 
@@ -23,6 +24,7 @@ class InstitucionForm(forms.ModelForm):
             'domicilio_calle': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la calle'}),
             'domicilio_numero': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el número'}),
             'domicilio_piso': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el piso'}),
+            'domicilio_depto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el departamento'}),
             'localidad': forms.Select(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el teléfono'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el email'}),
@@ -42,6 +44,7 @@ class InstitucionForm(forms.ModelForm):
         self.fields['domicilio_calle'].widget.attrs.update({'class': 'form-control'})
         self.fields['domicilio_numero'].widget.attrs.update({'class': 'form-control'})
         self.fields['domicilio_piso'].widget.attrs.update({'class': 'form-control'})
+        self.fields['domicilio_depto'].widget.attrs.update({'class': 'form-control'})
         self.fields['localidad'].widget.attrs.update({'class': 'form-control'})
         self.fields['telefono'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
