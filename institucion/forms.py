@@ -45,4 +45,5 @@ class InstitucionForm(forms.ModelForm):
         self.fields['localidad'].widget.attrs.update({'class': 'form-control'})
         self.fields['telefono'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
-        self.fields['cuit'].widget.attrs.update({'class': 'form-control'})      
+        self.fields['cuit'].widget.attrs.update({'class': 'form-control'})
+
