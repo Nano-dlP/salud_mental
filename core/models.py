@@ -2,6 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class ClienteLog(models.Model):
+    usuario = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    ip = models.GenericIPAddressField()
+    navegador = models.CharField(max_length=255)
+    sistema_operativo = models.CharField(max_length=255)
+    user_agent = models.TextField()
+    url = models.URLField(max_length=500)
+    referer = models.URLField(max_length=500, blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario or self.ip} visitó {self.url} el {self.fecha}"
+
+
+
+
 # Create your models here.
 class Auditoria(models.Model):
     estado = models.BooleanField('Estado', default=True)
@@ -11,7 +27,7 @@ class Auditoria(models.Model):
     #user_crea = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Usuario creo)
     user_crea = models.ForeignKey(User, verbose_name="Usuario creo registro", on_delete=models.CASCADE, related_name='auditoria_crea', null=True, blank=True)
     user_modifica = models.ForeignKey(User, verbose_name="Usuario modifico registro", on_delete=models.CASCADE, related_name='auditoria_modifica', null=True, blank=True)
-    
+    ip = models.GenericIPAddressField('IP', null=True, blank=True)
     
     class Meta:
         abstract=True

@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.RegistrarClienteMiddleware',  # Custom middleware to log client requests
 ]
 
 ROOT_URLCONF = 'salud_mental.urls'

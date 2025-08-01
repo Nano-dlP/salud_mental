@@ -1,0 +1,299 @@
+Funcion para paython (django) para conocer la ip, navegados, ectcetera  de quien se conecta
+
+1 - CREAR UN MODELO
+
+from django.db import models
+
+class ClienteLog(models.Model):
+    ip = models.GenericIPAddressField()
+    navegador = models.CharField(max_length=255)
+    sistema_operativo = models.CharField(max_length=255)
+    user_agent = models.TextField()
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.ip} - {self.fecha}"
+
+
+2 - FUNCION QUE OBTIENE Y GUARDA LOS DATOS
+
+pip install httpagentparser
+
+
+import httpagentparser
+from .models import ClienteLog
+
+def registrar_cliente(request):
+    # IP real o directa
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    navegador = ''
+    sistema_operativo = ''
+
+    try:
+        parsed = httpagentparser.simple_detect(user_agent)
+        sistema_operativo = parsed[0]
+        navegador = parsed[1]
+    except:
+        navegador = 'Desconocido'
+        sistema_operativo = 'Desconocido'
+
+    # Guardar en la base de datos
+    ClienteLog.objects.create(
+        ip=ip,
+        navegador=navegador,
+        sistema_operativo=sistema_operativo,
+        user_agent=user_agent
+    )
+
+
+3 - LAMADA DESDE CUALQUIER VISTA
+
+from django.http import HttpResponse
+from .utils import registrar_cliente  # o donde hayas puesto la función
+
+def mi_vista(request):
+    registrar_cliente(request)
+    return HttpResponse("Información registrada.")
+
+
+
+¿Querés también registrar la URL visitada, el usuario logueado (si hay) o el referer? Te lo puedo agregar fácilmente.
+
+Perfecto. A continuación te muestro la versión completa de la función que:
+
+Obtiene y guarda:
+
+IP
+
+Navegador
+
+Sistema operativo
+
+User-Agent
+
+URL visitada
+
+Usuario (si está logueado)
+
+Referer (de dónde vino el usuario)
+
+Fecha/hora
+
+
+1 - MODELO ACTUALIZADO
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class ClienteLog(models.Model):
+    usuario = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    ip = models.GenericIPAddressField()
+    navegador = models.CharField(max_length=255)
+    sistema_operativo = models.CharField(max_length=255)
+    user_agent = models.TextField()
+    url = models.URLField(max_length=500)
+    referer = models.URLField(max_length=500, blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario or self.ip} visitó {self.url} el {self.fecha}"
+
+
+2 - FUNCION QUE REGISTRA TODO (utils.py o similar)
+
+import httpagentparser
+from .models import ClienteLog
+
+def registrar_cliente(request):
+    # IP
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
+    # User Agent
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    try:
+        parsed = httpagentparser.simple_detect(user_agent)
+        sistema_operativo = parsed[0]
+        navegador = parsed[1]
+    except:
+        sistema_operativo = 'Desconocido'
+        navegador = 'Desconocido'
+
+    # URL actual
+    url = request.build_absolute_uri()
+
+    # Referer
+    referer = request.META.get('HTTP_REFERER', '')
+
+    # Usuario (si está autenticado)
+    usuario = request.user if request.user.is_authenticated else None
+
+    # Guardar log
+    ClienteLog.objects.create(
+        usuario=usuario,
+        ip=ip,
+        navegador=navegador,
+        sistema_operativo=sistema_operativo,
+        user_agent=user_agent,
+        url=url,
+        referer=referer or None
+    )
+
+
+3 - EJEMPLO DE USO EN UNA VISTA (views.py)
+
+from django.http import HttpResponse
+from .utils import registrar_cliente
+
+def mi_vista(request):
+    registrar_cliente(request)
+    return HttpResponse("Tu visita ha sido registrada.")
+
+
+✅ 1. Middleware para registrar automáticamente todas las visitas
+Este middleware llamará a registrar_cliente(request) para todas las vistas automáticamente.
+
+📁 middleware.py (crear en tu app si no existe)
+
+from .utils import registrar_cliente
+
+class RegistrarClienteMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        # Solo registrar si no es admin o static/media
+        if not request.path.startswith('/admin') and not request.path.startswith('/static') and not request.path.startswith('/media'):
+            try:
+                registrar_cliente(request)
+            except Exception as e:
+                # Si querés loguear errores podés hacerlo aquí
+                pass
+
+        return response
+
+
+✅ 2. Activar el middleware en settings.py
+Agregalo al final de la lista de MIDDLEWARE:
+
+MIDDLEWARE = [
+    ...
+    'tuapp.middleware.RegistrarClienteMiddleware',
+]
+Reemplazá tuapp con el nombre real de tu aplicación Django.
+
+
+✅ 3. Admin personalizado para ver los registros
+En tu archivo admin.py:
+
+from django.contrib import admin
+from .models import ClienteLog
+
+@admin.register(ClienteLog)
+class ClienteLogAdmin(admin.ModelAdmin):
+    list_display = ('fecha', 'usuario', 'ip', 'navegador', 'sistema_operativo', 'url')
+    search_fields = ('ip', 'usuario__username', 'user_agent', 'url', 'referer')
+    list_filter = ('fecha', 'sistema_operativo', 'navegador')
+    readonly_fields = [f.name for f in ClienteLog._meta.fields]
+    ordering = ['-fecha']
+
+    def has_add_permission(self, request):
+        return False  # solo lectura
+
+    def has_change_permission(self, request, obj=None):
+        return False  # evitar edición
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # evitar eliminación
+
+
+✅ 1. Exportar a Excel desde el admin
+Vamos a usar openpyxl para generar archivos .xlsx fácilmente.
+
+📦 Instalar dependencia
+
+pip install openpyxl
+
+
+🛠 Modificar admin.py para exportar
+Actualizá tu archivo admin.py con este código completo:
+
+import datetime
+from django.contrib import admin
+from django.http import HttpResponse
+from openpyxl import Workbook
+from .models import ClienteLog
+
+@admin.register(ClienteLog)
+class ClienteLogAdmin(admin.ModelAdmin):
+    list_display = ('fecha', 'usuario', 'ip', 'navegador', 'sistema_operativo', 'url')
+    search_fields = ('ip', 'usuario__username', 'user_agent', 'url', 'referer')
+    list_filter = ('fecha', 'sistema_operativo', 'navegador', 'ip', 'usuario')
+    readonly_fields = [f.name for f in ClienteLog._meta.fields]
+    actions = ['exportar_a_excel']
+    ordering = ['-fecha']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def exportar_a_excel(self, request, queryset):
+        workbook = Workbook()
+        worksheet = workbook.active
+        worksheet.title = "Clientes"
+
+        # Cabeceras
+        headers = [
+            'Fecha', 'Usuario', 'IP', 'Navegador', 'Sistema Operativo',
+            'User-Agent', 'URL', 'Referer'
+        ]
+        worksheet.append(headers)
+
+        # Filas de datos
+        for obj in queryset:
+            worksheet.append([
+                obj.fecha.strftime('%Y-%m-%d %H:%M:%S'),
+                str(obj.usuario) if obj.usuario else '',
+                obj.ip,
+                obj.navegador,
+                obj.sistema_operativo,
+                obj.user_agent,
+                obj.url,
+                obj.referer or ''
+            ])
+
+        # Preparar la respuesta
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        filename = f"registros_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+
+        workbook.save(response)
+        return response
+
+    exportar_a_excel.short_description = "Exportar seleccionados a Excel"
+
+
+✅ 2. Resultado
+
+    Desde el admin podés buscar por IP, URL, navegador, usuario, etc.
+
+    Filtrar por fecha, sistema operativo, etc.
+
+    Seleccionar registros y usar la acción "Exportar seleccionados a Excel".
+
+¿Querés también permitir exportación por rango de fechas o agregar un botón general para todo el log (sin seleccionar)?
