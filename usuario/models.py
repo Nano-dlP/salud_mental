@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from core.models import Auditoria, Tipo_Documento, Sede, AreaProfesional, Profesion
+from core.models import Tipo_Documento, Sede, AreaProfesional, Profesion
 
 
 
 # Create your models here.
-class Usuario(Auditoria):
+class Usuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profesional', verbose_name=("Usuario"))
     tipo_documento = models.ForeignKey(Tipo_Documento, on_delete=models.CASCADE, verbose_name=("Documento tipo"))
     numero_documento = models.CharField(max_length=20, unique=True, verbose_name=("Número de documento"))

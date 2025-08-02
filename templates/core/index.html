@@ -18,6 +18,7 @@
 
   <!-- Custom styles for this template-->
   <link href=" {% static 'css/sb-admin-2.min.css' %} " rel="stylesheet">
+  <link href=" {% static 'css/style.css' %} " rel="stylesheet">
 
   
 
@@ -39,7 +40,8 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-laugh-wink"></i>
+          <img src="{% static 'img/Defensoria-del-Pueblo.png' %}" alt="Logo ORSM" class="img-fluid"  style="width: 50px; height: 50px;">
+          <!--<i class="fas fa-laugh-wink"></i>-->
         </div>
         <div class="sidebar-brand-text mx-3">ORSM<sup>DPSF</sup></div>
       </a>
@@ -78,7 +80,7 @@
       </li>
 
       <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item">
+      <li class="nav-item small-nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-wrench"></i>
           <span>Utilities</span>
@@ -104,7 +106,7 @@
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+        <a class="nav-link collapsed small-nav-link" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
           <span>Pages</span>
         </a>

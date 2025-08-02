@@ -5,19 +5,19 @@ class InstitucionForm(forms.ModelForm):
     class Meta:
         model = Institucion
         fields = [
-            'institucion',
-            'tipo_institucion',
-            'domicilio_calle',
-            'domicilio_numero',
-            'domicilio_piso',
-            'domicilio_depto',
-            'localidad',
-            'telefono',
-            'email',
-            'cuit',
-            'estado',
+            'institucion', 
+            'tipo_institucion', 
+            'domicilio_calle', 
+            'domicilio_numero', 
+            'domicilio_piso', 
+            'domicilio_depto',  # Added field for department
+            'localidad', 
+            'telefono', 
+            'email', 
+            'cuit', 
+            'estado'
         ]
-
+        
         widgets = {
             'institucion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre de la institución'}),
             'tipo_institucion': forms.Select(attrs={'class': 'form-control'}),
@@ -29,32 +29,24 @@ class InstitucionForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el teléfono'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el email'}),
             'cuit': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el CUIT'}),
-            'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-
+    
     def clean_institucion(self):
         institucion = self.cleaned_data.get('institucion')
         if not institucion:
             raise forms.ValidationError('Este campo es obligatorio.')
-        if len(institucion) < 3:
-            raise forms.ValidationError('El nombre de la institución debe tener al menos 3 caracteres.')
         return institucion
-
-    def clean_telefono(self):
-        telefono = self.cleaned_data.get('telefono')
-        if telefono and not telefono.isdigit():
-            raise forms.ValidationError('El teléfono debe contener solo números.')
-        return telefono
-
-    def clean_cuit(self):
-        cuit = self.cleaned_data.get('cuit')
-        if cuit and (len(cuit) != 11 or not cuit.isdigit()):
-            raise forms.ValidationError('El CUIT debe contener 11 números.')
-        return cuit
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if email and not forms.EmailField().clean(email):
-            raise forms.ValidationError('Ingrese un email válido.')
-        return email
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['institucion'].widget.attrs.update({'class': 'form-control'})
+        self.fields['tipo_institucion'].widget.attrs.update({'class': 'form-control'})
+        self.fields['domicilio_calle'].widget.attrs.update({'class': 'form-control'})
+        self.fields['domicilio_numero'].widget.attrs.update({'class': 'form-control'})
+        self.fields['domicilio_piso'].widget.attrs.update({'class': 'form-control'})
+        self.fields['domicilio_depto'].widget.attrs.update({'class': 'form-control'})
+        self.fields['localidad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['telefono'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['cuit'].widget.attrs.update({'class': 'form-control'})
 

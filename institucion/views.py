@@ -3,9 +3,11 @@ from django.shortcuts import render
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, TemplateView
 from .models import Institucion
 from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404
+
 from .forms import InstitucionForm
 
 
@@ -48,3 +50,14 @@ class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.tipo_institucion = form.cleaned_data['tipo_institucion']
         #form.instance.user_modifica = self.request.user
         return super().form_valid(form)
+
+
+class InstitucionDetailView(TemplateView):
+    template_name = 'institucion/institucion_detail.html'  # Tu template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')  # Obtiene el pk desde la URL
+        institucion = get_object_or_404(Institucion, pk=pk)
+        context['institucion'] = institucion
+        return context
