@@ -6,7 +6,12 @@
 <div class="container-fluid">
 <body>
   <div class="container mt-5">
-    <h2 class="mb-4">Registrar / Editar Institución</h2>
+    {% if form.instance.pk %}
+      <h2 class="mb-4">Editar Institución</h2>
+    {% else %}
+      <h2 class="mb-4">Registrar Institución</h2>
+    {% endif %}
+
 
     <form method="POST" novalidate>
       {% csrf_token %}

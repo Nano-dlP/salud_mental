@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets.json') as f:
+with open(BASE_DIR / 'secrets_defe.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""

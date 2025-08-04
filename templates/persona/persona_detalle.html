@@ -1,0 +1,66 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="fw-bold text-primary mb-4">
+      Detalle de: {{ persona.apellido }}, {{ persona.nombre }}
+    </h5>
+    <!-- Género, teléfono, email -->
+    <div class="form-row border-bottom pb-2 mb-3">
+      <div class="form-group col-md-3">
+        <label class="h6 fw-bold text-uppercase mb-1">Género</label>
+        <p class="form-control-plaintext text-muted">{{ persona.genero }}</p>
+      </div>
+      <div class="form-group col-md-3">
+        <label class="h6 fw-bold text-uppercase mb-1">Teléfono</label>
+        <p class="form-control-plaintext text-muted">{{ persona.telefono }}</p>
+      </div>
+      <div class="form-group col-md-6">
+        <label class="h6 fw-bold text-uppercase mb-1">Email</label>
+        <p class="form-control-plaintext text-muted">{{ persona.email }}</p>
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div class="form-row border-bottom pb-2 mb-3">
+      <div class="form-group col-md-5">
+        <label class="h6 fw-bold text-uppercase mb-1">Calle</label>
+        <p class="form-control-plaintext text-muted">{{ persona.direccion_calle }}</p>
+      </div>
+      <div class="form-group col-md-3">
+        <label class="h6 fw-bold text-uppercase mb-1">Número</label>
+        <p class="form-control-plaintext text-muted">{{ persona.direccion_numero }}</p>
+      </div>
+      <div class="form-group col-md-2">
+        <label class="h6 fw-bold text-uppercase mb-1">Piso</label>
+        <p class="form-control-plaintext text-muted">{{ persona.direccion_piso }}</p>
+      </div>
+      <div class="form-group col-md-2">
+        <label class="h6 fw-bold text-uppercase mb-1">Depto</label>
+        <p class="form-control-plaintext text-muted">{{ persona.direccion_depto }}</p>
+      </div>
+    </div>
+
+    <!-- Localidad, ciudad de nacimiento -->
+    <div class="form-row border-bottom pb-2 mb-3">
+      <div class="form-group col-md-6">
+        <label class="h6 fw-bold text-uppercase mb-1">Localidad</label>
+        <p class="form-control-plaintext text-muted">{{ persona.localidad }}</p>
+      </div>
+      <div class="form-group col-md-6">
+        <label class="h6 fw-bold text-uppercase mb-1">Ciudad de nacimiento</label>
+        <p class="form-control-plaintext text-muted">{{ persona.ciudad_nacimiento }}</p>
+      </div>
+    </div>
+
+    <!-- Nivel educativo y ocupación -->
+    <div class="form-row border-bottom pb-2 mb-3">
+      <div class="form-group col-md-6">
+        <label class="h6 fw-bold text-uppercase mb-1">Nivel educativo</label>
+        <p class="form-control-plaintext text-muted">{{ persona.nivel_educativo }}</p>
+      </div>
+      <div class="form-group col-md-6">
+        <label class="h6 fw-bold text-uppercase mb-1">Ocupación</label>
+        <p class="form-control-plaintext text-muted">{{ persona.ocupacion }}</p>
+      </div>
+    </div>
+  </div>
+</div>

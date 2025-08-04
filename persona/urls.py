@@ -1,15 +1,15 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from .views import PersonaCreateView, PersonaListView
+from .views import PersonaCreateView, PersonaListView, PersonaDetailView, PersonaUpdateView
 from . import views
 
 app_name = 'persona'
 
 urlpatterns = [
-    path('institucion/', PersonaListView.as_view(), name='persona_list'),
+    path('persona/', PersonaListView.as_view(), name='persona_list'),
     path('persona/nueva/', PersonaCreateView.as_view(), name='persona_create'),
-    #path('isntitucion/editar/<int:pk>/', InstitucionUpdateView.as_view(), name='institucion_edit'),
-    #path('institucion/detalle/<int:pk>/', InstitucionDetailView.as_view(), name='institucion_detail'),
+    path('persona/editar/<int:pk>/', PersonaUpdateView.as_view(), name='persona_edit'),
+    path('persona/detalle/<int:pk>/', PersonaDetailView.as_view(), name='persona_detail'),
     
 ]

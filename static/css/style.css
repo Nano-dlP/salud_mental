@@ -1,6 +1,12 @@
 .sidebar {
-    width: 210px !important;
+    background-color: #2c3e50 !important; /* gris oscuro personalizado */
+    width: 280px !important;
 }
+
+#content-wrapper {
+    margin-left: 20px; /* ajustá según el ancho del sidebar */
+    margin-right: 20px; /* ajustá según el ancho del sidebar */
+  }
 
 .nav-link {
   font-size: 0.85rem;     /* texto más pequeño */
@@ -53,6 +59,7 @@
   overflow-x: auto;
 }
 
+/*
 .table {
   table-layout: auto;
   width: 100%;
@@ -67,6 +74,6 @@
 }
 
 .table th, .table td {
-  font-size: 0.75rem;
-  padding: 0.3rem 0.5rem; /* menos espacio interno */
-}
+  font-size: 0.95rem;
+   /* menos espacio interno 
+}*/
