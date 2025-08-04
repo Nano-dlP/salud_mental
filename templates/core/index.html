@@ -2,6 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
+{% block head %}
+  
+  
 <head>
 
   <meta charset="utf-8">
@@ -25,8 +29,11 @@
   <!-- Custom styles for this page -->
   <link href=" {% static 'css/bootstrap5/bootstrap.min.css' %}" rel="stylesheet">
   <link href=" {% static 'css/bootstrap5/dataTables.bootstrap5.min.css' %}" rel="stylesheet">
+  <link href=" {% static 'css/stilo_persona.css' %} " rel="stylesheet">
 
 </head>
+
+{% endblock head %}
 
 <body id="page-top">
 

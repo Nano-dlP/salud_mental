@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+#genera una tabla para registrar los logs de acceso de los clientes
+#se registra el usuario, ip, navegador, sistema operativo, user agent, url y referer
+#la fecha se registra automaticamente al crear el registro
 class ClienteLog(models.Model):
     usuario = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     ip = models.GenericIPAddressField()
@@ -17,23 +20,9 @@ class ClienteLog(models.Model):
 
 
 
-
-# Create your models here.
-class Auditoria(models.Model):
-    estado = models.BooleanField('Estado', default=True)
-    fecha_crea = models.DateTimeField('Fecha de creación',  auto_now_add=True, null=True, blank=True)
-    fecha_modifica = models.DateTimeField('Fecha de modificación', auto_now=True, null=True, blank=True)
-    
-    #user_crea = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Usuario creo)
-    user_crea = models.ForeignKey(User, verbose_name="Usuario creo registro", on_delete=models.CASCADE, related_name='auditoria_crea', null=True, blank=True)
-    user_modifica = models.ForeignKey(User, verbose_name="Usuario modifico registro", on_delete=models.CASCADE, related_name='auditoria_modifica', null=True, blank=True)
-    ip = models.GenericIPAddressField('IP', null=True, blank=True)
-    
-    class Meta:
-        abstract=True
-
-
-
+# Modelos para gestionar información de países, provincias, géneros, niveles educativos, tipos de documentos, sedes, localidades, áreas profesionales y profesiones.
+# Estas tablas seran complatadas por el administrador del sistema para que los usuarios puedan seleccionar de una lista desplegable
+# Sólo se permitirá crear registros de Localidades
 class Pais(models.Model):
     pais = models.CharField(max_length=100, blank=True, null=True, verbose_name='País')
 

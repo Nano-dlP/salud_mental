@@ -1,6 +1,5 @@
 from django.db import models
 
-from core.models import Auditoria
 from usuario.models import Usuario 
 from expediente.models import Expediente
 
@@ -13,7 +12,7 @@ class TipoIntervencion(models.Model):
         return self.tipo_intervencion
     
     
-class Intervencion(Auditoria):
+class Intervencion(models.Model):
     expediente = models.ForeignKey(Expediente, on_delete=models.CASCADE, verbose_name="Expediente")
     tipo_intervencion = models.ForeignKey(TipoIntervencion, on_delete=models.CASCADE, verbose_name="Tipo de Intervención")
     fecha_intervencion = models.DateField(verbose_name="Fecha de Intervención")

@@ -59,6 +59,10 @@ INSTALLED_APPS = [
     'persona',  # Your persona app
     'usuario',  # Bootstrap 4 support
     'institucion',  # Your institution app
+    'expediente',  # Your expediente app
+    'internacion',  # Your internacion app
+    'intervencion',  # Your intervencion app
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

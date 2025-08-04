@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class TipoSolicitud(models.Model):
     tipo_solicitud = models.CharField(max_length=50, verbose_name="Tipo de Solicitud")
@@ -41,6 +42,6 @@ class MediosIngreso(models.Model):
         return self.medios_ingreso
 
     
-class Expediente(Auditoria):
+class Expediente(models.Model):
     pass    
             

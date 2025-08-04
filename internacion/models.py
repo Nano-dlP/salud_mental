@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Auditoria
+
 
 
 # Create your models here.
@@ -35,5 +35,5 @@ class TipoAdiccion(models.Model):
         return self.tipo_adiccion
     
     
-class Internacion(Auditoria):
+class Internacion(models.Model):
     pass
