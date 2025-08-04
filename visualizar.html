@@ -1,0 +1,51 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Ficha Personal</h5>
+    </div>
+    <div class="card-body">
+
+      <!-- DATOS PERSONALES -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Datos Personales</h6>
+        <div class="row">
+          <div class="col-md-4"><strong>Nombre:</strong> {{ persona.nombre }}</div>
+          <div class="col-md-4"><strong>Apellido:</strong> {{ persona.apellido }}</div>
+          <div class="col-md-4"><strong>DNI:</strong> {{ persona.numero_documento }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-4"><strong>Género:</strong> {{ persona.genero }}</div>
+          <div class="col-md-4"><strong>Fecha de Nacimiento:</strong> {{ persona.fecha_nacimiento }}</div>
+          <div class="col-md-4"><strong>Email:</strong> {{ persona.email }}</div>
+        </div>
+      </div>
+
+      <!-- DOMICILIO -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Domicilio</h6>
+        <div class="row">
+          <div class="col-md-6"><strong>Calle:</strong> {{ persona.direccion_calle }}</div>
+          <div class="col-md-2"><strong>Número:</strong> {{ persona.direccion_numero }}</div>
+          <div class="col-md-2"><strong>Piso:</strong> {{ persona.direccion_piso }}</div>
+          <div class="col-md-2"><strong>Depto:</strong> {{ persona.direccion_depto }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6"><strong>Localidad:</strong> {{ persona.localidad }}</div>
+          <div class="col-md-6"><strong>Ciudad de Nacimiento:</strong> {{ persona.ciudad_nacimiento }}</div>
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN LABORAL -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Información Laboral</h6>
+        <div class="row">
+          <div class="col-md-6"><strong>Ocupación:</strong> {{ persona.ocupacion }}</div>
+          <div class="col-md-6"><strong>Nivel Educativo:</strong> {{ persona.nivel_educativo }}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
