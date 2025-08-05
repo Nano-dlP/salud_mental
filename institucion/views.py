@@ -7,6 +7,8 @@ from django.views.generic import ListView, CreateView, UpdateView, TemplateView
 from .models import Institucion
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+
 
 from .forms import InstitucionForm
 
@@ -36,6 +38,10 @@ class InstitucionListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Institucion.objects.all().order_by('institucion')
     
+    #Con esta función restrinjo la visualizasión solo a los que tienen estado true
+    def get_queryset(self):
+        return Institucion.objects.filter(estado=True)
+    
 
 class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
     model = Institucion
@@ -63,21 +69,12 @@ class InstitucionDetailView(TemplateView):
         return context
     
 
-def institucion_inactivar(request, id):
-    institucion = Institucion.objects.filter(pk=id).first()
-    contexto={}
-    template_name="institucion/modal_eliminación.html"
+def institucion_desactivar(request, pk):
+    institucion = get_object_or_404(Institucion, pk=pk)
 
-    if not institucion:
-        return redirect("institucion:institucion_list")
-    
-    if request.method=='GET':
-        contexto={'obj':institucion}
-    
-    if request.method=='POST':
+    if request.method == 'POST':
         institucion.estado=False
         institucion.save()
-        return redirect("institucion:institucion_list")
-    
-    return render(request, template_name, contexto)
-        
+        messages.success(request, f"{institucion} fue desactivada exitosamente")
+
+    return redirect('institucion:institucion_list')
