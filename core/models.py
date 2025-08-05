@@ -95,8 +95,8 @@ class Sede(models.Model):
 
 class Localidad(models.Model):
     localidad = models.CharField('Localidad', max_length=70, blank=False, null=False)
-    nombre_abreviado = models.CharField('Nombre abreviado', max_length=4, blank=True, null=True)
-    codigo_area = models.IntegerField('Código de área', blank=True, null=True)
+    abreviatura = models.CharField('Nombre abreviado', max_length=4, blank=True, null=True)
+    codigo_postal = models.IntegerField('Código de postal', blank=True, null=True)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, verbose_name='Provincia', blank=True, null=True, related_name='localidades_provincia')
 
 

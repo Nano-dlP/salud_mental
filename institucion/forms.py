@@ -1,5 +1,6 @@
 from django import forms
-from .models import Institucion
+from .models import Institucion, Localidad, TipoInstitucion
+import re
 
 class InstitucionForm(forms.ModelForm):
     class Meta:
@@ -47,14 +48,19 @@ class InstitucionForm(forms.ModelForm):
         return telefono
 
     def clean_cuit(self):
-        cuit = self.cleaned_data.get('cuit')
-        if cuit and (len(cuit) != 11 or not cuit.isdigit()):
-            raise forms.ValidationError('El CUIT debe contener 11 números.')
+        cuit = self.cleaned_data['cuit']
+        if not re.match(r'^\d{2}-\d{8}-\d$', cuit):
+            raise forms.ValidationError("CUIT inválido. Debe tener el formato XX-XXXXXXXX-X")
         return cuit
-
+    
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and not forms.EmailField().clean(email):
             raise forms.ValidationError('Ingrese un email válido.')
         return email
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtra solo localidades activas
+        #self.fields['localidad'].queryset = Localidad.objects.filter(estado=True)
+        self.fields['tipo_institucion'].queryset = TipoInstitucion.objects.filter(estado=True)
