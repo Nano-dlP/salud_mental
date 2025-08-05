@@ -84,7 +84,9 @@
                       <td>
                         <a href="{% url 'institucion:institucion_edit' institucion.id %}" class="btn btn-warning btn-circle" title="Editar"><i class="far fa-edit"></i></a>
                         <a href="{% url 'institucion:institucion_detail' institucion.id %}" class="btn btn-info btn-circle" title="Detalles"><i class="fas fa-eye"></i></a>
-                        <a href="#" class="btn btn-danger btn-circle disabled" title="Borrar"><i class="far fa-trash-alt"></i></a>
+                        <a href="{% url 'institucion:institucion_inactivate' institucion.id %}" class="btn btn-danger btn-circle" title="Borrar"><i class="far fa-trash-alt"></i></a>
+                        <a href="#" class="btn btn-warning btn-circle" data-id="{{ institucion.id }}" data-action="desactivar" data-entity="la institucion {{ institucion.institucion }}" onclick="mostrarModal(this)"><i class="fas fa-power-off"></i></a>
+  
                       </td>
                     </tr>
                     {% endfor %}
@@ -99,6 +101,54 @@
     {% endblock body %}
   </div>
 </div>
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalConfirmacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalConfirmacionLabel">Confirmar acción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body" id="modalMensaje">
+        <!-- Se completa dinámicamente -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form id="formAccion" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" id="btnConfirmarAccion">Confirmar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  function mostrarModal(elemento) {
+    const id = elemento.getAttribute('data-id');
+    const action = elemento.getAttribute('data-action');
+    const entity = elemento.getAttribute('data-entity');
+
+    const mensaje = `¿Estás seguro de que deseas <strong>${action}</strong> a ${entity}?`;
+    document.getElementById('modalMensaje').innerHTML = mensaje;
+
+    const form = document.getElementById('formAccion');
+    form.action = `/persona/${id}/${action}/`;  // Ajustá esta ruta si es necesario
+
+    const btnConfirmar = document.getElementById('btnConfirmarAccion');
+    btnConfirmar.classList.remove('btn-danger', 'btn-warning');
+    btnConfirmar.classList.add(action === 'eliminar' ? 'btn-danger' : 'btn-warning');
+    btnConfirmar.textContent = action.charAt(0).toUpperCase() + action.slice(1);
+
+    const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+    modal.show();
+  }
+</script>
+
+
 
 {% endblock page_content %}
 

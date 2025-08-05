@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from .views import InstitucionCreateView, InstitucionListView, InstitucionUpdateView, InstitucionDetailView
+from .views import InstitucionCreateView, InstitucionListView, InstitucionUpdateView, InstitucionDetailView, institucion_inactivar
 from . import views
 
 app_name = 'institucion'
@@ -12,5 +12,7 @@ urlpatterns = [
     path('institucion/nuevo/', InstitucionCreateView.as_view(), name='institucion_create'),
     path('isntitucion/editar/<int:pk>/', InstitucionUpdateView.as_view(), name='institucion_edit'),
     path('institucion/detalle/<int:pk>/', InstitucionDetailView.as_view(), name='institucion_detail'),
+    path('institucion/inactivar/<int:id>', institucion_inactivar, name="institucion_inactivate")
+
     
 ]

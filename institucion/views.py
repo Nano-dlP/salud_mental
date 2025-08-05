@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -61,3 +61,23 @@ class InstitucionDetailView(TemplateView):
         institucion = get_object_or_404(Institucion, pk=pk)
         context['institucion'] = institucion
         return context
+    
+
+def institucion_inactivar(request, id):
+    institucion = Institucion.objects.filter(pk=id).first()
+    contexto={}
+    template_name="institucion/modal_eliminación.html"
+
+    if not institucion:
+        return redirect("institucion:institucion_list")
+    
+    if request.method=='GET':
+        contexto={'obj':institucion}
+    
+    if request.method=='POST':
+        institucion.estado=False
+        institucion.save()
+        return redirect("institucion:institucion_list")
+    
+    return render(request, template_name, contexto)
+        
