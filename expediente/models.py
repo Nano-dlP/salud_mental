@@ -112,6 +112,7 @@ class Expediente(models.Model):
     tipo_solicitud = models.ForeignKey(TipoSolicitud, on_delete=models.CASCADE, related_name='expediente_tipo_solicitud', blank=True, null=True)
     grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE, blank=True, null=True)
     tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True, related_name='expediente_resumen_intervencion')
+    estado_expediente = models.ForeignKey(EstadoExpediente, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_estado_expediente')
     resumen_intervencion = models.ForeignKey(ResumenIntervencion, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_resumen_intervencion')
     
     estado = models.BooleanField("Estado", default=True)

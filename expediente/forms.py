@@ -8,7 +8,7 @@ class ExpedienteForm(forms.ModelForm):
         fields = [
             'localidad', 'fecha_de_juzgado', 'fecha_de_recepcion', 'expediente_fisico', 'cuij',
             'clave_sisfe', 'medio_ingreso', 'situacion_habitacional_hist', 'tipo_solicitud',
-            'grupo_etario', 'tipo_patrocinio', 'resumen_intervencion'            
+            'grupo_etario', 'tipo_patrocinio', 'resumen_intervencion', 'estado_expediente'            
         ]
 
         widgets = {
@@ -23,6 +23,7 @@ class ExpedienteForm(forms.ModelForm):
             'tipo_solicitud':forms.Select(attrs={'class': 'form-control'}),
             'grupo_etario':forms.Select(attrs={'class': 'form-control'}),
             'tipo_patrocinio':forms.Select(attrs={'class': 'form-control'}),
+            'estado_expediente':forms.Select(attrs={'class': 'form-control'}),
             'resumen_intervencion':forms.Select(attrs={'class': 'form-control'}),
 
         }

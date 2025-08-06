@@ -21,3 +21,6 @@ class Usuario(models.Model):
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
+        
+        
+        
