@@ -12,7 +12,11 @@ class TipoSolicitud(models.Model):
     def __str__(self):
         return self.tipo_solicitud
     
-    
+    class Meta:
+        verbose_name = 'Tipo de solicitud'
+        verbose_name_plural = 'Tipos de solicitudes'
+
+
 class GrupoEtario(models.Model):
     grupo_etario = models.CharField(max_length=50, verbose_name="Grupo Etario")
     estado = models.BooleanField(default=True)
@@ -20,6 +24,11 @@ class GrupoEtario(models.Model):
     def __str__(self):
         return self.grupo_etario
     
+    class Meta:
+        verbose_name = 'Grupo Etario'
+        verbose_name_plural = 'Grupos etarios'
+
+
     
 class ResumenIntervencion(models.Model):
     resumen_intervencion = models.CharField(max_length=50, verbose_name="Resumen de Intervención")
@@ -28,6 +37,11 @@ class ResumenIntervencion(models.Model):
     def __str__(self):
         return self.resumen_intervencion    
     
+    class Meta:
+        verbose_name = 'Resumen de Intervención'
+        verbose_name_plural = 'Resumenes de intervenciones'
+
+
     
 class TipoPatrocinio(models.Model):
     tipo_patrocinio = models.CharField(max_length=50, verbose_name="Tipo de Patrocinio")
@@ -35,6 +49,11 @@ class TipoPatrocinio(models.Model):
     
     def __str__(self):
         return self.tipo_patrocinio
+
+    class Meta:
+        verbose_name = 'Tipo de patrocinio'
+        verbose_name_plural = 'Tipos de patrocinios'
+
 
 
 class MedioIngreso(models.Model):
@@ -61,7 +80,21 @@ class EstadoArchivo(models.Model):
         verbose_name_plural = 'Estado de los archivos'
 
 
+class EstadoExpediente(models.Model):
+    estado_expediente = models.CharField(max_length=100, verbose_name="Estado el expediente")
+    estado = models.BooleanField(default=True)
     
+    def __str__(self):
+        return self.estado_archivo
+    
+    class Meta:
+        verbose_name = 'Estado del expediente'
+        verbose_name_plural = 'Estado de los expedientes'
+
+
+
+
+
 class Expediente(models.Model):
     localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, related_name='expediente_localidad')
     numero = models.PositiveIntegerField("Número de expediente")
