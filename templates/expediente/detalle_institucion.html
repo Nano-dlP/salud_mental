@@ -1,0 +1,53 @@
+<div class="container mt-4">
+
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Detalle de la Institución</h5>
+    </div>
+    <div class="card-body">
+
+      <!-- DATOS PERSONALES -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Datos Institucionales</h6>
+        <div class="row">
+          <div class="col-md-4"><strong>Nombre:</strong> {{ institucion.institucion }}</div>
+          <div class="col-md-4"><strong>Tipo de institución:</strong> {{ institucion.tipo_institucion }}</div>
+        </div>
+      </div>
+
+      <!-- DOMICILIO -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Domicilio</h6>
+        <div class="row">
+          <div class="col-md-6"><strong>Calle:</strong> {{ institucion.domicilio_calle }}</div>
+          <div class="col-md-2"><strong>Número:</strong> {{ institucion.domicilio_numero }}</div>
+          <div class="col-md-2"><strong>Piso:</strong> {{ institucion.domicilio_piso }}</div>
+          <div class="col-md-2"><strong>Dto.:</strong> {{ institucion.domicilio_depto }}</div>
+          <div class="col-md-6"><strong>Localidad:</strong> {{ institucion.localidad }}</div>
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN LABORAL -->
+      <div class="mb-4 border-bottom pb-3">
+        <h6 class="text-primary fw-bold">Otros </h6>
+        <div class="row">
+          <div class="col-md-6"><strong>Teléfono:</strong> {{ institucion.telefono }}</div>
+          <div class="col-md-6"><strong>Correo electrónico:</strong> {{ institucion.email }}</div>
+          <div class="col-md-6"><strong>CUIT:</strong> {{ institucion.cuit }}</div>
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="d-flex justify-content-end mt-4">
+        <a href="{% url 'institucion:institucion_list' %}" class="btn btn-secondary me-2">
+          <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+        <button onclick="window.print()" class="btn btn-primary">
+          <i class="fas fa-print"></i> Imprimir
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

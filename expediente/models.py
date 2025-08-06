@@ -48,20 +48,38 @@ class MedioIngreso(models.Model):
         verbose_name = 'Medio de Ingreso'
         verbose_name_plural = 'Medios de Ingresos'
 
+
+class EstadoArchivo(models.Model):
+    estado_archivo = models.CharField(max_length=50, verbose_name="Estado del Archivo")
+    estado = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.estado_archivo
+    
+    class Meta:
+        verbose_name = 'Estado del archivo'
+        verbose_name_plural = 'Estado de los archivos'
+
+
     
 class Expediente(models.Model):
-    localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT)
+    localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, related_name='expediente_localidad')
     numero = models.PositiveIntegerField("Número de expediente")
     anio = models.PositiveIntegerField("Año del expediente", default=2025)
     identificador = models.CharField("Identificador del expediente", max_length=100, unique=True, editable=False)
+    
     fecha_creacion = models.DateField("Fecha de creación", auto_now_add=True)
-
-    medio_ingreso = models.ForeignKey(MedioIngreso, on_delete=models.CASCADE, blank=True, null=True)
+    fecha_de_juzgado = models.DateTimeField('Fecha del Juzgado', blank=True, null=True )
+    fecha_de_recepcion = models.DateTimeField('Fecha de Recepción', blank=True, null=True )
     expediente_fisico = models.BooleanField(default=False)
-    tipo_solicitud = models.ForeignKey(TipoSolicitud, on_delete=models.CASCADE)
-    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE)
-    tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True)
-    resumen_intervencion = models.ForeignKey(ResumenIntervencion, on_delete=models.CASCADE, blank=True, null=True)
+    cuij = models.CharField(max_length=50, verbose_name='CUIJ', blank=True, null=True)
+    clave_sisfe = models.CharField(max_length=50, verbose_name='Clave SISFE', blank=True, null=True)
+    medio_ingreso = models.ForeignKey(MedioIngreso, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_medio_ingreso')
+    situacion_habitacional_hist = models.CharField(max_length=100, verbose_name="Situación habitacional histórica", blank=True, null=True)
+    tipo_solicitud = models.ForeignKey(TipoSolicitud, on_delete=models.CASCADE, related_name='expediente_tipo_solicitud', blank=True, null=True)
+    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE, blank=True, null=True)
+    tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True, related_name='expediente_resumen_intervencion')
+    resumen_intervencion = models.ForeignKey(ResumenIntervencion, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_resumen_intervencion')
     
     estado = models.BooleanField("Estado", default=True)
 

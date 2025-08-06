@@ -1,0 +1,51 @@
+<!-- Modal de confirmación reutilizable -->
+<div class="modal fade" id="modalConfirmacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalConfirmacionLabel">Confirmar acción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body" id="modalMensaje">
+        <!-- Se completa dinámicamente -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+        <form id="formAccion" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" id="btnConfirmarAccion">Confirmar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  function mostrarModal(btn) {
+    const id = btn.getAttribute('data-id');
+    const action = btn.getAttribute('data-action');
+    const entity = btn.getAttribute('data-entity');
+
+    // Actualiza mensaje
+    const mensaje = `¿Estás seguro de que deseas <strong>${action}</strong> a ${entity}?`;
+    document.getElementById('modalMensaje').innerHTML = mensaje;
+
+    // Actualiza el formulario
+    const form = document.getElementById('formAccion');
+    form.action = `/persona/${id}/${action}/`;  // Ajustá esta ruta a tu sistema de URLs
+
+    // Cambia color del botón según acción
+    const btnConfirmar = document.getElementById('btnConfirmarAccion');
+    btnConfirmar.classList.remove('btn-danger', 'btn-warning');
+    btnConfirmar.classList.add(action === 'eliminar' ? 'btn-danger' : 'btn-warning');
+    btnConfirmar.textContent = action.charAt(0).toUpperCase() + action.slice(1);
+
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+    modal.show();
+  }
+</script>
