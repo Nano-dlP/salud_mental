@@ -1,0 +1,260 @@
+Perfecto. Vamos a adaptar el panel de administración del modelo CustomUser a un estilo tipo SB Admin 2 o similar, fuera del admin clásico de Django.
+
+🎯 Objetivo:
+Crear una vista con tabla de usuarios
+
+Estilo frontend (Bootstrap 5, SB Admin 2 compatible)
+
+Opciones: ver, editar, eliminar, crear usuarios
+
+Interfaz 100% personalizada, fuera del admin /admin/
+
+✅ 1. Crear vistas personalizadas para administrar usuarios
+📁 Estructura sugerida:
+bash
+Copiar
+Editar
+usuario/
+├── templates/usuario/
+│   ├── lista_usuarios.html
+│   ├── usuario_form.html
+│   └── usuario_confirm_delete.html
+├── views.py
+├── forms.py
+└── urls.py
+📄 2. Formulario para crear/editar usuarios
+python
+Copiar
+Editar
+# usuario/forms.py
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import CustomUser
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'telefono', 'direccion', 'foto_perfil', 'is_staff']
+
+class CustomUserUpdateForm(UserChangeForm):
+    password = None  # opcional, si no querés mostrar el campo contraseña
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'telefono', 'direccion', 'foto_perfil', 'is_staff']
+🔧 3. Vistas basadas en clases (CRUD)
+python
+Copiar
+Editar
+# usuario/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import CustomUser
+from .forms import CustomUserCreationForm, CustomUserUpdateForm
+
+class AdminOnlyMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+class UsuarioListView(LoginRequiredMixin, AdminOnlyMixin, ListView):
+    model = CustomUser
+    template_name = 'usuario/lista_usuarios.html'
+    context_object_name = 'usuarios'
+
+class UsuarioCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
+    model = CustomUser
+    form_class = CustomUserCreationForm
+    template_name = 'usuario/usuario_form.html'
+    success_url = reverse_lazy('usuario:lista_usuarios')
+
+class UsuarioUpdateView(LoginRequiredMixin, AdminOnlyMixin, UpdateView):
+    model = CustomUser
+    form_class = CustomUserUpdateForm
+    template_name = 'usuario/usuario_form.html'
+    success_url = reverse_lazy('usuario:lista_usuarios')
+
+class UsuarioDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):
+    model = CustomUser
+    template_name = 'usuario/usuario_confirm_delete.html'
+    success_url = reverse_lazy('usuario:lista_usuarios')
+🔗 4. URLs
+python
+Copiar
+Editar
+# usuario/urls.py
+from django.urls import path
+from .views import UsuarioListView, UsuarioCreateView, UsuarioUpdateView, UsuarioDeleteView
+
+app_name = 'usuario'
+
+urlpatterns = [
+    path('', UsuarioListView.as_view(), name='lista_usuarios'),
+    path('nuevo/', UsuarioCreateView.as_view(), name='usuario_crear'),
+    path('<int:pk>/editar/', UsuarioUpdateView.as_view(), name='usuario_editar'),
+    path('<int:pk>/eliminar/', UsuarioDeleteView.as_view(), name='usuario_eliminar'),
+]
+🎨 5. Template: lista_usuarios.html
+html
+Copiar
+Editar
+{% extends 'base_dashboard.html' %}
+{% block title %}Usuarios{% endblock %}
+{% block content %}
+
+<h2>Usuarios</h2>
+
+<a href="{% url 'usuario:usuario_crear' %}" class="btn btn-success mb-3">Nuevo Usuario</a>
+
+<table class="table table-striped table-hover">
+  <thead class="table-light">
+    <tr>
+      <th>Usuario</th>
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Teléfono</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for usuario in usuarios %}
+    <tr>
+      <td>{{ usuario.username }}</td>
+      <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+      <td>{{ usuario.email }}</td>
+      <td>{{ usuario.telefono }}</td>
+      <td>
+        <a href="{% url 'usuario:usuario_editar' usuario.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <a href="{% url 'usuario:usuario_eliminar' usuario.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+✏️ 6. Template: usuario_form.html
+html
+Copiar
+Editar
+{% extends 'base_dashboard.html' %}
+{% block title %}Formulario de Usuario{% endblock %}
+{% block content %}
+
+<h2>{{ form.instance.pk|yesno:"Editar Usuario,Nuevo Usuario" }}</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  <a href="{% url 'usuario:lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}
+🗑️ 7. Template: usuario_confirm_delete.html
+html
+Copiar
+Editar
+{% extends 'base_dashboard.html' %}
+{% block title %}Eliminar Usuario{% endblock %}
+{% block content %}
+<h2>¿Eliminar usuario {{ object.username }}?</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+  <a href="{% url 'usuario:lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
+✅ Resultado
+Interfaz personalizada de administración de usuarios
+
+CRUD completo (crear, leer, actualizar, eliminar)
+
+Panel accesible solo para is_staff o superuser
+
+Diseño compatible con SB Admin 2 / Bootstrap 5
+
+
+Perfecto. Vamos a integrar DataTables en la lista de usuarios para que tengas:
+
+✅ Paginación
+✅ Búsqueda instantánea
+✅ Ordenamiento por columnas
+✅ Estilo responsivo Bootstrap 5
+
+✅ 1. Agregar DataTables al template
+🎨 Actualiza lista_usuarios.html:
+html
+Copiar
+Editar
+{% extends 'base_dashboard.html' %}
+{% block title %}Usuarios{% endblock %}
+{% block content %}
+
+<h2>Usuarios</h2>
+
+<a href="{% url 'usuario:usuario_crear' %}" class="btn btn-success mb-3">Nuevo Usuario</a>
+
+<table id="tablaUsuarios" class="table table-striped table-bordered nowrap" style="width:100%">
+  <thead class="table-light">
+    <tr>
+      <th>Usuario</th>
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Teléfono</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for usuario in usuarios %}
+    <tr>
+      <td>{{ usuario.username }}</td>
+      <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+      <td>{{ usuario.email }}</td>
+      <td>{{ usuario.telefono }}</td>
+      <td>
+        <a href="{% url 'usuario:usuario_editar' usuario.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <a href="{% url 'usuario:usuario_eliminar' usuario.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- JS y CSS de DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"/>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    new DataTable('#tablaUsuarios', {
+      responsive: true,
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
+    });
+  });
+</script>
+
+{% endblock %}
+📌 2. Asegurate de tener jQuery en tu base
+Si tu base_dashboard.html no incluye jQuery, añadilo antes de DataTables:
+
+html
+Copiar
+Editar
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+Ponelo antes de los scripts de DataTables.
+
+✅ Resultado
+Tabla ordenable, filtrable y paginada automáticamente
+
+Totalmente integrada con Bootstrap 5
+
+Localizada en español
+
+Compatible con SB Admin 2 o cualquier layout que uses
+
+¿Querés que te agregue también exportación a Excel/PDF, botones de acción por fila o filtro por rol (is_staff, is_superuser)? Puedo incluirlo.

@@ -1,8 +1,28 @@
+# usuario/admin.py
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import gettext_lazy as _
+from .models import CustomUser
 
-# Register your models here.
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
 
-from .models import Usuario
+    # Campos que se ven en el panel de lista (listado de usuarios)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'telefono')
+    search_fields = ('username', 'email', 'first_name', 'last_name', 'telefono')
 
-# Register the Profesional model with the admin site
-admin.site.register(Usuario)
+    # Secciones del formulario de edición
+    fieldsets = UserAdmin.fieldsets + (
+        (_('Información adicional'), {
+            'fields': ('telefono', 'direccion', 'foto_perfil'),
+        }),
+    )
+
+    # Campos extra al crear un usuario
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (_('Información adicional'), {
+            'fields': ('telefono', 'direccion', 'foto_perfil'),
+        }),
+    )
+
+admin.site.register(CustomUser, CustomUserAdmin)

@@ -46,7 +46,7 @@
     <ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href=" {% url "core:index" %} ">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href=" {% url "core:index" %}">
         <div class="sidebar-brand-icon rotate-n-15">
           <img src="{% static 'img/Defensoria-del-Pueblo.png' %}" alt="Logo ORSM" class="img-fluid"  style="width: 50px; height: 50px;">
           <!--<i class="fas fa-laugh-wink"></i>-->
@@ -95,8 +95,8 @@
         <div id="collapseInstitucion" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="{% url "institucion:institucion_list" %} ">Listado</a>
-            <a class="collapse-item" href="{% url "institucion:institucion_create" %}">Nueva</a>
+            <a class="collapse-item" href="{% url 'institucion:institucion_list' %}">Listado</a>
+            <a class="collapse-item" href="{% url 'institucion:institucion_create' %}">Nueva</a>
           </div>
         </div>
       </li>
@@ -211,7 +211,7 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-800">{{user.first_name}} {{user.last_name}}</span>
+                <span class="mr-2 d-none d-lg-inline text-gray-800">{{user.username}}</span>
                 <img class="img-profile rounded-circle" src="{% static 'img/profile.svg' %}">
               </a>
               <!-- Dropdown - User Information -->
@@ -379,11 +379,31 @@
   <script src="{% static 'js/bootstrap5/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'js/bootstrap5/dataTables.bootstrap5.min.js' %}"></script>
 
-   
+   <script>
+    let tiempoInactivo = 15 * 60 * 1000;  // 15 minutos
+    let temporizador;
+
+    function resetTimer() {
+        clearTimeout(temporizador);
+        temporizador = setTimeout(cerrarSesion, tiempoInactivo);
+    }
+
+    function cerrarSesion() {
+        window.location.href = "{% url 'core:logout' %}";  // Asegúrate de tener esta URL
+    }
+
+    // Detectar actividad
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.onclick = resetTimer;
+    document.onscroll = resetTimer;
+</script>
   
 
  
   {% block js_page %}
+
   {% endblock js_page %}
 
 </body>

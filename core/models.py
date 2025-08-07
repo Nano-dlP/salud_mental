@@ -1,12 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
-
+#from django.contrib.auth.models import User
+#Para nuestro modelo de usuario personalizado debemos
+#importar setings y reemplaza el uso de User por settings.AUTH_USER_MODEL
+from django.conf import settings
 
 #genera una tabla para registrar los logs de acceso de los clientes
 #se registra el usuario, ip, navegador, sistema operativo, user agent, url y referer
 #la fecha se registra automaticamente al crear el registro
 class ClienteLog(models.Model):
-    usuario = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     ip = models.GenericIPAddressField()
     navegador = models.CharField(max_length=255)
     sistema_operativo = models.CharField(max_length=255)

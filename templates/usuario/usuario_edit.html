@@ -1,0 +1,67 @@
+<!-- templates/cuentas/editar_perfil.html -->
+{% extends 'core/index.html' %}
+{% load static %}
+
+{% block page_content %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="fw-bold text-primary mb-4">
+        Perfil de: {{ user.first_name }}, {{ user.last_name }}
+      </h5>
+
+      <style>
+        .profile-container {
+          max-width: 600px;
+          margin: 0 auto;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          padding: 20px;
+          display: flex;
+          gap: 20px;
+          align-items: center;
+        }
+
+        .profile-photo {
+          width: 150px;
+          height: 150px;
+          border-radius: 10px;
+          border: 2px solid #ddd;
+          object-fit: cover;
+        }
+
+        .profile-form {
+          flex-grow: 1;
+        }
+      </style>
+
+      <div class="profile-container">
+        <!-- Mostrar fotografía de perfil -->
+        <div>
+          {% if user.foto_perfil %}
+    <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil" class="profile-photo">
+{% else %}
+    <div class="profile-photo d-flex justify-content-center align-items-center" style="background-color: #f0f0f0;">
+        <span class="text-muted">Sin foto</span>
+    </div>
+{% endif %}
+
+        </div>
+
+        <!-- Formulario -->
+        <div class="profile-form">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </form>
+
+          <a href="{% url 'usuario:cambiar_contrasena' %}" class="btn btn-secondary mt-3">Cambiar contraseña</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock page_content %}

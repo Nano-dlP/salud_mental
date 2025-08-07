@@ -1,0 +1,30 @@
+<!-- templates/cuentas/editar_perfil.html -->
+{% extends 'core/index.html' %}
+{% load static %}
+{% block page_content %}
+<div class="container mt-4">
+<div class="card">
+  <div class="card-body">
+    <h5 class="fw-bold text-primary mb-4">
+     Cambiar contraseña de: {{ user.first_name }}, {{ user.last_name }}
+    </h5>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-danger">Actualizar contraseña</button>
+</form>
+
+<a href="{% url 'usuario:editar_perfil' %}" class="btn btn-secondary mt-3">Volver al perfil</a>
+
+</div>
+</div>
+</div>
+{% endblock page_content %}
+
+
+
+
+
+
+
