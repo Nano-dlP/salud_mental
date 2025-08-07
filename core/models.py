@@ -131,3 +131,14 @@ class Profesion (models.Model):
     class Meta:
         verbose_name = 'Profesión'
         verbose_name_plural = 'Profesiones'
+        
+        
+class Rol (models.Model):
+    rol = models.CharField('Rol', max_length=50, blank=True, null=True)
+    
+    def __str__(self):
+        return self.rol
+    
+    class Meta:
+        verbose_name = 'Rol'
+        verbose_name_plural = 'Roles'

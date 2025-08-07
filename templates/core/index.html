@@ -31,6 +31,9 @@
   <link href=" {% static 'css/bootstrap5/dataTables.bootstrap5.min.css' %}" rel="stylesheet">
   <link href=" {% static 'css/stilo_persona.css' %} " rel="stylesheet">
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
 </head>
 
 {% endblock head %}
@@ -46,7 +49,7 @@
     <ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href=" {% url "core:index" %}">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href=" {% url 'core:index' %}">
         <div class="sidebar-brand-icon rotate-n-15">
           <img src="{% static 'img/Defensoria-del-Pueblo.png' %}" alt="Logo ORSM" class="img-fluid"  style="width: 50px; height: 50px;">
           <!--<i class="fas fa-laugh-wink"></i>-->
@@ -216,7 +219,7 @@
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href=" {% url 'usuario:editar_perfil' %}">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Perfil
                 </a>
@@ -379,26 +382,27 @@
   <script src="{% static 'js/bootstrap5/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'js/bootstrap5/dataTables.bootstrap5.min.js' %}"></script>
 
-   <script>
-    let tiempoInactivo = 15 * 60 * 1000;  // 15 minutos
-    let temporizador;
+  <!-- Script para cierre de sesión -->
+  <script>
+      let tiempoInactivo = 15 * 60 * 1000;  // 15 minutos
+      let temporizador;
 
-    function resetTimer() {
-        clearTimeout(temporizador);
-        temporizador = setTimeout(cerrarSesion, tiempoInactivo);
-    }
+      function resetTimer() {
+          clearTimeout(temporizador);
+          temporizador = setTimeout(cerrarSesion, tiempoInactivo);
+      }
 
-    function cerrarSesion() {
-        window.location.href = "{% url 'core:logout' %}";  // Asegúrate de tener esta URL
-    }
+      function cerrarSesion() {
+          window.location.href = "{% url 'core:logout' %}";  // Asegúrate de tener esta URL
+      }
 
-    // Detectar actividad
-    window.onload = resetTimer;
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
-    document.onclick = resetTimer;
-    document.onscroll = resetTimer;
-</script>
+      // Detectar actividad
+      window.onload = resetTimer;
+      document.onmousemove = resetTimer;
+      document.onkeypress = resetTimer;
+      document.onclick = resetTimer;
+      document.onscroll = resetTimer;
+  </script>
   
 
  

@@ -1,30 +1,39 @@
-<!-- templates/cuentas/editar_perfil.html -->
 {% extends 'core/index.html' %}
 {% load static %}
+
 {% block page_content %}
-<div class="container mt-4">
-<div class="card">
-  <div class="card-body">
-    <h5 class="fw-bold text-primary mb-4">
-     Cambiar contraseña de: {{ user.first_name }}, {{ user.last_name }}
-    </h5>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-danger">Actualizar contraseña</button>
-</form>
+      <div class="card shadow border-0">
+        <div class="card-body p-4">
 
-<a href="{% url 'usuario:editar_perfil' %}" class="btn btn-secondary mt-3">Volver al perfil</a>
+          <h4 class="fw-bold text-center text-primary mb-4">
+            Cambiar contraseña de {{ user.first_name }} {{ user.last_name }}
+          </h4>
 
-</div>
-</div>
+          <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-danger">
+                <i class="fas fa-key me-1"></i> Actualizar contraseña
+              </button>
+              <a href="{% url 'usuario:editar_perfil' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Volver al perfil
+              </a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 {% endblock page_content %}
-
-
-
-
 
 
 

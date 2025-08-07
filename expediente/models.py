@@ -1,6 +1,8 @@
 from django.db import models
 
-from core.models import Localidad
+from core.models import Localidad, Rol
+from persona.models import Persona
+from institucion.models import Institucion
 from django.utils import timezone
 
 
@@ -68,53 +70,38 @@ class MedioIngreso(models.Model):
         verbose_name_plural = 'Medios de Ingresos'
 
 
-class EstadoArchivo(models.Model):
-    estado_archivo = models.CharField(max_length=50, verbose_name="Estado del Archivo")
-    estado = models.BooleanField(default=True)
-    
-    def __str__(self):
-        return self.estado_archivo
-    
-    class Meta:
-        verbose_name = 'Estado del archivo'
-        verbose_name_plural = 'Estado de los archivos'
-
 
 class EstadoExpediente(models.Model):
     estado_expediente = models.CharField(max_length=100, verbose_name="Estado el expediente")
     estado = models.BooleanField(default=True)
     
     def __str__(self):
-        return self.estado_archivo
+        return self.estado_expediente
     
     class Meta:
         verbose_name = 'Estado del expediente'
         verbose_name_plural = 'Estado de los expedientes'
 
 
-
-
-
 class Expediente(models.Model):
-    localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, related_name='expediente_localidad')
     numero = models.PositiveIntegerField("Número de expediente")
     anio = models.PositiveIntegerField("Año del expediente", default=2025)
-    identificador = models.CharField("Identificador del expediente", max_length=100, unique=True, editable=False)
     
     fecha_creacion = models.DateField("Fecha de creación", auto_now_add=True)
+    identificador = models.CharField("Identificador del expediente", max_length=100, unique=True, editable=False)
+    localidad = models.ForeignKey(Localidad, on_delete=models.PROTECT, related_name='expediente_localidad')
+    medio_ingreso = models.ForeignKey(MedioIngreso, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_medio_ingreso')    
     fecha_de_juzgado = models.DateTimeField('Fecha del Juzgado', blank=True, null=True )
     fecha_de_recepcion = models.DateTimeField('Fecha de Recepción', blank=True, null=True )
     expediente_fisico = models.BooleanField(default=False)
     cuij = models.CharField(max_length=50, verbose_name='CUIJ', blank=True, null=True)
     clave_sisfe = models.CharField(max_length=50, verbose_name='Clave SISFE', blank=True, null=True)
-    medio_ingreso = models.ForeignKey(MedioIngreso, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_medio_ingreso')
-    situacion_habitacional_hist = models.CharField(max_length=100, verbose_name="Situación habitacional histórica", blank=True, null=True)
     tipo_solicitud = models.ForeignKey(TipoSolicitud, on_delete=models.CASCADE, related_name='expediente_tipo_solicitud', blank=True, null=True)
-    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE, blank=True, null=True)
-    tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True, related_name='expediente_resumen_intervencion')
     estado_expediente = models.ForeignKey(EstadoExpediente, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_estado_expediente')
+    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE, blank=True, null=True)
+    situacion_habitacional_hist = models.CharField(max_length=100, verbose_name="Situación habitacional histórica", blank=True, null=True)
+    tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True, related_name='expediente_resumen_intervencion')
     resumen_intervencion = models.ForeignKey(ResumenIntervencion, on_delete=models.CASCADE, blank=True, null=True, related_name='expediente_resumen_intervencion')
-    
     estado = models.BooleanField("Estado", default=True)
 
     class Meta:
@@ -186,3 +173,15 @@ class Expediente(models.Model):
     def __str__(self):
         return self.identificador
     pass
+
+
+class ExpedientePersona(models.Model):
+    expediente = models.ForeignKey(Expediente, on_delete=models.CASCADE, related_name='expedientepersona_expediente')
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='expedientepersona_persona')
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='expedientepersona_rol')
+
+
+class ExpedienteInstitucion(models.Model):
+    expediente = models.ForeignKey(Expediente, on_delete=models.CASCADE, related_name='expedienteinstitucion_expediente')
+    institucion = models.ForeignKey(Institucion, on_delete=models.CASCADE, related_name='expedienteinstitucion_institucion')
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='expedienteinstitucion_rol')
