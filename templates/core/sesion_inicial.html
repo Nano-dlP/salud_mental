@@ -1,0 +1,24 @@
+{% extends "core/index.html" %}
+{% block page_content %}
+<div class="container mt-5">
+  <div class="card shadow border-0">
+    <div class="card-body">
+      <h5 class="fw-bold text-primary mb-4">Inicio de Sesión de Trabajo</h5>
+      <form method="post" action="{% url 'core:sesion_inicial' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.fecha.label_tag }}
+          {{ form.fecha }}
+        </div>
+        <div class="mb-3">
+          {{ form.localidad.label_tag }}
+          {{ form.localidad }}
+          <p>Localidad seleccionada: {{ request.session.localidad_nombre }}</p>
+
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Comenzar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

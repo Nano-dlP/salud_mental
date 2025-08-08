@@ -1,5 +1,7 @@
 from django import forms
-from .models import Provincia, Pais
+from .models import Localidad
+from datetime import date
+from .models import Provincia
 
 class ProvinciaForm(forms.ModelForm):
     class Meta:
@@ -26,4 +28,18 @@ class ProvinciaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['provincia'].widget.attrs.update({'class': 'form-control'})
-        
+
+
+
+
+class SesionInicialForm(forms.Form):
+    fecha = forms.DateField(
+        initial=date.today,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha"
+    )
+    localidad = forms.ModelChoiceField(
+        queryset=Localidad.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="Localidad"
+    )

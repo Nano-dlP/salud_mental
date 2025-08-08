@@ -83,22 +83,11 @@ class Tipo_Documento(models.Model):
         verbose_name_plural = 'Tipos de documentos'
 
 
-class Sede(models.Model):
-    sede = models.CharField('Sede', max_length=50)
-    Localidad = models.ForeignKey('Localidad', on_delete=models.CASCADE, verbose_name='Localidad', blank=True, null=True, related_name='sede_localidad')
-    
-    def __str__(self):
-        return self.sede
-    
-    class Meta:
-        verbose_name ='Sede'
-        verbose_name_plural = 'Sedes'
-
 
 class Localidad(models.Model):
     localidad = models.CharField('Localidad', max_length=70, blank=False, null=False)
-    abreviatura = models.CharField('Nombre abreviado', max_length=4, blank=True, null=True)
-    codigo_postal = models.IntegerField('Código de postal', blank=True, null=True)
+    abreviatura = models.CharField('Nombre abreviado', max_length=4, blank=True, null=True, unique=True)
+    codigo_postal = models.CharField('Código de postal', max_length=50, blank=True, null=True)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, verbose_name='Provincia', blank=True, null=True, related_name='localidades_provincia')
 
 
@@ -108,6 +97,25 @@ class Localidad(models.Model):
     class Meta:
         verbose_name = 'Localidad'
         verbose_name_plural = 'Localidades'
+
+
+
+class Sede(models.Model):
+    sede = models.CharField('Sede', max_length=50)
+    telefono = models.CharField(max_length=20, verbose_name=("Teléfono"), blank=True, null=True)
+    direccion_calle = models.CharField(max_length=50, verbose_name=("Calle"), blank=True, null=True)
+    direccion_numero = models.CharField(max_length=10, verbose_name=("Número"), blank=True, null=True)
+    direccion_piso = models.CharField(max_length=10, verbose_name=("Piso"), blank=True, null=True)
+    direccion_depto = models.CharField(max_length=10, verbose_name=("Dto."), blank=True, null=True)
+    localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE, verbose_name='Localidad', blank=True, null=True, related_name='sede_localidad')
+    
+    def __str__(self):
+        return self.sede
+    
+    class Meta:
+        verbose_name ='Sede'
+        verbose_name_plural = 'Sedes'
+
 
 
 

@@ -1,12 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 from django.views.generic import ListView, TemplateView, CreateView
 from .models import Provincia
+from persona.models import Persona
 from django.urls import reverse_lazy
 from .forms import ProvinciaForm
 
+from django.contrib.auth.decorators import login_required
+from .forms import SesionInicialForm
 
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'core/home.html'
@@ -40,3 +43,38 @@ class ProvinciaListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Provincia.objects.all().order_by('provincia')
+    
+
+
+
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            fecha = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            localidad = form.cleaned_data['localidad']  # instancia Localidad
+
+            # Guardamos en sesión los datos clave
+            request.session['fecha_sesion'] = fecha
+            request.session['localidad_sesion'] = localidad.id
+            request.session['localidad_nombre'] = localidad.localidad  # nombre para mostrar
+
+            return redirect('core:dashboard')  # tu vista principal
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+
+@login_required
+def dashboard(request):
+    fecha = request.session.get('fecha_sesion')
+    localidad_id = request.session.get('localidad_sesion')
+
+    # Por ejemplo, filtrar pacientes por localidad seleccionada
+    personas = Persona.objects.filter(localidad_id=localidad_id)
+
+    return render(request, 'core/dashboard.html', {
+        'fecha': fecha,
+        'personas': personas,
+    })

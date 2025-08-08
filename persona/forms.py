@@ -69,3 +69,6 @@ class PersonaForm(forms.ModelForm):
                     cleaned_data[field_name] = value.upper()  # Todo lo demás en mayúsculas
 
         return cleaned_data
+    
+
+    

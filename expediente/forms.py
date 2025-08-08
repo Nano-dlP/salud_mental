@@ -1,6 +1,7 @@
 from django import forms
-from .models import Expediente
 
+from .models import Expediente
+from institucion.models import Institucion
 
 class ExpedienteForm(forms.ModelForm):
     class Meta:
@@ -27,3 +28,8 @@ class ExpedienteForm(forms.ModelForm):
             'resumen_intervencion':forms.Select(attrs={'class': 'form-control'}),
 
         }
+
+
+
+
+

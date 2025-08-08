@@ -1,0 +1,901 @@
+1️⃣ Flujo propuesto
+Usuario inicia sesión normalmente.
+
+Redirección automática a una vista donde elige la localidad (fecha ya precargada).
+
+Al enviar el formulario, se guarda en request.session algo así como:
+
+request.session['fecha_sesion'] = '08/08/2025'
+request.session['localidad_sesion'] = 15  # id de localidad
+En cualquier vista de Django podés acceder a:
+
+
+fecha = request.session.get('fecha_sesion')
+localidad_id = request.session.get('localidad_sesion')
+
+2️⃣ Ejemplo de implementación
+models.py
+
+class Localidad(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+forms.py
+from django import forms
+from .models import Localidad
+from datetime import date
+
+class SesionInicialForm(forms.Form):
+    fecha = forms.DateField(
+        initial=date.today,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha"
+    )
+    localidad = forms.ModelChoiceField(
+        queryset=Localidad.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="Localidad"
+    )
+views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import SesionInicialForm
+
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            request.session['fecha_sesion'] = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            request.session['localidad_sesion'] = form.cleaned_data['localidad'].id
+            return redirect('core:dashboard')  # o donde quieras redirigir
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+
+template sesion_inicial.html
+html
+
+{% extends "core/index.html" %}
+{% block page_content %}
+<div class="container mt-5">
+  <div class="card shadow border-0">
+    <div class="card-body">
+      <h5 class="fw-bold text-primary mb-4">Inicio de Sesión de Trabajo</h5>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Comenzar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+3️⃣ Cómo usar esos datos en cualquier vista
+En cualquier otra vista podés acceder así:
+
+@login_required
+def mi_vista(request):
+    fecha = request.session.get('fecha_sesion')
+    localidad_id = request.session.get('localidad_sesion')
+
+    if not fecha or not localidad_id:
+        return redirect('core:sesion_inicial')  # si no hay sesión configurada
+
+    # ejemplo: filtrar datos por localidad
+    datos = Modelo.objects.filter(localidad_id=localidad_id)
+
+    return render(request, 'mi_template.html', {'datos': datos, 'fecha': fecha})
+Si querés, puedo prepararte la integración automática para que después del login Django vaya directo a esta pantalla de selección de fecha y localidad antes de mostrar el dashboard.
+Así el usuario no la saltea nunca.
+
+
+1️⃣ Flujo de inicio de sesión modificado
+Usuario ingresa usuario y contraseña en la pantalla de login.
+
+Si el login es correcto → redirige automáticamente a la vista sesion_inicial.
+
+Ahí elige la fecha (prellenada con la actual) y la localidad.
+
+Se guardan en request.session y luego lo manda al dashboard.
+
+2️⃣ Configuración
+forms.py
+python
+Copiar
+Editar
+from django import forms
+from .models import Localidad
+from datetime import date
+
+class SesionInicialForm(forms.Form):
+    fecha = forms.DateField(
+        initial=date.today,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha"
+    )
+    localidad = forms.ModelChoiceField(
+        queryset=Localidad.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="Localidad"
+    )
+views.py
+python
+Copiar
+Editar
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import SesionInicialForm
+
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            request.session['fecha_sesion'] = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            request.session['localidad_sesion'] = form.cleaned_data['localidad'].id
+            return redirect('core:dashboard')  # cambia a tu vista principal
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+sesion_inicial.html
+html
+Copiar
+Editar
+{% extends "core/index.html" %}
+{% block page_content %}
+<div class="container mt-5">
+  <div class="card shadow border-0">
+    <div class="card-body">
+      <h5 class="fw-bold text-primary mb-4">Inicio de Sesión de Trabajo</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.fecha.label_tag }}
+          {{ form.fecha }}
+        </div>
+        <div class="mb-3">
+          {{ form.localidad.label_tag }}
+          {{ form.localidad }}
+        </div>
+        <button type="submit" class="btn btn-primary">Comenzar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+urls.py
+python
+Copiar
+Editar
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('sesion-inicial/', views.sesion_inicial, name='sesion_inicial'),
+]
+3️⃣ Redirección automática después del login
+En settings.py:
+
+python
+Copiar
+Editar
+LOGIN_REDIRECT_URL = '/sesion-inicial/'
+Esto hace que, después de iniciar sesión, Django mande al usuario sí o sí a la pantalla de selección de fecha y localidad.
+
+4️⃣ Uso de los datos en cualquier vista
+En cualquier vista, podés hacer:
+
+python
+Copiar
+Editar
+@login_required
+def mi_vista(request):
+    fecha = request.session.get('fecha_sesion')
+    localidad_id = request.session.get('localidad_sesion')
+
+    if not fecha or not localidad_id:
+        return redirect('sesion_inicial')  # si no hay datos en sesión
+
+    # Ejemplo: filtrar registros por localidad
+    datos = Modelo.objects.filter(localidad_id=localidad_id)
+
+    return render(request, 'mi_template.html', {'datos': datos, 'fecha': fecha})
+Si querés, puedo agregarle un mixin para que cualquier vista automáticamente bloquee el acceso si no está definida la fecha y localidad en la sesión, así no tenés que poner el if not fecha en todas.
+Esto te deja el sistema blindado y más limpio.
+
+
+
+
+
+
+
+
+Dijiste:
+si
+
+
+ChatGPT dijo:
+Genial, entonces vamos a blindar el sistema con un mixin que verifique automáticamente si la fecha y localidad están configuradas en la sesión antes de permitir acceder a cualquier vista.
+
+Esto evita que tengas que repetir el mismo if not fecha en cada vista.
+
+1️⃣ Mixin para control de sesión
+Creamos un archivo mixins.py dentro de tu app (por ejemplo core/mixins.py):
+
+python
+Copiar
+Editar
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class SesionTrabajoRequiredMixin(LoginRequiredMixin):
+    """
+    Mixin que obliga a que la fecha y localidad estén definidas en la sesión
+    antes de permitir el acceso a la vista.
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if not request.session.get('fecha_sesion') or not request.session.get('localidad_sesion'):
+            return redirect('sesion_inicial')
+        return super().dispatch(request, *args, **kwargs)
+2️⃣ Uso en vistas basadas en clases (CBV)
+Ejemplo para una ListView:
+
+python
+Copiar
+Editar
+from django.views.generic import ListView
+from .models import Cliente
+from core.mixins import SesionTrabajoRequiredMixin
+
+class ClienteListView(SesionTrabajoRequiredMixin, ListView):
+    model = Cliente
+    template_name = 'cliente/cliente_list.html'
+    context_object_name = 'clientes'
+
+    def get_queryset(self):
+        localidad_id = self.request.session['localidad_sesion']
+        return Cliente.objects.filter(localidad_id=localidad_id)
+3️⃣ Uso en vistas basadas en funciones (FBV)
+Para funciones, podés usar un decorador en el mismo mixins.py:
+
+python
+Copiar
+Editar
+from functools import wraps
+from django.shortcuts import redirect
+
+def sesion_trabajo_requerida(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.session.get('fecha_sesion') or not request.session.get('localidad_sesion'):
+            return redirect('sesion_inicial')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+Y en la vista:
+
+python
+Copiar
+Editar
+from core.mixins import sesion_trabajo_requerida
+from django.contrib.auth.decorators import login_required
+
+@login_required
+@sesion_trabajo_requerida
+def mi_vista(request):
+    fecha = request.session['fecha_sesion']
+    localidad_id = request.session['localidad_sesion']
+    datos = Modelo.objects.filter(localidad_id=localidad_id)
+    return render(request, 'mi_template.html', {'datos': datos, 'fecha': fecha})
+4️⃣ Beneficios
+✅ Seguridad: el usuario no puede entrar a nada si no eligió fecha y localidad.
+✅ Código limpio: no repetís verificaciones en cada vista.
+✅ Flexible: funciona para CBV y FBV.
+
+Si querés, puedo dejarte el flujo completo ya integrado con tu login de Django y SB Admin 2, para que después de loguearse se vaya a la selección de fecha/localidad y el mixin controle todo el sistema sin que toques cada vista una por una.
+Así queda listo para producción.
+
+
+
+
+
+
+
+
+Dijiste:
+si
+
+
+ChatGPT dijo:
+Perfecto, entonces te dejo el flujo completo listo para producción con tu login de Django + SB Admin 2 + selección de fecha/localidad + mixin que bloquea todo el sistema si no se setearon esos datos.
+
+1️⃣ Estructura final de archivos
+bash
+Copiar
+Editar
+core/
+ ├── forms.py
+ ├── mixins.py
+ ├── views.py
+ ├── templates/core/sesion_inicial.html
+ ├── urls.py
+2️⃣ forms.py
+python
+Copiar
+Editar
+from django import forms
+from .models import Localidad
+from datetime import date
+
+class SesionInicialForm(forms.Form):
+    fecha = forms.DateField(
+        initial=date.today,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha"
+    )
+    localidad = forms.ModelChoiceField(
+        queryset=Localidad.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="Localidad"
+    )
+3️⃣ mixins.py
+python
+Copiar
+Editar
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from functools import wraps
+
+class SesionTrabajoRequiredMixin(LoginRequiredMixin):
+    """
+    Mixin para CBV: obliga a que la fecha y localidad estén definidas
+    antes de permitir el acceso a la vista.
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if not request.session.get('fecha_sesion') or not request.session.get('localidad_sesion'):
+            return redirect('sesion_inicial')
+        return super().dispatch(request, *args, **kwargs)
+
+
+def sesion_trabajo_requerida(view_func):
+    """
+    Decorador para FBV: igual que el mixin pero para vistas basadas en funciones.
+    """
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.session.get('fecha_sesion') or not request.session.get('localidad_sesion'):
+            return redirect('sesion_inicial')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+4️⃣ views.py
+python
+Copiar
+Editar
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import SesionInicialForm
+
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            request.session['fecha_sesion'] = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            request.session['localidad_sesion'] = form.cleaned_data['localidad'].id
+            return redirect('core:dashboard')  # cambia por tu vista principal
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+5️⃣ sesion_inicial.html (Bootstrap 5 + SB Admin 2)
+html
+Copiar
+Editar
+{% extends "core/index.html" %}
+{% block page_content %}
+<div class="container mt-5">
+  <div class="card shadow border-0">
+    <div class="card-body">
+      <h5 class="fw-bold text-primary mb-4">Inicio de Sesión de Trabajo</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.fecha.label_tag }}
+          {{ form.fecha }}
+        </div>
+        <div class="mb-3">
+          {{ form.localidad.label_tag }}
+          {{ form.localidad }}
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Comenzar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+6️⃣ urls.py
+python
+Copiar
+Editar
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('sesion-inicial/', views.sesion_inicial, name='sesion_inicial'),
+]
+7️⃣ settings.py
+python
+Copiar
+Editar
+LOGIN_REDIRECT_URL = '/sesion-inicial/'
+Esto fuerza que después del login Django envíe al usuario a la selección de fecha/localidad.
+
+8️⃣ Uso en vistas
+CBV
+python
+Copiar
+Editar
+from django.views.generic import ListView
+from core.mixins import SesionTrabajoRequiredMixin
+from .models import Cliente
+
+class ClienteListView(SesionTrabajoRequiredMixin, ListView):
+    model = Cliente
+    template_name = 'cliente/cliente_list.html'
+    context_object_name = 'clientes'
+
+    def get_queryset(self):
+        localidad_id = self.request.session['localidad_sesion']
+        return Cliente.objects.filter(localidad_id=localidad_id)
+FBV
+python
+Copiar
+Editar
+from django.contrib.auth.decorators import login_required
+from core.mixins import sesion_trabajo_requerida
+from django.shortcuts import render
+from .models import Cliente
+
+@login_required
+@sesion_trabajo_requerida
+def clientes_view(request):
+    localidad_id = request.session['localidad_sesion']
+    clientes = Cliente.objects.filter(localidad_id=localidad_id)
+    return render(request, 'cliente/cliente_list.html', {'clientes': clientes})
+✅ Con esto, el flujo es obligatorio:
+
+Login → Selección fecha/localidad → Dashboard.
+
+Ninguna vista funciona si no están en sesión esos datos.
+
+Si querés, puedo hacer que el nombre de la localidad y la fecha elegida aparezcan en el topbar de SB Admin 2 todo el tiempo, para que el usuario sepa en qué contexto está trabajando.
+Así queda como un “estado de sesión” visual.
+
+
+
+
+
+
+
+
+Dijiste:
+si
+
+
+ChatGPT dijo:
+Perfecto, entonces vamos a hacer que la fecha y la localidad elegidas aparezcan en el topbar de SB Admin 2 durante toda la sesión, para que el usuario siempre vea en qué contexto está trabajando.
+
+1️⃣ Pasar los datos a todas las plantillas
+La forma más limpia es usar un context processor de Django.
+
+core/context_processors.py
+python
+Copiar
+Editar
+def sesion_trabajo(request):
+    """
+    Envía la fecha y localidad de la sesión a todas las plantillas.
+    """
+    return {
+        'fecha_sesion': request.session.get('fecha_sesion'),
+        'localidad_sesion': request.session.get('localidad_sesion'),
+    }
+2️⃣ Activar el context processor en settings.py
+En TEMPLATES agregá tu processor:
+
+python
+Copiar
+Editar
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / "templates"],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'core.context_processors.sesion_trabajo',  # 👈 agregado
+            ],
+        },
+    },
+]
+3️⃣ Mostrarlo en el topbar
+Suponiendo que tu topbar está en core/topbar.html (o incluido en index.html), agregás algo así:
+
+html
+Copiar
+Editar
+<!-- Dentro del topbar -->
+{% if fecha_sesion and localidad_sesion %}
+    <span class="me-3 fw-bold text-primary">
+        <i class="fas fa-calendar-alt"></i> {{ fecha_sesion }}
+    </span>
+    <span class="fw-bold text-success">
+        <i class="fas fa-map-marker-alt"></i>
+        {% with localidades=Localidad.objects.all %}
+            {% for loc in localidades %}
+                {% if loc.id == localidad_sesion %}
+                    {{ loc.nombre }}
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+    </span>
+{% endif %}
+4️⃣ Optimización para no consultar en el template
+Consultar el modelo en el template no es ideal. Mejor guardamos también el nombre de la localidad en la sesión cuando el usuario la elige.
+
+En views.py → sesion_inicial:
+
+python
+Copiar
+Editar
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            fecha = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            localidad = form.cleaned_data['localidad']
+            
+            request.session['fecha_sesion'] = fecha
+            request.session['localidad_sesion'] = localidad.id
+            request.session['localidad_nombre'] = localidad.nombre  # 👈 nuevo
+
+            return redirect('core:dashboard')
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+Y en el topbar:
+
+html
+Copiar
+Editar
+{% if fecha_sesion and localidad_nombre %}
+    <span class="me-3 fw-bold text-primary">
+        <i class="fas fa-calendar-alt"></i> {{ fecha_sesion }}
+    </span>
+    <span class="fw-bold text-success">
+        <i class="fas fa-map-marker-alt"></i> {{ localidad_nombre }}
+    </span>
+{% endif %}
+5️⃣ Resultado
+Cuando el usuario se loguea → Selecciona fecha y localidad.
+
+Esa info se guarda en sesión.
+
+En cualquier página, el topbar muestra algo como:
+
+swift
+Copiar
+Editar
+📅 08/08/2025   📍 Córdoba Capital
+Con estilos de SB Admin 2 y sin consultas extra a la base.
+
+Si querés, puedo dejarte el HTML del topbar ya modificado con Bootstrap 5 + íconos FontAwesome listos para que quede bonito y alineado a la derecha.
+
+
+Perfecto, te armo el topbar de SB Admin 2 modificado para que muestre la fecha y localidad elegidas, alineadas a la derecha y con iconos bonitos usando FontAwesome.
+
+1️⃣ HTML del topbar modificado
+Este sería un ejemplo de templates/core/topbar.html adaptado:
+
+html
+Copiar
+Editar
+<!-- Topbar -->
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <!-- Botón de menú (sidebar) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <!-- Texto o logo -->
+    <span class="navbar-brand d-none d-sm-inline-block text-primary fw-bold">
+        Sistema de Gestión
+    </span>
+
+    <!-- Espaciador -->
+    <div class="ms-auto d-flex align-items-center">
+
+        {% if fecha_sesion and localidad_nombre %}
+            <div class="me-4 text-primary fw-bold d-flex align-items-center">
+                <i class="fas fa-calendar-alt me-1"></i> {{ fecha_sesion }}
+            </div>
+            <div class="text-success fw-bold d-flex align-items-center">
+                <i class="fas fa-map-marker-alt me-1"></i> {{ localidad_nombre }}
+            </div>
+        {% endif %}
+
+        <!-- Divider -->
+        <div class="topbar-divider d-none d-sm-block"></div>
+
+        <!-- Menú de usuario -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                   data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="me-2 d-none d-lg-inline text-gray-600 small">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </span>
+                    <img class="img-profile rounded-circle" src="{% static 'img/user.png' %}">
+                </a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in"
+                     aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="{% url 'core:logout' %}">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
+                        Cerrar sesión
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End of Topbar -->
+2️⃣ Detalles importantes
+{{ fecha_sesion }} y {{ localidad_nombre }} vienen del context processor y la vista sesion_inicial.
+
+Está alineado a la derecha (ms-auto) para que quede cerca del usuario.
+
+Usa FontAwesome (fa-calendar-alt y fa-map-marker-alt) para los iconos.
+
+Es totalmente compatible con SB Admin 2 + Bootstrap 5.
+
+Se mantiene el menú de usuario con su avatar y nombre.
+
+3️⃣ Recomendación extra
+Para que se vea más prolijo, en context_processors.py podemos ya devolver localidad_nombre directo desde la sesión, así no hay que consultarlo en ningún otro lado:
+
+python
+Copiar
+Editar
+def sesion_trabajo(request):
+    return {
+        'fecha_sesion': request.session.get('fecha_sesion'),
+        'localidad_nombre': request.session.get('localidad_nombre'),
+    }
+Con esto, apenas el usuario elija fecha y localidad, el topbar se actualizará automáticamente en todas las páginas sin que tengas que modificar cada vista.
+
+Si querés, puedo prepararte también un botón en el topbar para cambiar de localidad/fecha sin cerrar sesión, que abra el mismo formulario de sesion_inicial. Así no tiene que desloguearse para cambiar.
+
+
+
+
+
+
+
+
+Dijiste:
+si
+
+
+ChatGPT dijo:
+Perfecto, te paso cómo agregar un botón en el topbar para que el usuario pueda cambiar la fecha y localidad en cualquier momento sin cerrar sesión, abriendo el formulario sesion_inicial en un modal (ventana emergente), así queda súper fluido y moderno.
+
+1️⃣ Agregar enlace o botón en el topbar (en topbar.html)
+Justo después del display de fecha y localidad, podés poner un botón así:
+
+html
+Copiar
+Editar
+<button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#modalSesion">
+  <i class="fas fa-edit"></i> Cambiar
+</button>
+2️⃣ Crear el modal para el formulario sesion_inicial
+Agregá esto también dentro de topbar.html, al final del archivo (o donde tenga sentido):
+
+html
+Copiar
+Editar
+<!-- Modal -->
+<div class="modal fade" id="modalSesion" tabindex="-1" aria-labelledby="modalSesionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'core:sesion_inicial' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSesionLabel">Cambiar Fecha y Localidad</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="id_fecha" class="form-label">Fecha</label>
+            <input type="date" name="fecha" class="form-control" id="id_fecha" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_localidad" class="form-label">Localidad</label>
+            <select name="localidad" id="id_localidad" class="form-select" required>
+              {% for loc in localidades %}
+                <option value="{{ loc.id }}" {% if loc.id == localidad_sesion %}selected{% endif %}>{{ loc.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+3️⃣ Pasar las localidades al contexto en el context_processor
+Modificá el sesion_trabajo para que también pase las localidades:
+
+python
+Copiar
+Editar
+from .models import Localidad
+
+def sesion_trabajo(request):
+    return {
+        'fecha_sesion': request.session.get('fecha_sesion'),
+        'localidad_nombre': request.session.get('localidad_nombre'),
+        'localidades': Localidad.objects.all(),
+        'localidad_sesion': request.session.get('localidad_sesion'),
+    }
+4️⃣ Modificar la vista sesion_inicial para aceptar POST desde modal
+Para que funcione igual, no necesitás cambiar nada porque es el mismo formulario.
+Solo asegurate que la URL core:sesion_inicial esté disponible para POST.
+
+5️⃣ Resultado
+El usuario ve la fecha y localidad en el topbar.
+
+Hace click en “Cambiar” y se abre el modal con el formulario.
+
+Cambia datos y guarda sin salir de la página.
+
+La sesión se actualiza y el topbar también al refrescar.
+
+Si querés, te puedo preparar el código para que el formulario se envíe vía AJAX y la página no se recargue, para una experiencia aún más suave. ¿Te interesa?
+
+
+
+
+
+
+
+
+Dijiste:
+si
+
+
+ChatGPT dijo:
+¡Genial! Te paso un ejemplo básico para que el formulario del modal se envíe vía AJAX y actualice el topbar sin recargar la página. Usaremos jQuery porque SB Admin 2 ya lo incluye, pero si preferís, puedo pasarte versión vanilla JS.
+
+1️⃣ Modificar el modal en topbar.html para dar id al formulario
+html
+Copiar
+Editar
+<form id="formSesion" method="post" action="{% url 'core:sesion_inicial' %}">
+  {% csrf_token %}
+  <!-- resto igual -->
+</form>
+2️⃣ Script AJAX para enviar el formulario sin recargar
+Poné este script al final de topbar.html o en tu archivo JS:
+
+html
+Copiar
+Editar
+<script>
+$(document).ready(function() {
+  $('#formSesion').submit(function(e) {
+    e.preventDefault(); // evitar recarga
+
+    $.ajax({
+      type: 'POST',
+      url: $(this).attr('action'),
+      data: $(this).serialize(),
+      success: function(response) {
+        // Cerramos el modal
+        $('#modalSesion').modal('hide');
+
+        // Actualizamos fecha y localidad en el topbar
+        // Suponemos que el backend devuelve JSON con los datos actualizados
+        if (response.success) {
+          $('.topbar .fecha-sesion').text(response.fecha);
+          $('.topbar .localidad-sesion').text(response.localidad);
+        } else {
+          alert('Error: ' + response.error);
+        }
+      },
+      error: function() {
+        alert('Error al guardar los datos. Intente de nuevo.');
+      }
+    });
+  });
+});
+</script>
+3️⃣ Ajustar la vista sesion_inicial para responder JSON si es AJAX
+python
+Copiar
+Editar
+from django.http import JsonResponse
+
+@login_required
+def sesion_inicial(request):
+    if request.method == 'POST':
+        form = SesionInicialForm(request.POST)
+        if form.is_valid():
+            fecha = form.cleaned_data['fecha'].strftime('%d/%m/%Y')
+            localidad = form.cleaned_data['localidad']
+
+            request.session['fecha_sesion'] = fecha
+            request.session['localidad_sesion'] = localidad.id
+            request.session['localidad_nombre'] = localidad.nombre
+
+            if request.is_ajax():
+                return JsonResponse({
+                    'success': True,
+                    'fecha': fecha,
+                    'localidad': localidad.nombre,
+                })
+
+            return redirect('core:dashboard')
+        else:
+            if request.is_ajax():
+                return JsonResponse({'success': False, 'error': form.errors.as_json()})
+
+    else:
+        form = SesionInicialForm()
+
+    return render(request, 'core/sesion_inicial.html', {'form': form})
+4️⃣ Modificar el topbar para que tenga clases a actualizar dinámicamente
+En el topbar donde muestras fecha y localidad, usá:
+
+html
+Copiar
+Editar
+<span class="me-4 text-primary fw-bold d-flex align-items-center fecha-sesion">
+  <i class="fas fa-calendar-alt me-1"></i> {{ fecha_sesion }}
+</span>
+<span class="text-success fw-bold d-flex align-items-center localidad-sesion">
+  <i class="fas fa-map-marker-alt me-1"></i> {{ localidad_nombre }}
+</span>
+5️⃣ Resultado
+El usuario abre el modal.
+
+Cambia fecha/localidad y presiona Guardar.
+
+El formulario se envía con AJAX, no recarga la página.
+
+El topbar actualiza la info con los datos nuevos instantáneamente.
+
+Modal se cierra automáticamente.
+
+¿Querés que te arme también el código para mostrar mensajes de error dentro del modal, sin alertas?
+
+
+
+
+
