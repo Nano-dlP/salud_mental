@@ -1,0 +1,15 @@
+{% extends "core/index.html" %}
+{% block page_content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Seleccionar Medio de Ingreso</h5>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-2">Continuar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

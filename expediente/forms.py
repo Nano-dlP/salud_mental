@@ -1,35 +1,42 @@
 from django import forms
+from core.models import Rol
+from persona.models import Persona
+from .models import Expediente, MedioIngreso, ExpedientePersona
 
-from .models import Expediente
-from institucion.models import Institucion
 
-class ExpedienteForm(forms.ModelForm):
+class MedioIngresoForm(forms.Form):
+    medio_ingreso = forms.ModelChoiceField(
+        queryset=MedioIngreso.objects.all(),
+        label="Medio de Ingreso",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+
+class ExpedienteCompletoForm(forms.ModelForm):
+    persona = forms.ModelChoiceField(
+        queryset=Persona.objects.all(),
+        label="Persona",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    rol = forms.ModelChoiceField(
+        queryset=Rol.objects.all(),
+        label="Rol",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Expediente
         fields = [
-            'localidad', 'fecha_de_juzgado', 'fecha_de_recepcion', 'expediente_fisico', 'cuij',
-            'clave_sisfe', 'medio_ingreso', 'situacion_habitacional_hist', 'tipo_solicitud',
-            'grupo_etario', 'tipo_patrocinio', 'resumen_intervencion', 'estado_expediente'            
+            'sede', 'tipo_solicitud', 'grupo_etario', 'tipo_patrocinio',
+            'edad_persona', 'situacion_habitacional', 'resumen_intervencion', 'observaciones'
         ]
-
         widgets = {
-            'localidad':forms.Select(attrs={'class': 'form-control'}),
-            'fecha_de_juzgado': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
-            'fecha_de_recepcion': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
-            'expediente_fisico': forms.CheckboxInput(attrs={'class': 'form-check-input form-check-input-sm'}),
-            'cuij': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese Clave Única de Identificación Judicial'}),
-            'clave_sisfe': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese clave SISFE'}),
-            'medio_ingreso':forms.Select(attrs={'class': 'form-control'}),
-            'situacion_habitacional_hist': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese situación habitacional histórica'}),
-            'tipo_solicitud':forms.Select(attrs={'class': 'form-control'}),
-            'grupo_etario':forms.Select(attrs={'class': 'form-control'}),
-            'tipo_patrocinio':forms.Select(attrs={'class': 'form-control'}),
-            'estado_expediente':forms.Select(attrs={'class': 'form-control'}),
-            'resumen_intervencion':forms.Select(attrs={'class': 'form-control'}),
-
+            'sede': forms.Select(attrs={'class': 'form-control'}),
+            'tipo_solicitud': forms.Select(attrs={'class': 'form-control'}),
+            'grupo_etario': forms.Select(attrs={'class': 'form-control'}),
+            'tipo_patrocinio': forms.Select(attrs={'class': 'form-control'}),
+            'edad_persona': forms.NumberInput(attrs={'class': 'form-control'}),
+            'situacion_habitacional': forms.TextInput(attrs={'class': 'form-control'}),
+            'resumen_intervencion': forms.Select(attrs={'class': 'form-control'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control'}),
         }
-
-
-
-
-

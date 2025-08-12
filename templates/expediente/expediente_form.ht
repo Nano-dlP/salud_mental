@@ -1,0 +1,151 @@
+{% extends 'core/index.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block page_content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+
+      {% if form.instance.pk %}
+        <div class="card-header bg-warning text-white py-2 px-3 text-center">
+          <h5 class="mb-3">Editar expediente {{ form.instance.identificador }}</h5>
+        </div>
+      {% else %}
+        <div class="card-header bg-success text-white py-2 px-3 text-center">
+          <h5 class="mb-0 w-100">Nuevo expediente</h5>
+        </div>
+      {% endif %}
+
+      <div class="card-body">
+        <form method="post" novalidate class="small-form">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <!-- Información de Ingreso -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mx-2 fw-bold">Información de Ingreso de expediente</h6>
+            </div>
+            <div class="card-body">
+              <!-- Documento -->
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  {{ form.localidad.label_tag }}
+                  {{ form.localidad }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.medio_ingreso.label_tag }}
+                  {{ form.medio_ingreso }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.estado_expediente.label_tag }}
+                  {{ form.estado_expediente }}
+                </div>
+
+              </div>
+
+              <!-- Fechas y expediente físico -->
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  {{ form.fecha_de_juzgado.label_tag }}
+                  {{ form.fecha_de_juzgado }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.fecha_de_recepcion.label_tag }}
+                  {{ form.fecha_de_recepcion }}
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                  <div class="form-check">
+                    {{ form.expediente_fisico }} {{ form.expediente_fisico.label_tag }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos de expediente -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mx-3 fw-bold">Datos del expediente</h6>
+            </div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group col-md-3">
+                  {{ form.cuij.label_tag }}
+                  {{ form.cuij }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ form.clave_sisfe.label_tag }}
+                  {{ form.clave_sisfe }}
+                </div>
+                
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-5">
+                  {{ form.situacion_habitacional_hist.label_tag }}
+                  {{ form.situacion_habitacional_hist }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ form.tipo_solicitud.label_tag }}
+                  {{ form.tipo_solicitud }}
+                </div>
+                <div class="form-group col-md-2">
+                  {{ form.grupo_etario.label_tag }}
+                  {{ form.grupo_etario }}
+                </div>
+                <div class="form-group col-md-2">
+                  {{ form.tipo_patrocinio.label_tag }}
+                  {{ form.tipo_patrocinio }}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  {{ form.resumen_intervencion.label_tag }}
+                  {{ form.resumen_intervencion }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+            <a href="{% url 'expediente:expediente_list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
+
+<!-- Validación visual -->
+<script>
+  (() => {
+    'use strict'
+    const forms = document.querySelectorAll('form')
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
+
+{% endblock page_content %}

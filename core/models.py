@@ -48,6 +48,7 @@ class Provincia(models.Model):
     class Meta:
         verbose_name = 'Provincia'
         verbose_name_plural = 'Provincias'
+
     
 
 class Genero(models.Model):
@@ -61,6 +62,7 @@ class Genero(models.Model):
         verbose_name_plural='Generos'
 
 
+
 class Nivel_Educativo(models.Model):
     nivel_educativo = models.CharField('Nivel Educativo', max_length=50, blank=True, null=True)
     
@@ -70,6 +72,7 @@ class Nivel_Educativo(models.Model):
     class Meta:
         verbose_name='Nivel Educativo'
         verbose_name_plural='Niveles Educativos'
+
 
 
 class Tipo_Documento(models.Model):
@@ -102,6 +105,7 @@ class Localidad(models.Model):
 
 class Sede(models.Model):
     sede = models.CharField('Sede', max_length=50)
+    abreviatura = models.CharField('Nombre abreviado', max_length=4, blank=True, null=True, unique=True)
     telefono = models.CharField(max_length=20, verbose_name=("Teléfono"), blank=True, null=True)
     direccion_calle = models.CharField(max_length=50, verbose_name=("Calle"), blank=True, null=True)
     direccion_numero = models.CharField(max_length=10, verbose_name=("Número"), blank=True, null=True)
@@ -118,7 +122,6 @@ class Sede(models.Model):
 
 
 
-
 class AreaProfesional(models.Model):
     area_profesional = models.CharField('Área profesional', max_length=50, blank=True, null=True)
     
@@ -128,6 +131,7 @@ class AreaProfesional(models.Model):
     class Meta:
         verbose_name = 'Área profesional'
         verbose_name_plural = 'Áreas profesionales'
+
 
 
 class Profesion (models.Model):
@@ -140,7 +144,8 @@ class Profesion (models.Model):
         verbose_name = 'Profesión'
         verbose_name_plural = 'Profesiones'
         
-        
+
+
 class Rol (models.Model):
     rol = models.CharField('Rol', max_length=50, blank=True, null=True)
     
