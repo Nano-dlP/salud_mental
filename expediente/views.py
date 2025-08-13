@@ -1,20 +1,12 @@
-from django.shortcuts import render, redirect
-
-# Create your views here.
-from django.contrib.auth.mixins import LoginRequiredMixin
-# Create your views here.
-from django.views.generic import ListView, CreateView
-from .models import Expediente
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
-from django.contrib import messages
-
-
-
+# views.py
+import datetime
 from django.views.generic import FormView
-from .forms import MedioIngresoForm, ExpedienteCompletoForm
-from .models import Expediente, ExpedientePersona
-
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
+from django.shortcuts import redirect
+from .forms import DemandaEspontanea, MedioIngresoForm
+from .models import Expediente, ExpedientePersona, Rol
 
 
 class ExpedienteListView(LoginRequiredMixin, ListView):
@@ -27,44 +19,66 @@ class ExpedienteListView(LoginRequiredMixin, ListView):
         return Expediente.objects.all().order_by('identificador')
     
 
-
-
-class SeleccionarMedioIngresoView(FormView):
-    template_name = "expediente/seleccionar_medio_ingreso.html"
+# Paso 1: Selección del Medio de Ingreso
+class MedioIngresoSelectView(FormView):
+    template_name = 'expediente/medio_ingreso.html'
     form_class = MedioIngresoForm
 
     def form_valid(self, form):
-        self.request.session['medio_ingreso_id'] = form.cleaned_data['medio_ingreso'].id
-        return redirect('expediente:expediente_crear')
+        medio_ingreso_id = form.cleaned_data['medio_ingreso'].id
+        # Redirige al formulario de expediente pasando el id del medio de ingreso
+        return redirect('expediente/crear/', medio_id=medio_ingreso_id)
+    
 
-
-class ExpedienteCreateView(FormView):
-    template_name = "expediente/expediente_form.html"
-    form_class = ExpedienteCompletoForm
-    success_url = reverse_lazy('expediente_lista')
+# Paso 2: Formulario de Expediente con MedioIngreso preseleccionado
+class DemandaEspontaneaCreateView(FormView):
+    template_name = 'expediente/demanda_espontanea_form.html'
+    form_class = DemandaEspontanea
+    success_url = reverse_lazy('expediente:expediente_list')
 
     def get_initial(self):
         initial = super().get_initial()
-        medio_ingreso_id = self.request.session.get('medio_ingreso_id')
-        if medio_ingreso_id:
-            initial['medio_ingreso'] = medio_ingreso_id
+        medio_id = self.kwargs.get('medio_id')
+        if medio_id:
+            initial['medio_ingreso'] = medio_id
         return initial
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Hacemos que el campo MedioIngreso sea readonly
+        form.fields['medio_ingreso'].disabled = True
+        return form
+
     def form_valid(self, form):
-        medio_ingreso_id = self.request.session.get('medio_ingreso_id')
-        if not medio_ingreso_id:
-            return redirect('seleccionar_medio_ingreso')
+        persona = form.cleaned_data['persona']
+        sede = form.cleaned_data['sede']
+        medio_ingreso = form.cleaned_data['medio_ingreso']
+        tipo_solicitud = form.cleaned_data['tipo_solicitud']
+        estado_expediente = form.cleaned_data['estado_expediente']
+        grupo_etario = form.cleaned_data['grupo_etario']
+        edad_persona = form.cleaned_data['edad_persona']
+        situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
+        resumen_intervencion = form.cleaned_data['resumen_intervencion']
+        observaciones = form.cleaned_data['observaciones']
 
-        # Guardar expediente
-        expediente = form.save(commit=False)
-        expediente.medio_ingreso_id = medio_ingreso_id
-        expediente.save()
+        expediente = Expediente(
+            sede=sede,
+            medio_ingreso=medio_ingreso,
+            tipo_solicitud=tipo_solicitud,
+            estado_expediente=estado_expediente,
+            grupo_etario=grupo_etario,
+            edad_persona=edad_persona,
+            situacion_habitacional=situacion_habitacional_hist,
+            resumen_intervencion=resumen_intervencion,
+            observaciones=observaciones
+        )
+        expediente.save()  # Identificador generado automáticamente
 
-        # Guardar relación expediente-persona
+        rol_titular, _ = Rol.objects.get_or_create(nombre='Titular')
         ExpedientePersona.objects.create(
             expediente=expediente,
-            persona=form.cleaned_data['persona'],
-            rol=form.cleaned_data['rol']
+            persona=persona,
+            rol=rol_titular
         )
 
-        return redirect(self.success_url)
+        return super().form_valid(form)

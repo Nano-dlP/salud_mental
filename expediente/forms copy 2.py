@@ -46,7 +46,7 @@ class ExpedienteCompletoForm(forms.ModelForm):
 
 class DemandaEspontanea(forms.Form):
     fecha_de_creacion = forms.DateField(
-        initial=datetime.date.today,
+        initial=datetime.date.today, 
         widget=forms.DateInput(
             attrs={
                 'class': 'form-control form-control-sm',
@@ -84,7 +84,7 @@ class DemandaEspontanea(forms.Form):
     )
     situacion_habitacional_hist = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
+        widget=forms.Textarea(attrs={'class': 'form-control'})
     )
     resumen_intervencion = forms.ModelChoiceField(
         queryset=ResumenIntervencion.objects.all(),
