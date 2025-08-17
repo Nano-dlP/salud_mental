@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets_defe.json') as f:
+with open(BASE_DIR / 'secrets_casa.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""
@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+     
+        
     'core',  # Your core app
     'persona',  # Your persona app
     'usuario',  # Bootstrap 4 support
@@ -66,9 +69,11 @@ INSTALLED_APPS = [
     'profesional',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -166,3 +171,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #
 AUTH_USER_MODEL = 'usuario.CustomUser'
+
+

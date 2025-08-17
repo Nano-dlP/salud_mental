@@ -2,182 +2,211 @@
 {% load widget_tweaks %}
 {% load static %}
 
-
 {% block page_content %}
-
-<!-- Begin Page Content -->
-
 <div class="container-fluid">
-
-<body>
-<div class="container mt-10">
-  <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
-    {% if form.instance.pk %}
-    <div class="card-header bg-warning text-white py-2 px-3 text-center">
-        <h5 class="mb-3">Editar Persona {{ form.instance.nombre }} {{ form.instance.apellido }}</h5>
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+      
+      {% if form.instance.pk %}
+        <div class="card-header bg-warning text-white py-2 px-3 text-center">
+          <h5 class="mb-3">Editar Persona {{ form.instance.nombre }} {{ form.instance.apellido }}</h5>
       {% else %}
-     
-    <div class="card-header bg-success text-white py-2 px-3 text-center">
-  <h5 class="mb-0 w-100">Nueva Persona</h5>
+        <div class="card-header bg-success text-white py-2 px-3 text-center">
+          <h5 class="mb-0 w-100">Nueva Persona</h5>
       {% endif %}
-    </div>
+        </div>
 
-    <div class="card-body">
-            <form method="post" novalidate class="small-form">
-        {% csrf_token %}
+      <div class="card-body">
+        <form method="post" novalidate class="small-form">
+          {% csrf_token %}
 
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger">
-            {{ form.non_field_errors }}
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <!-- Datos personales -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Datos Personales</h6>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  {{ form.tipo_documento.label_tag }}
+                  {{ form.tipo_documento }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.numero_documento.label_tag }}
+                  {{ form.numero_documento }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.fecha_nacimiento.label_tag }}
+                  {{ form.fecha_nacimiento }}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  {{ form.nombre.label_tag }}
+                  {{ form.nombre }}
+                </div>
+                <div class="form-group col-md-6">
+                  {{ form.apellido.label_tag }}
+                  {{ form.apellido }}
+                </div>
+              </div>
+            </div>
           </div>
-        {% endif %}
 
-        <!-- Datos personales -->
+          <!-- Información de contacto y domicilio -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Información de contacto y domicilio</h6>
 
+              <div class="form-row">
+                <div class="form-group col-md-3">
+                  {{ form.genero.label_tag }}
+                  {{ form.genero }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ form.telefono.label_tag }}
+                  {{ form.telefono }}
+                </div>
+                <div class="form-group col-md-6">
+                  {{ form.email.label_tag }}
+                  {{ form.email }}
+                </div>
+              </div>
 
-<div class="card mb-3">
-  <div class="card-body">
-    <h6 class="border-botton pb-2 mn-3">Datos Personales</h6>
-  </div>
-  <div class="card-body">
+              <div class="form-row">
+                <div class="form-group col-md-5">
+                  {{ form.direccion_calle.label_tag }}
+                  {{ form.direccion_calle }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ form.direccion_numero.label_tag }}
+                  {{ form.direccion_numero }}
+                </div>
+                <div class="form-group col-md-2">
+                  {{ form.direccion_piso.label_tag }}
+                  {{ form.direccion_piso }}
+                </div>
+                <div class="form-group col-md-2">
+                  {{ form.direccion_depto.label_tag }}
+                  {{ form.direccion_depto }}
+                </div>
+              </div>
 
-    <!-- Documento -->
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        {{ form.tipo_documento.label_tag }}
-        {{ form.tipo_documento }}
-      </div>
-      <div class="form-group col-md-4">
-        {{ form.numero_documento.label_tag }}
-        {{ form.numero_documento }}
-      </div>
-      <div class="form-group col-md-4">
-        {{ form.fecha_nacimiento.label_tag }}
-        {{ form.fecha_nacimiento }}
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  {{ form.localidad.label_tag }}
+                  {{ form.localidad }}
+                </div>
+                <div class="form-group col-md-6">
+                  {{ form.ciudad_nacimiento.label_tag }}
+                  {{ form.ciudad_nacimiento }}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  {{ form.nivel_educativo.label_tag }}
+                  {{ form.nivel_educativo }}
+                </div>
+                <div class="form-group col-md-6">
+                  {{ form.ocupacion.label_tag }}
+                  {{ form.ocupacion }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salud y grupo de apoyo -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Salud y grupo de apoyo</h6>
+              <div class="form-row align-items-end">
+                <div class="form-group col-md-2 d-flex align-items-center">
+                  <div class="form-check">
+                    {{ form.posee_cobertura_salud }} {{ form.posee_cobertura_salud.label_tag }}
+                  </div>
+                </div>
+
+                <div class="form-group col-md-4" id="cobertura_salud_container">
+                  {{ form.cobertura_salud.label_tag }}
+                  {% render_field form.cobertura_salud class="form-control" %}
+                </div>
+
+                <div class="form-group col-md-2 d-flex align-items-center">
+                  <div class="form-check">
+                    {{ form.posee_grupo_apoyo }} {{ form.posee_grupo_apoyo.label_tag }}
+                  </div>
+                </div>
+
+                <div class="form-group col-md-4" id="grupo_apoyo_container">
+                  {{ form.grupo_apoyo.label_tag }}
+                  {% render_field form.grupo_apoyo class="form-control" %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seguridad social y recursos -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Seguridad social y recursos</h6>
+
+              <div class="form-row align-items-center">
+                <div class="form-group col-md-6">
+                  {{ form.derecho_seguridad_social.label_tag }}
+                  {% render_field form.derecho_seguridad_social class="form-control" %}
+                </div>
+                <div class="form-group col-md-6 d-flex align-items-center">
+                  <div class="form-check mb-0 d-flex align-items-center">
+                    {{ form.administra_recursos|add_class:"me-2" }}
+                    {{ form.administra_recursos.label_tag }}
+                  </div>
+                </div>
+              </div>
+
+              <h6 class="border-bottom pb-2 mt-4 mb-3">Carnet discapacidad y situación habitacional</h6>
+
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  {{ form.carnet_discapacidad.label_tag }}
+                  {% render_field form.carnet_discapacidad class="form-control" %}
+                </div>
+                <div class="form-group col-md-6">
+                  {{ form.situacion_habitacional.label_tag }}
+                  {% render_field form.situacion_habitacional class="form-control" %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observaciones -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Observaciones</h6>
+              <div class="form-group col-md-12">
+                {{ form.observaciones }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+            <a href="{% url 'persona:persona_list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+          </div>
+        </form>
       </div>
     </div>
-
-    <!-- Nombre y apellido -->
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        {{ form.nombre.label_tag }}
-        {{ form.nombre }}
-      </div>
-      <div class="form-group col-md-6">
-        {{ form.apellido.label_tag }}
-        {{ form.apellido }}
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- Información de contacto y domicilio -->
-<div class="card mb-3">
-  <div class="card-body">
-    <h6 class="border-botton pb-2 mn-3">Información de contacto y domicilio</h6>
-  </div>
-  <div class="card-body">
-    <!-- Género, teléfono, email -->
-    <div class="form-row">
-      <div class="form-group col-md-3">
-        {{ form.genero.label_tag }}
-        {{ form.genero }}
-      </div>
-      <div class="form-group col-md-3">
-        {{ form.telefono.label_tag }}
-        {{ form.telefono }}
-      </div>
-      <div class="form-group col-md-6">
-        {{ form.email.label_tag }}
-        {{ form.email }}
-      </div>
-    </div>
-
-    <!-- Dirección -->
-    <div class="form-row">
-      <div class="form-group col-md-5">
-        {{ form.direccion_calle.label_tag }}
-        {{ form.direccion_calle }}
-      </div>
-      <div class="form-group col-md-3">
-        {{ form.direccion_numero.label_tag }}
-        {{ form.direccion_numero }}
-      </div>
-      <div class="form-group col-md-2">
-        {{ form.direccion_piso.label_tag }}
-        {{ form.direccion_piso }}
-      </div>
-      <div class="form-group col-md-2">
-        {{ form.direccion_depto.label_tag }}
-        {{ form.direccion_depto }}
-      </div>
-    </div>
-
-    <!-- Localidad, ciudad de nacimiento -->
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        {{ form.localidad.label_tag }}
-        {{ form.localidad }}
-      </div>
-      <div class="form-group col-md-6">
-        {{ form.ciudad_nacimiento.label_tag }}
-        {{ form.ciudad_nacimiento }}
-      </div>
-    </div>
-
-    <!-- Nivel educativo y ocupación -->
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        {{ form.nivel_educativo.label_tag }}
-        {{ form.nivel_educativo }}
-      </div>
-      <div class="form-group col-md-6">
-        {{ form.ocupacion.label_tag }}
-        {{ form.ocupacion }}
-      </div>
-    </div>
-
-  </div>
-</div>
-
-        
-
-<!-- Salud y grupo de apoyo -->
-<div class="card mb-3">
-  <div class="card-body">
-    <h6 class="border-bottom pb-2 mb-3">Salud y grupo de apoyo</h6>
-
-    <div class="form-row align-items-end">
-      <!-- Checkbox: Posee cobertura salud -->
-      <div class="form-group col-md-2 d-flex align-items-center">
-        <div class="form-check">
-          {{ form.posee_cobertura_salud }} {{ form.posee_cobertura_salud.label_tag }}
-        </div>
-      </div>
-
-      <!-- Select: Cobertura salud -->
-      <div class="form-group col-md-4" id="cobertura_salud_container">
-        {{ form.cobertura_salud.label_tag }}
-        {% render_field form.cobertura_salud class="form-control" %}
-      </div>
-
-      <!-- Checkbox: Posee grupo apoyo -->
-      <div class="form-group col-md-2 d-flex align-items-center">
-        <div class="form-check">
-          {{ form.posee_grupo_apoyo }} {{ form.posee_grupo_apoyo.label_tag }}
-        </div>
-      </div>
-
-      <!-- Select: Grupo apoyo -->
-      <div class="form-group col-md-4" id="grupo_apoyo_container">
-        {{ form.grupo_apoyo.label_tag }}
-        {% render_field form.grupo_apoyo class="form-control" %}
-      </div>
-    </div>
-  </div>
-</div>
-
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const checkboxCobertura = document.getElementById('id_posee_cobertura_salud');
@@ -201,81 +230,11 @@
     checkboxCobertura.addEventListener('change', () => toggleField(checkboxCobertura, selectCoberturaContainer, selectCobertura));
     checkboxGrupo.addEventListener('change', () => toggleField(checkboxGrupo, selectGrupoContainer, selectGrupo));
 
-    // Estado inicial
     toggleField(checkboxCobertura, selectCoberturaContainer, selectCobertura);
     toggleField(checkboxGrupo, selectGrupoContainer, selectGrupo);
   });
 </script>
 
-
-
-<!-- Seguridad social y recursos -->
-<div class="card mb-3">
-  <div class="card-body">
-    <!-- Título -->
-    <h6 class="border-bottom pb-2 mb-3">Seguridad social y recursos</h6>
-
-    <!-- Derecho seguridad social y administra recursos -->
-    <div class="form-row align-items-center">
-  <div class="form-group col-md-6">
-    {{ form.derecho_seguridad_social.label_tag }}
-    {% render_field form.derecho_seguridad_social class="form-control" %}
-
-  </div>
-  <div class="
-  form-group col-md-6 d-flex align-items-center">
-    <div class="form-check mb-0 d-flex align-items-center">
-  {{ form.administra_recursos|add_class:"me-2" }}
-  {{ form.administra_recursos.label_tag }}
-</div>
-  </div>
-</div>
-
-
-    <!-- Carnet discapacidad y situación habitacional -->
-    <h6 class="border-bottom pb-2 mt-4 mb-3">Carnet discapacidad y situación habitacional</h6>
-
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        {{ form.carnet_discapacidad.label_tag }}
-        {% render_field form.carnet_discapacidad class="form-control" %}
-      </div>
-      <div class="form-group col-md-6">
-        {{ form.situacion_habitacional.label_tag }}
-        {% render_field form.situacion_habitacional class="form-control" %}
-      </div>
-    </div>
-  </div>
-</div>
-
-       
-
-
-
-
-        <!-- Observaciones -->
-        <div class="card mb-3">
-  <div class="card mb-3">
-  <div class="card-body">
-    <h6 class="border-bottom pb-2 mb-3">Observaciones</h6>
-
-    <div class="form-group col-md-12">
-      {{ form.observaciones }}
-    </div>
-  </div>
-</div>
-
-        <div class="mt-3">
-          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
-          <a href="{% url 'persona:persona_list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
-<!-- validación visual -->
 <script>
   (() => {
     'use strict'
@@ -291,6 +250,4 @@
     })
   })()
 </script>
-</body>
-</div>
 {% endblock page_content %}

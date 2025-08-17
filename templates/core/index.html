@@ -14,7 +14,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>ORSM - Defensoría del Pueblo</title>
+  <title>ORSM - Defensoría del Pueblo{{user.sede}}</title>
 
   <!-- Custom fonts for this template-->
   <link href=" {% static 'vendor/fontawesome-free/css/all.min.css' %} " rel="stylesheet" type="text/css">
@@ -112,7 +112,7 @@
         <div id="collapseExpediente" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="#">Medio de Ingreso</a>
+            <a class="collapse-item" href="{% url 'expediente:medio_ingreso_select' %}">Medio de Ingreso</a>
             <a class="collapse-item" href="#">Listado</a>
             <a class="collapse-item" href="#">Busqueda</a>
           </div>
@@ -202,7 +202,7 @@
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
           <div class="me-4 text-secondary fw-bold d-flex align-items-center">
               <i class="fas fa-clock me-1"></i>
-                {{ fecha_hora_actual|date:"d/m/Y H:i:s" }}
+                {{user.sede}} - {{ fecha_hora_actual|date:"d/m/Y H:i:s" }}
           </div>
 
           <!-- Sidebar Toggle (Topbar) -->
@@ -386,29 +386,6 @@
   <!-- Page level plugins -->
   <script src="{% static 'js/bootstrap5/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'js/bootstrap5/dataTables.bootstrap5.min.js' %}"></script>
-
-  <!-- Script para cierre de sesión -->
-  <script>
-      let tiempoInactivo = 15 * 60 * 1000;  // 15 minutos
-      let temporizador;
-
-      function resetTimer() {
-          clearTimeout(temporizador);
-          temporizador = setTimeout(cerrarSesion, tiempoInactivo);
-      }
-
-      function cerrarSesion() {
-          window.location.href = "{% url 'core:logout' %}";  // Asegúrate de tener esta URL
-      }
-
-      // Detectar actividad
-      window.onload = resetTimer;
-      document.onmousemove = resetTimer;
-      document.onkeypress = resetTimer;
-      document.onclick = resetTimer;
-      document.onscroll = resetTimer;
-  </script>
-  
 
  
   {% block js_page %}

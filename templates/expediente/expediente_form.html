@@ -3,7 +3,7 @@
 <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h5 class="card-title">Nuevo Expediente</h5>
+      <h5 class="card-title">Nuevo Expediente Medio: {{ medio_ingreso.medio_ingreso }}</h5>
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

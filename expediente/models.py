@@ -85,21 +85,28 @@ class EstadoExpediente(models.Model):
 class Expediente(models.Model):
     numero = models.PositiveIntegerField("Número de expediente")
     anio = models.PositiveIntegerField("Año del expediente", default=2025)
-    abreviatura = models.ForeignKey(Sede, on_delete=models.CASCADE, related_name='expediente_abreviatura_sede')
-    fecha_creacion = models.DateField("Fecha de creación", auto_now_add=True)
+    abreviatura = models.CharField("Abreviatura", max_length=4)
+    fecha_creacion = models.DateField("Fecha de creación", auto_now_add=False)
     identificador = models.CharField("Identificador del expediente", max_length=100, unique=True, editable=False)
-
+    
+    fecha_de_juzgado = models.DateTimeField(blank=True, null=True, verbose_name='Fecha del Juzgado')
+    fecha_de_recepcion = models.DateTimeField(blank=True, null=True, verbose_name='Fecha de Recepción')
+    cuij = models.CharField(blank=True, max_length=50, null=True, verbose_name='CUIJ')
+    clave_sisfe = models.CharField(blank=True, max_length=50, null=True, verbose_name='Clave SISFE')
+    
+    estado_expediente = models.ForeignKey(EstadoExpediente, on_delete=models.CASCADE, related_name='expediente_estado_expediente')
     sede = models.ForeignKey(Sede, on_delete=models.PROTECT, verbose_name='Sede')
     medio_ingreso = models.ForeignKey(MedioIngreso, on_delete=models.CASCADE, blank=True, null=True)
     expediente_fisico = models.BooleanField(default=False)
     tipo_solicitud = models.ForeignKey(TipoSolicitud, on_delete=models.CASCADE)
-    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE)
+    
     tipo_patrocinio = models.ForeignKey(TipoPatrocinio, on_delete=models.CASCADE, null=True, blank=True)
     resumen_intervencion = models.ForeignKey(ResumenIntervencion, on_delete=models.CASCADE, blank=True, null=True)
 
     edad_persona = models.PositiveIntegerField(blank=True, null=True)
-    situacion_habitacional = models.CharField(max_length=255, blank=True, null=True)
-    observaciones = models.TextField(blank=True, null=True)
+    grupo_etario = models.ForeignKey(GrupoEtario, related_name='expediente_grupo_etario', on_delete=models.CASCADE)
+    situacion_habitacional_hist = models.CharField(verbose_name= 'Situación habitacional historica', max_length=255, blank=True, null=True)
+    observaciones = models.TextField(verbose_name='Observaviones', blank=True, null=True)
 
     estado = models.BooleanField("Estado", default=True)
 
