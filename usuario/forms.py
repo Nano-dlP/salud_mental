@@ -14,7 +14,7 @@ class PerfilUsuarioForm(forms.ModelForm):
             'dni': forms.TextInput(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
-            'localidad': forms.TextInput(attrs={'class': 'form-control'}),
+            'localidad': forms.Select(attrs={'class': 'form-control'}),
             'sede': forms.Select(attrs={'class': 'form-control'}),
             'foto_perfil': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

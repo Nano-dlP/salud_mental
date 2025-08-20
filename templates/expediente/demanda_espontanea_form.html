@@ -3,19 +3,16 @@
 {% load static %}
 
 {% block page_content %}
+<link href=" {% static 'css/expedientes.css' %} " rel="stylesheet">
 <div class="container-fluid">
   <div class="container mt-4">
     <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
-      
-      {% if form.instance.pk %}
-        <div class="card-header bg-warning text-white py-2 px-3 text-center">
-          <h5 class="mb-3">Editar Expediente {{ form.instance.identificador }}</h5>
-      {% else %}
-        <div class="card-header bg-success text-white py-2 px-3 text-center">
-          <h5 class="mb-0 w-100">Nuevo Expediente Demanda Espontánea</h5>
-      {% endif %}
-        </div>
-
+      <div class="card-header text-center">
+        <h5 class="mb-0">
+          {% if form.instance.pk %}EDITAR EXPENDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
+          <span id="medioIngresoTexto">{{ form.instance.medio_ingreso }}</span>
+        </h5>
+      </div>
       <div class="card-body">
         <form method="post" novalidate class="small-form">
           {% csrf_token %}
@@ -26,97 +23,87 @@
             </div>
           {% endif %}
 
-          <!-- Datos personales -->
-          <div class="card mb-3">
+          <!-- Encabezado -->
+          <div class="card mb-3 border-0 shadow-sm">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3">Encabezado</h6>
+              <h6 class="border-bottom pb-2 mb-3 text-muted">Encabezado</h6>
               <div class="form-row">
                 <div class="form-group col-md-4">
                   {{ form.sede.label_tag }}
-                  {{ form.sede }}
+                  {{ form.sede|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.fecha_creacion.label_tag }}
-                  {{ form.fecha_creacion }}
+                  {{ form.fecha_creacion|add_class:"form-control" }}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.medio_ingreso.label_tag }}
-                  {{ form.medio_ingreso }}
+                  {{ form.medio_ingreso|add_class:"form-select" }}
                 </div>
               </div>
 
-              <div class="form-row align-items-end">
-                <div class="form-group col-md-5 ">
+              <div class="form-row align-items-end mt-3">
+                <div class="form-group col-md-5">
                   {{ form.persona.label_tag }}
-                    <div class="input-group">
-                      {{ form.persona }}
-                      <div class="input-group-append">
-                        <a href="{% url 'persona:persona_create' %}" class="btn btn-success ml-2" title="Agregar nueva persona">
-                          <i class="fas fa-plus"></i>
-                        </a>
-                      </div>
-                    </div>
+                  <div class="input-group">
+                    {{ form.persona|add_class:"form-select" }}
+                    <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" class="btn btn-outline-secondary ms-2" title="Agregar nueva persona">
+                      <i class="fas fa-plus"></i>
+                    </a>
+                  </div>
                 </div>
+
                 <div class="form-group col-md-2">
                   {{ form.edad_persona.label_tag }}
-                  {{ form.edad_persona }}
+                  {{ form.edad_persona|add_class:"form-control" }}
                 </div>
                 <div class="form-group col-md-5">
                   {{ form.grupo_etario.label_tag }}
-                  {{ form.grupo_etario }}
+                  {{ form.grupo_etario|add_class:"form-select" }}
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Información de contacto y domicilio -->
-          <div class="card mb-3">
+          <!-- Información adicional -->
+          <div class="card mb-3 border-0 shadow-sm">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3">Información Adicional</h6>
+              <h6 class="border-bottom pb-2 mb-3 text-muted">Información Adicional</h6>
 
               <div class="form-row">
                 <div class="form-group col-md-3">
                   {{ form.tipo_solicitud.label_tag }}
-                  {{ form.tipo_solicitud }}
+                  {{ form.tipo_solicitud|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-3">
                   {{ form.estado_expediente.label_tag }}
-                  {{ form.estado_expediente }}
+                  {{ form.estado_expediente|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-6">
                   {{ form.resumen_intervencion.label_tag }}
-                  {{ form.resumen_intervencion }}
+                  {{ form.resumen_intervencion|add_class:"form-control" }}
                 </div>
               </div>
 
-              <div class="form-row">
+              <div class="form-row mt-3">
                 <div class="form-group col-md-6">
                   {{ form.situacion_habitacional_hist.label_tag }}
-                  {{ form.situacion_habitacional_hist }}
+                  {{ form.situacion_habitacional_hist|add_class:"form-control" }}
                 </div>
-                 <div class="form-group col-md-6">
+                <div class="form-group col-md-6">
                   {{ form.observaciones.label_tag }}
-                  {{ form.observaciones }}
+                  {{ form.observaciones|add_class:"form-control" }}
                 </div>
-                </div>
-              </div>
-
-              </div>
-
-              <div class="form-row">
               </div>
             </div>
           </div>
 
-         
-
-          
-          
-
           <!-- Botones -->
-          <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
-            <a href="{% url 'persona:persona_list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+          <div class="mt-3 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-primary btn-sm px-4">
+              <i class="fas fa-save me-1"></i> Guardar
+            </button>
+            <a href="{% url 'persona:persona_list' %}" class="btn btn-outline-secondary btn-sm px-4">Cancelar</a>
           </div>
         </form>
       </div>
@@ -124,7 +111,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal persona -->
 <div class="modal fade" id="modalPersona" tabindex="-1" aria-labelledby="modalPersonaLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -133,11 +120,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div id="modalPersonaBody">
-          <div class="text-center">
-            <div class="spinner-border text-success" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
+        <div id="modalPersonaBody" class="text-center">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Cargando...</span>
           </div>
         </div>
       </div>
@@ -145,10 +130,23 @@
   </div>
 </div>
 
-
 <!-- Scripts -->
 <script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const medioIngresoSelect = document.getElementById("id_medio_ingreso");
+    const textoMedioIngreso = document.getElementById("medioIngresoTexto");
 
+    if (medioIngresoSelect && textoMedioIngreso) {
+      const actualizarTexto = () => {
+        const texto = medioIngresoSelect.options[medioIngresoSelect.selectedIndex]?.text || "";
+        textoMedioIngreso.textContent = texto;
+      };
+      medioIngresoSelect.addEventListener("change", actualizarTexto);
+      actualizarTexto();
+    }
+  });
+</script>
 
 <script>
   (() => {

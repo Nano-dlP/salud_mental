@@ -30,35 +30,75 @@ class PersonaForm(forms.ModelForm):
             'ciudad_nacimiento': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'nivel_educativo': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'ocupacion': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'posee_cobertura_salud': forms.CheckboxInput(attrs={'class': 'form-check-input form-check-input-sm'}),
+            
+            'posee_cobertura_salud': forms.CheckboxInput(attrs={
+                                                                'class': 'form-check-input',
+                                                                'style': """transform: scale(1.5); 
+                                                                            cursor: pointer; 
+                                                                            box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                                            border: 1px solid rgba(128, 128, 128, 1);"""}),
             'cobertura_salud': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'posee_grupo_apoyo': forms.CheckboxInput(attrs={'class': 'form-check-input form-check-input-sm'}),
+            
+            'posee_grupo_apoyo': forms.CheckboxInput(attrs={
+                                                            'class': 'form-check-input',
+                                                            'style': """transform: scale(1.5); 
+                                                                        cursor: pointer; 
+                                                                        box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                                        border: 1px solid rgba(128, 128, 128, 1);"""}),
             'grupo_apoyo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            
             'derecho_seguridad_social': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'administra_recursos': forms.CheckboxInput(attrs={'class': 'form-check-input form-check-input-sm'}),
+            
+            'administra_recursos': forms.CheckboxInput(attrs={
+                                                            'class': 'form-check-input',
+                                                            'style': """transform: scale(1.5); 
+                                                                        cursor: pointer; 
+                                                                        box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                                        border: 1px solid rgba(128, 128, 128, 1);"""}),
+            
             'carnet_discapacidad': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'situacion_habitacional': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
+        labels = {
+            'tipo_documento': 'Tipo de documento',
+            'numero_documento': 'Número de documento',
+            'nombre': 'Nombre(s)',
+            'apellido': 'Apellido(s)',
+            'fecha_nacimiento': 'Fecha de nacimiento',
+            'genero': 'Género',
+            'telefono': 'Teléfono',
+            'email': 'Correo electrónico',
+            'direccion_calle': 'Calle',
+            'direccion_numero': 'Número',
+            'direccion_piso': 'Piso',
+            'direccion_depto': 'Depto.',
+            'localidad': 'Localidad',
+            'ciudad_nacimiento': 'Ciudad de nacimiento',
+            'nivel_educativo': 'Nivel educativo',
+            'ocupacion': 'Ocupación',
+            'posee_cobertura_salud': '¿Tiene cobertura de salud?',
+            'cobertura_salud': 'Cobertura de salud',
+            'posee_grupo_apoyo': '¿Tiene grupo de apoyo?',
+            'grupo_apoyo': 'Grupo de apoyo',
+            'derecho_seguridad_social': 'Derechos de seguridad social',
+            'administra_recursos': '¿Administra recursos?',
+            'carnet_discapacidad': 'Carnet de discapacidad',
+            'situacion_habitacional': 'Situación habitacional',
+            'observaciones': 'Observaciones',
+        }
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Validación relacionada a campos booleanos
         if cleaned_data.get("posee_cobertura_salud") and not cleaned_data.get("cobertura_salud"):
             self.add_error("cobertura_salud", "Debe indicar la cobertura de salud si posee una.")
 
-
-
-    def clean(self):
-        cleaned_data = super().clean()
         if cleaned_data.get("posee_grupo_apoyo") and not cleaned_data.get("grupo_apoyo"):
             self.add_error("grupo_apoyo", "Debe indicar el grupo de apoyo si posee uno.")
-            
-            
-    # forms.py
 
-    def clean(self):
-        cleaned_data = super().clean()
-
+        # Transformación de valores de texto
         for field_name, value in cleaned_data.items():
             if isinstance(value, str):
                 if field_name == 'email':
@@ -69,6 +109,3 @@ class PersonaForm(forms.ModelForm):
                     cleaned_data[field_name] = value.upper()  # Todo lo demás en mayúsculas
 
         return cleaned_data
-    
-
-    

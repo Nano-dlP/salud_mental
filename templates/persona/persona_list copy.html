@@ -1,0 +1,105 @@
+{% extends 'core/index.html' %}
+{% load static %}
+
+{% block page_content %}
+<div class="container-fluid">
+
+  <!-- Encabezado -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <p class="h5 mb-0 text-secondary">Listado de Personas</p>
+    <a href="#" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-download me-1"></i> Descargar archivo
+    </a>
+  </div>
+
+  <!-- Contenido -->
+  <div class="row">
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3">
+        <!-- Cabecera de tarjeta -->
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <span class="fw-semibold text-secondary">
+            <i class="bi bi-people-fill me-1"></i> Personas
+          </span>
+          <div class="dropdown">
+            <a class="text-secondary" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical small"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="dropdownMenuLink">
+              <li><h6 class="dropdown-header text-muted">Acciones</h6></li>
+              <li><a class="dropdown-item small" href="{% url 'persona:persona_create' %}"><i class="bi bi-person-plus me-2 text-success"></i> Agregar</a></li>
+              <li><a class="dropdown-item small" href="#"><i class="bi bi-search me-2 text-info"></i> Buscar</a></li>
+              <li><a class="dropdown-item small" href="#"><i class="bi bi-printer me-2 text-secondary"></i> Imprimir</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item small text-danger" href="#"><i class="bi bi-box-arrow-left me-2"></i> Salir</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Cuerpo de tarjeta -->
+        <div class="card-body">
+          {% if not personas %}
+            <div class="alert alert-warning small mb-0">
+              No hay personas registradas.
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover table-sm align-middle fs-6" id="id_tabla_inst" width="100%">
+                <thead class="table-light">
+                  <tr class="text-secondary small text-uppercase">
+                    <th>ID</th>
+                    <th>DNI</th>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for persona in personas %}
+                  <tr>
+                    <td>{{ persona.id }}</td>
+                    <td>{{ persona.numero_documento }}</td>
+                    <td>{{ persona.apellido }}</td>
+                    <td>{{ persona.nombre }}</td>
+                    <td>{{ persona.email }}</td>
+                    <td>{{ persona.telefono }}</td>
+                    <td class="text-center">
+                      <a href="{% url 'persona:persona_edit' persona.id %}" class="btn btn-outline-warning btn-sm me-1" title="Editar">
+                        <i class="bi bi-pencil-fill small"></i>
+                      </a>
+                      <a href="{% url 'persona:persona_detail' persona.id %}" class="btn btn-outline-info btn-sm me-1" title="Detalles">
+                        <i class="bi bi-eye-fill small"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-danger btn-sm disabled" title="Borrar">
+                        <i class="bi bi-trash-fill small"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock page_content %}
+
+{% block js_page %}
+<script>
+  $(document).ready(function () {
+    $('#id_tabla_inst').DataTable({
+      pageLength: 5,
+      lengthMenu: [5, 10, 20, 50],
+      language: {
+        url: "{% static '/es-ES.json' %}"
+      }
+    });
+  });
+</script>
+{% endblock js_page %}

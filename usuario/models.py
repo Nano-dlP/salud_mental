@@ -18,4 +18,4 @@ class CustomUser(AbstractUser):
             raise ValidationError({'dni': "Ya existe un usuario con este DNI."})
 
     def __str__(self):
-        return f"{self.username} ({self.dni})"
+        return f"{self.username} ({self.dni}) {self.localidad}"

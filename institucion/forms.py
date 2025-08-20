@@ -48,17 +48,13 @@ class InstitucionForm(forms.ModelForm):
         return telefono
 
     def clean_cuit(self):
-        cuit = self.cleaned_data['cuit']
+        cuit = self.cleaned_data.get('cuit')
+        if not cuit:
+            raise forms.ValidationError("Este campo es obligatorio.")
         if not re.match(r'^\d{2}-\d{8}-\d$', cuit):
             raise forms.ValidationError("CUIT inválido. Debe tener el formato XX-XXXXXXXX-X")
         return cuit
-    
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if email and not forms.EmailField().clean(email):
-            raise forms.ValidationError('Ingrese un email válido.')
-        return email
-
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Filtra solo localidades activas
