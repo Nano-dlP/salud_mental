@@ -1,6 +1,9 @@
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from urllib.parse import urlencode
 from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 from .models import Persona
 from .forms import PersonaForm
@@ -18,9 +21,14 @@ class PersonaCreateView(LoginRequiredMixin, CreateView):
     login_url = 'core:login'
 
     def form_valid(self, form):
-        form.instance.usuario = self.request.user  # Set the user to the current logged-in user
-        return super().form_valid(form)
+        form.instance.usuario = self.request.user
+        response = super().form_valid(form)
 
+        next_url = self.request.GET.get('next')
+        if next_url:
+            query_string = urlencode({'persona_id': self.object.pk})
+            return HttpResponseRedirect(f'{next_url}?{query_string}')
+        return response
 
 class PersonaListView(LoginRequiredMixin, ListView):
     model = Persona
@@ -41,9 +49,7 @@ class PersonaUpdateView(LoginRequiredMixin, UpdateView):
     login_url = 'core:login'
 
     def form_valid(self, form):
-        form.instance.persona = form.cleaned_data['persona']
-        form.instance.tipo_persona = form.cleaned_data['tipo_persona']
-        #form.instance.user_modifica = self.request.user
+        messages.success(self.request, "Perfil actualizado correctamente.")
         return super().form_valid(form)
 
 

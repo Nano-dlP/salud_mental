@@ -2,40 +2,35 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 {% block head %}
-  
-  
 <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
 
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <title>ORSM - Defensoría del Pueblo {{ user.sede }}</title>
 
-  <title>ORSM - Defensoría del Pueblo{{user.sede}}</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet" />
 
-  <!-- Custom fonts for this template-->
-  <link href=" {% static 'vendor/fontawesome-free/css/all.min.css' %} " rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <!-- Font Awesome (elige local o CDN, no ambos) -->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" />
 
-  <!-- Custom styles for this template-->
-  <link href=" {% static 'css/sb-admin-2.min.css' %} " rel="stylesheet">
-  <link href=" {% static 'css/style.css' %} " rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="{% static 'css/bootstrap5/bootstrap.min.css' %}" rel="stylesheet" />
 
-  
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link href="{% static 'css/bootstrap5/dataTables.bootstrap5.min.css' %}" rel="stylesheet" />
 
-  <!-- Custom styles for this page -->
-  <link href=" {% static 'css/bootstrap5/bootstrap.min.css' %}" rel="stylesheet">
-  <link href=" {% static 'css/bootstrap5/dataTables.bootstrap5.min.css' %}" rel="stylesheet">
-  <link href=" {% static 'css/stilo_persona.css' %} " rel="stylesheet">
+  <!-- SB Admin 2 template CSS -->
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
+  <!-- Custom CSS -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/stilo_persona.css' %}" rel="stylesheet" />
 </head>
-
 {% endblock head %}
 
 <body id="page-top">

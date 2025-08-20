@@ -1,5 +1,8 @@
 {% extends 'core/index.html' %}
+{% load static %}
+
 {% block page_content %}
+<link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 <div class="container mt-4">
     
     {% include 'persona/detalle_persona.html' %}

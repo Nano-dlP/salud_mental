@@ -88,7 +88,7 @@ class Tipo_Documento(models.Model):
 
 
 class Localidad(models.Model):
-    localidad = models.CharField('Localidad', max_length=70, blank=False, null=False)
+    localidad = models.CharField(verbose_name='Localidad', max_length=70, blank=False, null=False)
     codigo_postal = models.CharField('Código de postal', max_length=50, blank=True, null=True)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, verbose_name='Provincia', blank=True, null=True, related_name='localidades_provincia')
 

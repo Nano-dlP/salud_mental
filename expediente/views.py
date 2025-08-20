@@ -3,11 +3,13 @@ import datetime
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.shortcuts import redirect
-from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm
-from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, MedioIngreso
+from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
+from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, TipoPatrocinio
 
 
 class ExpedienteListView(LoginRequiredMixin, ListView):
@@ -44,7 +46,7 @@ class MedioIngresoSelectView(FormView):
         elif  medio_ingreso_id in [2,3, 4, 5, 6] :
             return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
         elif  medio_ingreso_id in [7,] :
-            return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
+            return redirect('expediente:expediente_create', medio_id=medio_ingreso_id)
         else:
             return redirect('expediente:medio_ingreso_select')
 
@@ -59,9 +61,14 @@ class DemandaEspontaneaCreateView(FormView):
     def get_initial(self):
         initial = super().get_initial()
         medio_id = self.kwargs.get('medio_id')
+        persona_id = self.request.GET.get('persona_id')
+
         if medio_id:
             initial['medio_ingreso'] = medio_id
             initial['fecha_creacion'] = datetime.date.today
+        if persona_id:
+            initial['persona'] = persona_id    
+            
         return initial
 
     #Función del formulario para obtener usuario y medio de ingreso
@@ -84,6 +91,12 @@ class DemandaEspontaneaCreateView(FormView):
         situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
         resumen_intervencion = form.cleaned_data['resumen_intervencion']
         observaciones = form.cleaned_data['observaciones']
+        
+        try:
+            rol = Rol.objects.get(pk=1)
+        except Rol.DoesNotExist:
+            form.add_error(None, 'El rol con ID 11 no existe.')
+            return self.form_invalid(form)
 
         expediente = Expediente(
             sede=sede,
@@ -99,15 +112,16 @@ class DemandaEspontaneaCreateView(FormView):
         )
         expediente.save()  # Identificador generado automáticamente
 
-        #rol, _ = Rol.objects.get_or_create(rol='Paciente')  # 
-        rol = Rol.objects.get(pk=1)
-        ExpedientePersona.objects.create(
-            expediente=expediente,
-            persona=persona,
-            rol=rol
-        )
 
-        return super().form_valid(form)
+        try:
+            ExpedientePersona.objects.create(
+                expediente=expediente,
+                persona=persona,
+                rol=rol
+            )
+        except Exception as e:
+            messages.error(self.request, f"No se pudo registrar la persona en el expediente: {e}")
+            return self.form_invalid(form)
     
     
     
@@ -119,6 +133,91 @@ class OficioCreateView(FormView):
     def get_initial(self):
         initial = super().get_initial()
         medio_id = self.kwargs.get('medio_id')
+        institucion_id = self.request.GET.get('institucion_id')
+        if medio_id:
+            initial['medio_ingreso'] = medio_id
+            initial['fecha_creacion'] = datetime.date.today
+        if institucion_id:
+            initial['institucion'] = institucion_id   
+        return initial
+
+    #Función del formulario para obtener usuario y medio de ingreso
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        form = form_class(user=self.request.user, **self.get_form_kwargs())
+        form.fields['medio_ingreso'].disabled = True
+        return form
+
+    def form_valid(self, form):
+        institucion = form.cleaned_data['institucion']
+        sede = form.cleaned_data['sede']
+        fecha_creacion = form.cleaned_data['fecha_creacion']
+        medio_ingreso = form.cleaned_data['medio_ingreso']
+        fecha_de_juzgado = form.cleaned_data['fecha_de_juzgado']
+        fecha_de_recepcion = form.cleaned_data['fecha_de_recepcion']
+        persona = form.cleaned_data['persona']
+        expediente_fisico = form.cleaned_data['expediente_fisico']
+        cuij = form.cleaned_data['cuij']
+        clave_sisfe = form.cleaned_data['clave_sisfe']
+        tipo_solicitud = form.cleaned_data['tipo_solicitud']
+        estado_expediente = form.cleaned_data['estado_expediente']
+        grupo_etario = form.cleaned_data['grupo_etario']
+        edad_persona = form.cleaned_data['edad_persona']
+        situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
+        tipo_patrocinio = form.cleaned_data['tipo_patrocinio']
+        resumen_intervencion = form.cleaned_data['resumen_intervencion']
+        observaciones = form.cleaned_data['observaciones']
+        
+        try:
+            rol = Rol.objects.get(pk=1)
+        except Rol.DoesNotExist:
+            form.add_error(None, 'El rol no existe.')
+            return self.form_invalid(form)
+
+        expediente = Expediente(
+            institucion = institucion,
+            sede = sede,
+            fecha_creacion = fecha_creacion,
+            medio_ingreso = medio_ingreso,
+            fecha_de_juzgado = fecha_de_juzgado,
+            fecha_de_recepcion = fecha_de_recepcion,
+            persona = persona,
+            expediente_fisico = expediente_fisico,
+            cuij = cuij,
+            clave_sisfe = clave_sisfe,
+            tipo_solicitud = tipo_solicitud,
+            estado_expediente = estado_expediente,
+            grupo_etario = grupo_etario,
+            edad_persona = edad_persona,
+            situacion_habitacional_hist = situacion_habitacional_hist,
+            tipo_patrocinio = tipo_patrocinio,
+            resumen_intervencion = resumen_intervencion,
+            observaciones = observaciones,
+        )
+        expediente.save()  # Identificador generado automáticamente
+
+        try:
+            ExpedienteInstitucion.objects.create(
+                expediente=expediente,
+                institucion=institucion,
+                rol=rol
+            )
+        except Exception as e:
+            messages.error(self.request, f"No se pudo registrar la institución en el expediente: {e}")
+            return self.form_invalid(form)
+        
+        
+        
+class SecretariaCreateView(FormView):
+    template_name = 'expediente/secretaria_form.html'
+    form_class = SecretariaForm
+    success_url = reverse_lazy('expediente:expediente_list')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        medio_id = self.kwargs.get('medio_id')
+        
         if medio_id:
             initial['medio_ingreso'] = medio_id
             initial['fecha_creacion'] = datetime.date.today
@@ -133,10 +232,8 @@ class OficioCreateView(FormView):
         return form
 
     def form_valid(self, form):
-        institucion = form.cleaned_data['institucion']
-        fecha_de_juzgado = form.cleaned_data['fecha_de_juzgago']
+        fecha_de_juzgado = form.cleaned_data['fecha_de_juzgado']
         fecha_de_recepcion = form.cleaned_data['fecha_de_recepcion']
-        persona = form.cleaned_data['persona']
         sede = form.cleaned_data['sede']
         fecha_creacion = form.cleaned_data['fecha_creacion']
         medio_ingreso = form.cleaned_data['medio_ingreso']
@@ -150,12 +247,16 @@ class OficioCreateView(FormView):
         clave_sisfe = form.cleaned_data['clave_sisfe']
         cuij = form.cleaned_data['cuij']
         observaciones = form.cleaned_data['observaciones']
+        
+        try:
+            rol = Rol.objects.get(pk=1)
+        except Rol.DoesNotExist:
+            form.add_error(None, 'El rol no existe.')
+            return self.form_invalid(form)
 
         expediente = Expediente(
-            institucion = institucion,
             fecha_de_juzgado = fecha_de_juzgado,
             fecha_de_recepcion = fecha_de_recepcion,
-            persona = persona,
             sede = sede,
             fecha_creacion = fecha_creacion,
             medio_ingreso = medio_ingreso,
@@ -172,13 +273,3 @@ class OficioCreateView(FormView):
 
         )
         expediente.save()  # Identificador generado automáticamente
-
-        #rol, _ = Rol.objects.get_or_create(rol='Paciente')  # 
-        rol = Rol.objects.get(pk=1)
-        ExpedienteInstitucion.objects.create(
-            expediente=expediente,
-            institucion=institucion,
-            rol=rol
-        )
-
-        return super().form_valid(form)

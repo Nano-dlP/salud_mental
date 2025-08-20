@@ -9,6 +9,9 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from urllib.parse import urlencode
 
 from .forms import InstitucionForm
 
@@ -23,10 +26,14 @@ class InstitucionCreateView(LoginRequiredMixin, CreateView):
     login_url = 'core:login'
 
     def form_valid(self, form):
-        form.instance.institucion = form.cleaned_data['institucion']
-        form.instance.tipo_institucion = form.cleaned_data['tipo_institucion']
-        #form.instance.user_crea = self.request.user
-        return super().form_valid(form)
+        form.instance.usuario = self.request.user
+        response = super().form_valid(form)
+
+        next_url = self.request.GET.get('next')
+        if next_url:
+            query_string = urlencode({'institucion_id': self.object.pk})
+            return HttpResponseRedirect(f'{next_url}?{query_string}')
+        return response
 
 
 class InstitucionListView(LoginRequiredMixin, ListView):
