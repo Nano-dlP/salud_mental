@@ -5,7 +5,7 @@ from django.db import models
 from core.models import Localidad, Sede
 
 class CustomUser(AbstractUser):
-    dni = models.CharField(verbose_name ='DNI', max_length=15, unique=True)
+    dni = models.CharField(verbose_name ='DNI', max_length=15, blank=True, null=True)
     telefono = models.CharField(verbose_name = 'Teléfono', max_length=20, blank=True, null=True)
     direccion = models.CharField(verbose_name = 'Domicilio', blank=True, null=True)
     localidad = models.ForeignKey(Localidad, verbose_name = 'Localidad' ,on_delete=models.SET_NULL, null=True, blank=True)
