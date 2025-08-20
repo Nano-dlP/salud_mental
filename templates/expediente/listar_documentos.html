@@ -1,0 +1,11 @@
+<h5>Documentos adjuntos</h5>
+<ul>
+  {% for doc in expediente.documentos.all %}
+    <li>
+      <a href="{{ doc.archivo.url }}" target="_blank">{{ doc.nombre }}</a>
+      ({{ doc.fecha_subida|date:"d/m/Y H:i" }})
+    </li>
+  {% empty %}
+    <li>No hay documentos adjuntos</li>
+  {% endfor %}
+</ul>

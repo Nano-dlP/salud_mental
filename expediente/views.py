@@ -2,14 +2,19 @@
 import datetime
 from django.views.generic import FormView
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+
 from django.http import Http404
-from django.contrib import messages
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
-from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, TipoPatrocinio
+from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, TipoPatrocinio, ExpedienteDocumento
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
+from .forms import ExpedienteDocumentoFormSet
 
 
 class ExpedienteListView(LoginRequiredMixin, ListView):
@@ -68,10 +73,9 @@ class DemandaEspontaneaCreateView(FormView):
             initial['fecha_creacion'] = datetime.date.today
         if persona_id:
             initial['persona'] = persona_id    
-            
+
         return initial
 
-    #Función del formulario para obtener usuario y medio de ingreso
     def get_form(self, form_class=None):
         if form_class is None:
             form_class = self.get_form_class()
@@ -79,7 +83,23 @@ class DemandaEspontaneaCreateView(FormView):
         form.fields['medio_ingreso'].disabled = True
         return form
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                self.request.POST, self.request.FILES, queryset=ExpedienteDocumento.objects.none()
+            )
+        else:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(queryset=ExpedienteDocumento.objects.none())
+        return context
+
     def form_valid(self, form):
+        context = self.get_context_data()
+        documento_formset = context['documento_formset']
+
+        if not documento_formset.is_valid():
+            return self.form_invalid(form)
+
         persona = form.cleaned_data['persona']
         sede = form.cleaned_data['sede']
         fecha_creacion = form.cleaned_data['fecha_creacion']
@@ -91,14 +111,14 @@ class DemandaEspontaneaCreateView(FormView):
         situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
         resumen_intervencion = form.cleaned_data['resumen_intervencion']
         observaciones = form.cleaned_data['observaciones']
-        
+
         try:
             rol = Rol.objects.get(pk=1)
         except Rol.DoesNotExist:
-            form.add_error(None, 'El rol con ID 11 no existe.')
+            form.add_error(None, 'El rol con ID 1 no existe.')
             return self.form_invalid(form)
 
-        expediente = Expediente(
+        expediente = Expediente.objects.create(
             sede=sede,
             fecha_creacion=fecha_creacion,
             medio_ingreso=medio_ingreso,
@@ -110,19 +130,21 @@ class DemandaEspontaneaCreateView(FormView):
             resumen_intervencion=resumen_intervencion,
             observaciones=observaciones,
         )
-        expediente.save()  # Identificador generado automáticamente
 
+        ExpedientePersona.objects.create(
+            expediente=expediente,
+            persona=persona,
+            rol=rol
+        )
 
-        try:
-            ExpedientePersona.objects.create(
-                expediente=expediente,
-                persona=persona,
-                rol=rol
-            )
-        except Exception as e:
-            messages.error(self.request, f"No se pudo registrar la persona en el expediente: {e}")
-            return self.form_invalid(form)
-    
+        for documento_form in documento_formset:
+            if documento_form.cleaned_data.get('archivo'):
+                documento = documento_form.save(commit=False)
+                documento.expediente = expediente
+                documento.save()
+
+        messages.success(self.request, "Expediente creado con sus documentos.")
+        return super().form_valid(form)
     
     
 class OficioCreateView(FormView):
@@ -273,3 +295,25 @@ class SecretariaCreateView(FormView):
 
         )
         expediente.save()  # Identificador generado automáticamente
+
+
+def expediente_documentos_view(request, expediente_id):
+    expediente = get_object_or_404(Expediente, id=expediente_id)
+
+    if request.method == "POST":
+        formset = ExpedienteDocumentoFormSet(request.POST, request.FILES, queryset=ExpedienteDocumento.objects.none())
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data.get('archivo'):  # si realmente cargaron un archivo
+                    documento = form.save(commit=False)
+                    documento.expediente = expediente
+                    documento.save()
+            messages.success(request, "Documentos cargados correctamente.")
+            return redirect("expediente:expediente_detail", pk=expediente.id)
+    else:
+        formset = ExpedienteDocumentoFormSet(queryset=ExpedienteDocumento.objects.none())
+
+    return render(request, "expediente/expediente_documentos_form.html", {
+        "formset": formset,
+        "expediente": expediente,
+    })

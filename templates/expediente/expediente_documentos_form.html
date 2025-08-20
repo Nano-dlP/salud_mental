@@ -1,0 +1,28 @@
+<h5>Subir documentos para el expediente {{ expediente.identificador }}</h5>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div class="row">
+        {% for form in formset %}
+            <div class="col-md-6 mb-3">
+                <div class="card p-3 shadow-sm">
+                    <div class="mb-2">
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre }}
+                    </div>
+                    <div class="mb-2">
+                        {{ form.archivo.label_tag }}
+                        {{ form.archivo }}
+                    </div>
+                    {% if form.DELETE %}
+                        <div class="form-check">
+                            {{ form.DELETE }} <label class="form-check-label">Eliminar</label>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-success">Guardar documentos</button>
+</form>

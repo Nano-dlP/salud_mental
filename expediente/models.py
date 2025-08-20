@@ -5,6 +5,7 @@ from persona.models import Persona
 from institucion.models import Institucion
 
 
+
 # Create your models here.
 class TipoSolicitud(models.Model):
     tipo_solicitud = models.CharField(max_length=50, verbose_name="Tipo de Solicitud")
@@ -133,6 +134,22 @@ class Expediente(models.Model):
 
     def __str__(self):
         return self.identificador
+
+
+
+class ExpedienteDocumento(models.Model):
+    expediente = models.ForeignKey(
+        'Expediente',
+        related_name='documentos',
+        on_delete=models.CASCADE
+    )
+    nombre = models.CharField("Nombre del documento", max_length=255, blank=True, null=True)
+    archivo = models.FileField("Archivo", upload_to="documentos/expedientes/")
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre or 'Documento'}"
+
 
 
 class ExpedientePersona(models.Model):

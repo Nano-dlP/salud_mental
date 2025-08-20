@@ -1,10 +1,11 @@
 import datetime
 from django.shortcuts import render
 from django import forms
+from django.forms import modelformset_factory
 from core.models import Rol
 from persona.models import Persona
 from institucion.models import Institucion
-from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, ResumenIntervencion, TipoPatrocinio, EstadoExpediente
+from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, ResumenIntervencion, TipoPatrocinio, EstadoExpediente, ExpedienteDocumento
 from core.models import Sede
 from django.conf import settings
 
@@ -20,37 +21,6 @@ class MedioIngresoForm(forms.Form):
         label="Medio de Ingreso",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-
-
-class ExpedienteCompletoForm(forms.ModelForm):
-    persona = forms.ModelChoiceField(
-        queryset=Persona.objects.all(),
-        label="Persona",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    rol = forms.ModelChoiceField(
-        queryset=Rol.objects.all(),
-        label="Rol",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    class Meta:
-        model = Expediente
-        fields = [
-            'sede', 'tipo_solicitud', 'grupo_etario', 'tipo_patrocinio', 
-            'edad_persona', 'situacion_habitacional_hist', 'resumen_intervencion', 'observaciones'
-        ]
-        widgets = {
-            'sede': forms.Select(attrs={'class': 'form-control'}),
-            #'fecha_creacion': forms.Select(attrs={'class': 'form-control'}),
-            'tipo_solicitud': forms.Select(attrs={'class': 'form-control'}),
-            'grupo_etario': forms.Select(attrs={'class': 'form-control'}),
-            'tipo_patrocinio': forms.Select(attrs={'class': 'form-control'}),
-            'edad_persona': forms.NumberInput(attrs={'class': 'form-control'}),
-            'situacion_habitacional_hist': forms.TextInput(attrs={'class': 'form-control'}),
-            'resumen_intervencion': forms.Select(attrs={'class': 'form-control'}),
-            'observaciones': forms.Textarea(attrs={'class': 'form-control'}),
-        }
 
 
 class DemandaEspontanea(forms.Form):
@@ -116,6 +86,7 @@ class DemandaEspontanea(forms.Form):
             self.fields['sede'].queryset = Sede.objects.filter(id=user.sede.id)  # Solo su sede
             self.fields['sede'].disabled = True  # Opcional: para que no pueda cambiarla
             
+
             
 class OficioForm(forms.Form):
     fecha_creacion = forms.DateField(
@@ -239,6 +210,7 @@ class OficioForm(forms.Form):
             
             
 class SecretariaForm(forms.Form):
+
     fecha_creacion = forms.DateField(
         label="Fecha de creación:",
         initial=datetime.date.today,
@@ -353,3 +325,25 @@ class SecretariaForm(forms.Form):
             self.fields['sede'].queryset = Sede.objects.filter(id=user.sede.id)  # Solo su sede
             self.fields['sede'].disabled = True  # Opcional: para que no pueda cambiarla
     
+
+
+class ExpedienteDocumentoForm(forms.ModelForm):
+    class Meta:
+        model = ExpedienteDocumento
+        fields = ['nombre', 'archivo']
+        widgets = {
+            'nombre': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Ingrese nombre del documento'}
+            ),
+            'archivo': forms.ClearableFileInput(
+                attrs={'class': 'form-control'}
+            ),
+        }
+
+# Formset para múltiples documentos
+ExpedienteDocumentoFormSet = modelformset_factory(
+    ExpedienteDocumento,
+    form=ExpedienteDocumentoForm,
+    extra=2,         # cantidad de formularios vacíos a mostrar
+    can_delete=True   # permite borrar documentos existentes
+)
