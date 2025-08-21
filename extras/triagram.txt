@@ -1,0 +1,1 @@
+¿Querés que te muestre cómo hacerlo con AJAX y autocompletado real con Select2 y Django-Autocomplete-Light (DAL)?
