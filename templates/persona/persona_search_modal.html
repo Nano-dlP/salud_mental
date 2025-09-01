@@ -1,0 +1,56 @@
+<form method="get" class="mb-3">
+  <div class="input-group">
+    <input type="text" name="buscar_persona" class="form-control"
+           placeholder="Nombre, apellido o DNI">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+  </div>
+</form>
+
+{% if personas %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>DNI</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for persona in personas %}
+    <tr>
+      <td>{{ persona.nombre }}</td>
+      <td>{{ persona.apellido }}</td>
+      <td>{{ persona.numero_documento }}</td>
+      <td>
+        <button type="button" class="btn btn-success btn-sm"
+                onclick="seleccionarPersona('{{ persona.id }}', '{{ persona.nombre }} {{ persona.apellido }}')">
+          Seleccionar
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<script>
+function seleccionarPersona(id, nombre) {
+  // Cargar el valor en el select del form principal
+  const select = window.parent.document.querySelector('#id_persona');
+  if (select) {
+    // Creamos la opción si no existe
+    let option = select.querySelector(`option[value="${id}"]`);
+    if (!option) {
+      option = new Option(nombre, id, true, true);
+      select.add(option);
+    }
+    // Seleccionamos la persona
+    select.value = id;
+  }
+  // Cerrar el modal desde el iframe
+  const modal = window.parent.document.querySelector('#buscarPersonaModal');
+  const bsModal = bootstrap.Modal.getInstance(modal);
+  bsModal.hide();
+}
+</script>

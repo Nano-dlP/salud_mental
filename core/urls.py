@@ -13,5 +13,7 @@ urlpatterns = [
     path('provincia_nuevo/', ProvinciaCreate.as_view(), name='provincia_create'),
     path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('localidades/', views.localidad_autocomplete, name='localidad-autocomplete'),
+
     
 ]

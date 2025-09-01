@@ -16,9 +16,8 @@ class TipoIntervencion(models.Model):
 
 class Intervencion(models.Model):
     expediente = models.ForeignKey(Expediente, on_delete=models.CASCADE, related_name='intervencion_expediente')
+    profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, related_name='intervencion_profesional')
     tipo_intervencion = models.ForeignKey(TipoIntervencion, on_delete=models.CASCADE, related_name='intervencion_tipo_intervencion')
     fecha_intervencion = models.DateTimeField('Fecha de la intervención', auto_now=False, auto_now_add=False, blank=True, null=True)
-    profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, related_name='intervencion_profesional')
     observacion = models.TextField('Observaciones', blank=True, null=True)
-    
-    
+

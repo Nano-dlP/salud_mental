@@ -1,0 +1,11 @@
+ <!-- mi_template.html -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form_principal.as_p }}
+        <input type="submit" value="Buscar">
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form_destino.as_p }}
+    </form>

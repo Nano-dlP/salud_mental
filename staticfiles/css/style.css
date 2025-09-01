@@ -1,0 +1,80 @@
+.sidebar {
+    background-color: #2c3e50 !important; /* gris oscuro personalizado */
+    width: 280px !important;
+}
+
+#content-wrapper {
+    margin-left: 20px; /* ajustá según el ancho del sidebar */
+    margin-right: 20px; /* ajustá según el ancho del sidebar */
+  }
+
+.nav-link {
+  font-size: 0.85rem;     /* texto más pequeño */
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.nav-link i {
+  font-size: 0.9rem;      /* ícono más pequeño */
+}
+
+.nav-link span {
+  font-size: 0.85rem;     /* texto al lado del ícono más pequeño */
+}
+
+.small-nav-link {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+}
+
+.small-nav-link i {
+  font-size: 0.85rem;
+}
+
+.small-nav-link span {
+  font-size: 0.8rem;
+}
+
+.nav-link i {
+  margin-right: 6px;
+}
+
+.nav-link::after {
+  right: 1rem !important;  /* más a la izquierda (por defecto suele estar en 1.5rem o 2rem) */
+}
+
+.card {
+  height: 100%; /* Para que la tarjeta ocupe todo el alto del contenedor padre */
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;           /* Ocupa todo el espacio vertical restante */
+  overflow: auto;    /* Para que la tabla tenga scroll si es necesario */
+}
+
+.table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/*
+.table {
+  table-layout: auto;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.table th, .table td {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  
+}
+
+.table th, .table td {
+  font-size: 0.95rem;
+   /* menos espacio interno 
+}*/
+
