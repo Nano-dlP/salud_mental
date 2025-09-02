@@ -1,0 +1,123 @@
+{% extends 'core/index.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block page_content %}
+<link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+
+<div class="container-fluid">
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+      
+      {% if form.instance.pk %}
+        <div class="card-header bg-warning text-white py-2 px-3 text-center">
+          <h5 class="mb-3">Editar Profesional </h5>
+        </div>
+      {% else %}
+        <div class="card-header bg-success text-white py-2 px-3 text-center">
+          <h5 class="mb-0 w-100">Nuev0 Profesional</h5>
+        </div>
+      {% endif %}
+
+      <div class="card-body">
+        <form method="post" novalidate class="small-form">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <!-- Datos personales -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Datos Profesionales</h6>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  {{ form.profesion.label_tag }}
+                  {{ form.profesion }}
+                </div>
+                <div class="form-group col-md-4">
+                  {{ form.area_profesional.label_tag }}
+                  {{ form.area_profesional }}
+                </div>
+              
+              </div>
+
+            
+            </div>
+          </div>
+
+          <!-- Información de contacto y domicilio -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Información de contacto y domicilio</h6>
+
+              <div class="form-row">
+                <div class="form-group col-md-3">
+                  {{ form.estado.label_tag }}
+                  {{ form.estado }}
+                </div>
+
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+            <a href="{% url 'persona:persona_list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkboxCobertura = document.getElementById('id_posee_cobertura_salud');
+    const selectCoberturaContainer = document.getElementById('cobertura_salud_container');
+    const selectCobertura = document.getElementById('id_cobertura_salud');
+
+    const checkboxGrupo = document.getElementById('id_posee_grupo_apoyo');
+    const selectGrupoContainer = document.getElementById('grupo_apoyo_container');
+    const selectGrupo = document.getElementById('id_grupo_apoyo');
+
+    function toggleField(checkbox, container, select) {
+      if (checkbox.checked) {
+        container.style.display = 'block';
+        select.disabled = false;
+      } else {
+        container.style.display = 'none';
+        select.disabled = true;
+      }
+    }
+
+    checkboxCobertura.addEventListener('change', () => toggleField(checkboxCobertura, selectCoberturaContainer, selectCobertura));
+    checkboxGrupo.addEventListener('change', () => toggleField(checkboxGrupo, selectGrupoContainer, selectGrupo));
+
+    toggleField(checkboxCobertura, selectCoberturaContainer, selectCobertura);
+    toggleField(checkboxGrupo, selectGrupoContainer, selectGrupo);
+  });
+</script>
+
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('form');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+{% endblock page_content %}

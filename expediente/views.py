@@ -17,6 +17,7 @@ from django.contrib import messages
 from .forms import ExpedienteDocumentoFormSet
 
 
+
 class ExpedienteListView(LoginRequiredMixin, ListView):
     model = Expediente
     template_name = 'expediente/expediente_list.html'
@@ -317,3 +318,6 @@ def expediente_documentos_view(request, expediente_id):
         "formset": formset,
         "expediente": expediente,
     })
+
+
+

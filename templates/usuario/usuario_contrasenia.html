@@ -1,24 +1,76 @@
 {% extends 'core/index.html' %}
 {% load static %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+  <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+{% endblock extra_css %}
 
 {% block page_content %}
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
 
-      <div class="card shadow border-0">
+
+
+      <div class="card shadow-sm border-0 rounded-4 custom-card">
         <div class="card-body p-4">
 
-          <h4 class="fw-bold text-center text-primary mb-4">
-            Cambiar contraseña de {{ user.first_name }} {{ user.last_name }}
-          </h4>
+          <!-- Título -->
+          <h3 class="card-header bg-primary text-white fw-semibold d-flex align-items-center gap-2">
+            <i class="fas fa-lock me-2"></i> Cambiar contraseña
+          </h3>
+          <p class="text-center text-muted mb-4 mt-3">
+            Usuario: <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+          </p>
 
-          <form method="post">
+          <!-- Formulario -->
+          <form method="post" novalidate>
             {% csrf_token %}
-            {{ form.as_p }}
+            <input type="hidden" name="next" value="{{ request.path }}">
 
+            <!-- Errores generales -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger rounded-3">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+
+            <!-- Campos -->
+            <div class="mb-3">
+              <label for="{{ form.old_password.id_for_label }}" class="form-label fw-semibold">
+                Contraseña actual
+              </label>
+              {% render_field form.old_password class="form-control" placeholder="Ingrese su contraseña actual" %}
+              {% for error in form.old_password.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.new_password1.id_for_label }}" class="form-label fw-semibold">
+                Nueva contraseña
+              </label>
+              {% render_field form.new_password1 class="form-control" placeholder="Ingrese la nueva contraseña" %}
+              {% for error in form.new_password1.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.new_password2.id_for_label }}" class="form-label fw-semibold">
+                Confirmar nueva contraseña
+              </label>
+              {% render_field form.new_password2 class="form-control" placeholder="Repita la nueva contraseña" %}
+              {% for error in form.new_password2.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Botones -->
             <div class="d-grid gap-2 mt-4">
-              <button type="submit" class="btn btn-danger">
+              <button type="submit" class="btn btn-primary btn-gradient">
                 <i class="fas fa-key me-1"></i> Actualizar contraseña
               </button>
               <a href="{% url 'usuario:editar_perfil' %}" class="btn btn-outline-secondary">
@@ -34,6 +86,3 @@
   </div>
 </div>
 {% endblock page_content %}
-
-
-

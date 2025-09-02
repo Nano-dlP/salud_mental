@@ -2,6 +2,9 @@ from django.db import models
 
 from core.models import Tipo_Documento, Genero,Nivel_Educativo, Localidad
 
+#Conecto el modelo con la clase que se encuentra en el managers
+from .managers import PersonaManagers
+
 
 # Create your models here.
 class Persona(models.Model):
@@ -32,7 +35,9 @@ class Persona(models.Model):
     situacion_habitacional = models.CharField(max_length=100, verbose_name=("Situación habitacional"), blank=True, null=True)
     observaciones = models.TextField(blank=True, null=True)
 
-    
+    #Establezco la conexión a la clase
+    objects = PersonaManagers()
+
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
     

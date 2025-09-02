@@ -1,0 +1,104 @@
+<!-- Modal -->
+<div class="modal fade" id="modalBuscarPersona" tabindex="-1" aria-labelledby="modalBuscarPersonaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Buscar Persona</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Campo búsqueda -->
+        <div class="input-group mb-3">
+          <input type="text" id="inputBusquedaPersona" class="form-control" placeholder="Ingrese apellido o DNI">
+          <button class="btn btn-outline-primary" type="button" id="btnBuscarPersona">Buscar</button>
+        </div>
+
+        <!-- Resultados -->
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tablaResultadosPersona">
+              <tr><td colspan="4" class="text-center text-muted">Sin resultados</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("btnBuscarPersona").addEventListener("click", buscarPersonas);
+document.getElementById("inputBusquedaPersona").addEventListener("keyup", function(e) {
+  if (e.key === "Enter") buscarPersonas();
+});
+
+function buscarPersonas() {
+  const query = document.getElementById("inputBusquedaPersona").value;
+  fetch(`/buscar_personas/?q=${query}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("tablaResultadosPersona");
+      tbody.innerHTML = "";
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin resultados</td></tr>`;
+      } else {
+        data.forEach(p => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${p.nombre}</td>
+              <td>${p.apellido}</td>
+              <td>${p.numero_documento}</td>
+              <td>
+                <button class="btn btn-sm btn-success seleccionar-persona" 
+                        data-id="${p.id}" 
+                        data-nombre="${p.apellido}, ${p.nombre}">
+                  Seleccionar
+                </button>
+              </td>
+            </tr>`;
+        });
+      }
+    });
+}
+
+// Delegar evento seleccionar
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("seleccionar-persona")) {
+    const personaId = e.target.dataset.id;
+    const personaNombre = e.target.dataset.nombre;
+
+    // Rellenar formulario principal
+    const inputId = document.getElementById("id_persona");
+    const inputNombre = document.getElementById("nombre_persona_display");
+    if (inputId && inputNombre) {
+      inputId.value = personaId;
+      inputNombre.value = personaNombre;
+    }
+
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalBuscarPersona'));
+    modal.hide();
+
+    // Mostrar Toast
+    const toastEl = document.getElementById('toastPersonaSeleccionada');
+    document.getElementById('toastPersonaTexto').textContent = `Persona seleccionada: ${personaNombre}`;
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+  }
+});
+
+</script>

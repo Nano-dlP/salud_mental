@@ -1,0 +1,15 @@
+{% extends "core/form_base.html" %}
+
+{% block form_icon %}
+<i class="fas fa-user-edit"></i>
+{% endblock %}
+
+{% block form_title %}
+Editar perfil de {{ user.first_name }} {{ user.last_name }}
+{% endblock %}
+
+{% block form_extra_button %}
+<a href="{% url 'usuario:cambiar_contrasena' %}" class="btn btn-outline-secondary btn-sm">
+  <i class="fas fa-lock me-1"></i> Cambiar contraseña
+</a>
+{% endblock %}

@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block page_content %}
+
 <link href=" {% static 'css/expedientes.css' %} " rel="stylesheet">
 <div class="container-fluid">
   <div class="container mt-4">
@@ -43,21 +44,40 @@
               </div>
 
               <div class="form-row align-items-end mt-3">
-                <div class="form-group col-md-5">
-                  {{ form.persona.label_tag }}
-                  <div class="input-group">
-                    {{ form.persona|add_class:"form-select" }}
-                    <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" class="btn btn-outline-secondary ms-2" title="Agregar nueva persona">
-                      <i class="fas fa-plus"></i>
-                    </a>
-                  </div>
-                </div>
+                
+<div class="form-group col-md-6">
+    {{ form.persona.label_tag }}
+    <div class="input-group">
+      <!-- Campo oculto para enviar ID -->
+      <input type="hidden" name="persona" id="id_persona" value="{{ form.persona.value }}">
+      
+      <!-- Campo visible para mostrar nombre -->
+      <input type="text" id="nombre_persona_display" class="form-control" placeholder="Seleccione persona"
+       value="{% if form.persona.value %}{{ form.persona.instance.apellido }}{% endif %}" readonly>
+
+      
+      <!-- Botón para agregar nueva persona -->
+      <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+         class="btn btn-outline-secondary ms-2" title="Agregar nueva persona">
+        <i class="fas fa-plus"></i>
+      </a>
+      
+      <!-- Botón para buscar persona en modal -->
+      <a href="#" class="btn btn-outline-primary ms-1" data-bs-toggle="modal" data-bs-target="#modalBuscarPersona">
+        <i class="fas fa-search"></i>
+      </a>
+    </div>
+  </div>
+
+
+
+
 
                 <div class="form-group col-md-2">
                   {{ form.edad_persona.label_tag }}
                   {{ form.edad_persona|add_class:"form-control" }}
                 </div>
-                <div class="form-group col-md-5">
+                <div class="form-group col-md-4">
                   {{ form.grupo_etario.label_tag }}
                   {{ form.grupo_etario|add_class:"form-select" }}
                 </div>
@@ -124,6 +144,10 @@
   </div>
 </div>
 
+
+{% include "persona/modal_buscar_persona.html" %}
+
+
 <!-- Modal persona -->
 <div class="modal fade" id="modalPersona" tabindex="-1" aria-labelledby="modalPersonaLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -176,4 +200,8 @@
     })
   })()
 </script>
+<script src="{% static 'autocomplete_light/autocomplete_light.js' %}"></script>
+<link href="{% static 'autocomplete_light/autocomplete_light.css' %}" rel="stylesheet">
+
+
 {% endblock page_content %}

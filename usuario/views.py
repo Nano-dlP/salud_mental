@@ -9,8 +9,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 
-
-
 User = get_user_model()
 
 class PerfilUsuarioUpdateView(LoginRequiredMixin, UpdateView):
@@ -27,9 +25,6 @@ class PerfilUsuarioUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-# cuentas/views.py (agrega esto también)
-from django.contrib.auth.views import PasswordChangeView
-from django.contrib.auth.forms import PasswordChangeForm
 
 class CambiarContrasenaView(LoginRequiredMixin, PasswordChangeView):
     form_class = PasswordChangeForm

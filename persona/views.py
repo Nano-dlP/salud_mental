@@ -11,6 +11,12 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+from dal import autocomplete
+
+
 
 class PersonaCreateView(LoginRequiredMixin, CreateView):
     model = Persona
@@ -30,6 +36,8 @@ class PersonaCreateView(LoginRequiredMixin, CreateView):
             return HttpResponseRedirect(f'{next_url}?{query_string}')
         return response
 
+
+
 class PersonaListView(LoginRequiredMixin, ListView):
     model = Persona
     template_name = "persona/persona_list.html"
@@ -39,6 +47,19 @@ class PersonaListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Persona.objects.all().order_by('apellido', 'nombre')
     
+
+
+class BusquedaAvanzadaListView(LoginRequiredMixin, ListView):
+    model = Persona
+    template_name = "persona/busqueda_avanzada.html"
+    context_object_name = 'personas'
+    login_url = 'core:login'
+    
+    def get_queryset(self):
+        return Persona.objects.busqueda_fecha()
+    
+
+
 
 class PersonaUpdateView(LoginRequiredMixin, UpdateView):
     model = Persona
@@ -53,6 +74,7 @@ class PersonaUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+
 class PersonaDetailView(TemplateView):
     template_name = 'persona/persona_detail.html'  # Tu template
 
@@ -64,4 +86,40 @@ class PersonaDetailView(TemplateView):
         return context
     
 
+
+class PersonaAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # filtrar según lo que escribe el usuario
         
+        if not self.request.user.is_authenticated:
+            return Persona.objects.none()
+
+        qs = Persona.objects.all()
+
+        if self.q:
+            qs = qs.filter(nombre__icontains=self.q) | qs.filter(apellido__icontains=self.q)
+
+        return qs
+    
+
+
+
+
+@require_GET
+def buscar_personas(request):
+    q = request.GET.get("q", "").strip()
+    personas = Persona.objects.filter(
+        apellido__icontains=q
+    ) | Persona.objects.filter(
+        nombre__icontains=q
+    ) | Persona.objects.filter(
+        numero_documento__icontains=q
+    )
+
+    personas = personas.distinct()[:20]
+
+    data = [
+        {"id": p.id, "nombre": p.nombre, "apellido": p.apellido, "dni": p.numero_documento}
+        for p in personas
+    ]
+    return JsonResponse(data, safe=False)

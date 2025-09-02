@@ -14,15 +14,16 @@
       <div class="card shadow border-0 rounded-4 custom-card">
         <!-- Encabezado -->
         <div class="card-header bg-primary text-white fw-semibold d-flex align-items-center gap-2">
-          <i class="fas fa-user-edit"></i>
-          <span>Editar perfil de {{ user.first_name }} {{ user.last_name }}</span>
+          {% block form_icon %}<i class="fas fa-edit"></i>{% endblock %}
+          <span>{% block form_title %}Formulario{% endblock %}</span>
         </div>
 
         <!-- Contenido -->
         <div class="card-body">
           <div class="row align-items-center">
-            <!-- Foto de perfil -->
+            <!-- Foto de perfil opcional -->
             <div class="col-md-4 text-center mb-4 mb-md-0">
+              {% block form_photo %}
               {% if user.foto_perfil %}
                 <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil"
                      class="img-thumbnail rounded-circle shadow-sm perfil-foto">
@@ -32,13 +33,14 @@
                   Sin foto
                 </div>
               {% endif %}
+              {% endblock %}
             </div>
 
             <!-- Formulario -->
             <div class="col-md-8">
               <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
-
+                {% block form_fields %}
                 {% for field in form %}
                   <div class="mb-3">
                     <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
@@ -50,20 +52,20 @@
                     {% endif %}
                   </div>
                 {% endfor %}
+                {% endblock %}
 
                 <!-- Botones -->
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                  <a href="{% url 'usuario:cambiar_contrasena' %}" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-lock me-1"></i> Cambiar contraseña
-                  </a>
+                  {% block form_extra_button %}
+                  {% endblock %}
 
                   <div class="d-flex gap-2">
                     <a href="javascript:history.back()" class="btn btn-outline-danger btn-sm">
                       <i class="fas fa-times me-1"></i> Cancelar
                     </a>
-                    <button type="submit" class="btn btn-primary btn-sm">
-                <i class="fas fa-save me-1"></i> Guardar cambios
-              </button>
+                    <button type="submit" class="btn btn-gradient btn-sm">
+                      <i class="fas fa-save me-1"></i> Guardar
+                    </button>
                   </div>
                 </div>
               </form>

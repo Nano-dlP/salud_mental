@@ -1,0 +1,24 @@
+{% extends 'core/index.html' %}
+
+{% block page_content %}
+<h1>Lista de Personas</h1>
+<p>
+    <form action="" method="get">
+        <button type="submit">Buscar</button>
+    </form>
+</p>
+
+<ul>
+    {% for p in personas %}
+        <li>
+            
+            {{p.apellido}}
+
+        </li>
+    {% endfor %}
+</ul>
+
+
+
+{% endblock page_content %}
+

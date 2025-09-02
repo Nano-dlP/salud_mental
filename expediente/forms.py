@@ -9,6 +9,9 @@ from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, Resume
 from core.models import Sede
 from django.conf import settings
 
+from dal import autocomplete
+
+
 
 
 #usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
@@ -36,9 +39,10 @@ class DemandaEspontanea(forms.Form):
         ),
         input_formats=['%Y-%m-%d']
     )
-    persona = forms.ModelChoiceField(
-        queryset=Persona.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+
+    persona = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     sede = forms.ModelChoiceField(
         queryset=Sede.objects.all(),
