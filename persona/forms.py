@@ -1,6 +1,9 @@
 from django import forms
 from .models import Persona
 
+
+
+
 class PersonaForm(forms.ModelForm):
     class Meta:
         model = Persona
@@ -26,7 +29,10 @@ class PersonaForm(forms.ModelForm):
             'direccion_numero': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'direccion_piso': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'direccion_depto': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'localidad': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'localidad': forms.Select(attrs={
+                                            'class': 'form-control form-control-sm select2-localidad',
+                                            'id': 'id_localidad'
+                                            }),
             'ciudad_nacimiento': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'nivel_educativo': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'ocupacion': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

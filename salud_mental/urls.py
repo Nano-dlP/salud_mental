@@ -26,7 +26,7 @@ urlpatterns = [
     path('', include('persona.urls')),
     path('', include('expediente.urls')),
     path('', include('usuario.urls')),
-       
+    path('', include('profesional.urls')),
 
 ]
 if settings.DEBUG:

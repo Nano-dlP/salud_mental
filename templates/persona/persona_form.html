@@ -271,4 +271,28 @@
     });
   })();
 </script>
+<script>
+$(document).ready(function() {
+  $('.select2-localidad').select2({
+    ajax: {
+      url: '/api/localidades/',
+      dataType: 'json',
+      delay: 250,
+      data: function (params) {
+        return { q: params.term };
+      },
+      processResults: function (data) {
+        return {
+          results: data.results
+        };
+      },
+      cache: true
+    },
+    minimumInputLength: 2,
+    placeholder: 'Buscar localidad...'
+  });
+});
+</script>
+
+
 {% endblock page_content %}

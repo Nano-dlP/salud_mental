@@ -1,0 +1,37 @@
+/* print.css */
+
+/* Fondo blanco para impresión */
+body {
+  background-color: white !important;
+  color: black !important;
+  font-family: Arial, sans-serif;
+}
+
+/* Ocultar botones en impresión */
+.btn {
+  display: none !important;
+}
+
+/* Quitar sombras y márgenes */
+.card {
+  box-shadow: none !important;
+  margin: 0 !important;
+  border: 1px solid #000 !important;
+}
+
+/* Asegurar ancho total para tabla */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+/* Resaltar encabezados de sección */
+.table-primary {
+  background-color: #cce5ff !important;
+  -webkit-print-color-adjust: exact; /* Para Chrome */
+}
+
+/* Mejorar bordes en impresión */
+table, th, td {
+  border: 1px solid black !important;
+}

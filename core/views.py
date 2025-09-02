@@ -4,10 +4,11 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 from django.views.generic import ListView, TemplateView, CreateView
-from .models import Provincia
+from .models import Provincia, Localidad
 from persona.models import Persona
 from django.urls import reverse_lazy
 from .forms import ProvinciaForm
+from django.http import JsonResponse
 
 from django.contrib.auth.decorators import login_required
 
@@ -44,3 +45,10 @@ class ProvinciaListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Provincia.objects.all().order_by('provincia')
+
+
+def localidad_autocomplete(request):
+    q = request.GET.get('q', '')
+    localidades = Localidad.objects.filter(localidad__icontains=q)[:20]
+    results = [{'id': loc.id, 'text': loc.localidad} for loc in localidades]
+    return JsonResponse({'results': results})

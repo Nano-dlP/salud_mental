@@ -1,0 +1,4 @@
+<!-- Botón: Buscar persona -->
+                <a href="{% url 'persona:persona_buscar_modal' %}?next={{ request.path }}" class="btn btn-outline-secondary ml-2 mr-2" title="Buscar persona">
+            <i class="fas fa-search"></i>
+          </a>

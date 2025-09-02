@@ -1,0 +1,74 @@
+Para cargar un dato obtenido de un queryset a un input de otro formulario en Django, primero debes obtener y filtrar los datos deseados en tu vista (usando el queryset), luego instanciar el segundo formulario con los datos filtrados como valores iniciales o a través de un campo específico (como un Select o ModelChoiceField), y finalmente renderizar el formulario en la plantilla HTML para que el usuario pueda interactuar con él y ver los datos precargados. 
+En la vista (views.py)
+1. Obtener los datos:
+Realiza una consulta al queryset de tu modelo para obtener el objeto que necesitas. 
+2. Instanciar el formulario con datos iniciales:
+Puedes pasar un diccionario de valores iniciales a la instancia del formulario. 
+
+
+
+
+    # views.py
+    from django.shortcuts import render
+    from .forms import FormularioPrincipal, FormularioDestino
+    from .models import TuModelo
+
+    def mi_vista(request):
+        if request.method == 'POST':
+            # Si es un POST, procesa el formulario principal
+            form_principal = FormularioPrincipal(request.POST)
+            if form_principal.is_valid():
+                # Obtén el valor del input del formulario principal
+                valor_buscado = form_principal.cleaned_data['campo_principal']
+
+                # Busca el dato en tu queryset
+                try:
+                    objeto_seleccionado = TuModelo.objects.get(pk=valor_buscado) # O el filtro que necesites
+                    
+                    # Inicializa el segundo formulario con el dato obtenido
+                    form_destino_inicial = {'campo_destino': objeto_seleccionado}
+                    form_destino = FormularioDestino(initial=form_destino_inicial) 
+                    
+                    context = {'form_principal': form_principal, 'form_destino': form_destino}
+                    return render(request, 'mi_template.html', context)
+                except TuModelo.DoesNotExist:
+                    # Manejar el caso de que el objeto no exista
+                    pass 
+        else:
+            # Si es un GET, muestra los formularios vacíos
+            form_principal = FormularioPrincipal()
+            form_destino = FormularioDestino() # Formulario vacío al inicio
+
+        context = {'form_principal': form_principal, 'form_destino': form_destino}
+        return render(request, 'mi_template.html', context)
+
+
+
+En las plantillas (mi_template.html)
+Renderizar los formularios: Utiliza la variable de plantilla para mostrar los formularios HTML.
+
+
+    <!-- mi_template.html -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form_principal.as_p }}
+        <input type="submit" value="Buscar">
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form_destino.as_p }}
+    </form>
+
+
+Explicación
+Formulario Principal:
+El primer formulario se usa para que el usuario ingrese un valor que servirá como criterio de búsqueda. 
+cleaned_data:
+Después de enviar el formulario principal, los datos validados del input se acceden a través de form_principal.cleaned_data['campo_principal']. 
+Filtrado del Queryset:
+Este valor se utiliza para filtrar el queryset de tu modelo y obtener el objeto deseado. 
+Formulario Destino con initial:
+El objeto filtrado se pasa a la instancia del segundo formulario a través del argumento initial para que los campos con ese nombre (ej. campo_destino) se pre-carguen con el dato. 
+Renderizado:
+Finalmente, el form_destino se renderiza en la plantilla, mostrando el dato ya cargado en su input correspondiente. 

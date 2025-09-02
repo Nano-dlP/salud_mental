@@ -1,0 +1,66 @@
+{% extends "core/index.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block page_content %}
+<div class="container mt-4">
+  <div class="card shadow-sm border-0 rounded">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">
+        {% if object %}Editar Profesional{% else %}Registrar Profesional{% endif %}
+      </h5>
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Usuario -->
+        <div class="mb-3">
+          <label for="{{ form.user.id_for_label }}" class="form-label">{{ form.user.label }}</label>
+          {{ form.user|add_class:"form-select" }}
+          {% if form.user.errors %}
+            <div class="text-danger small">{{ form.user.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Profesión -->
+        <div class="mb-3">
+          <label for="{{ form.profesion.id_for_label }}" class="form-label">{{ form.profesion.label }}</label>
+          {{ form.profesion|add_class:"form-select" }}
+          {% if form.profesion.errors %}
+            <div class="text-danger small">{{ form.profesion.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Área profesional -->
+        <div class="mb-3">
+          <label for="{{ form.area_profesional.id_for_label }}" class="form-label">{{ form.area_profesional.label }}</label>
+          {{ form.area_profesional|add_class:"form-select" }}
+          {% if form.area_profesional.errors %}
+            <div class="text-danger small">{{ form.area_profesional.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Estado -->
+        <div class="form-check mb-3">
+          {{ form.estado|add_class:"form-check-input" }}
+          <label class="form-check-label" for="{{ form.estado.id_for_label }}">
+            {{ form.estado.label }}
+          </label>
+          {% if form.estado.errors %}
+            <div class="text-danger small">{{ form.estado.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end">
+          <a href="{% url 'profesional:profesional_list' %}" class="btn btn-secondary me-2">Cancelar</a>
+          <button type="submit" class="btn btn-warning">
+            {% if object %}Actualizar{% else %}Guardar{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

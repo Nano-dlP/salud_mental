@@ -1,0 +1,67 @@
+<!-- Campo oculto del formulario (por Django) -->
+{{ form.persona }}
+
+<!-- Botón para abrir el modal -->
+<button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#buscarPersonaModal">
+  Buscar persona
+</button>
+
+<!-- Muestra quién fue seleccionada -->
+<div id="persona-seleccionada" class="mt-2 text-success fw-bold"></div>
+
+<!-- Modal -->
+<div class="modal fade" id="buscarPersonaModal" tabindex="-1" aria-labelledby="buscarPersonaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Buscar Persona</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="busquedaPersonaInput" class="form-control" placeholder="Buscar por apellido, nombre o DNI">
+        <ul id="resultadosPersona" class="list-group mt-3"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  $('#busquedaPersonaInput').on('input', function() {
+    const query = $(this).val();
+    if (query.length < 2) {
+      $('#resultadosPersona').empty();
+      return;
+    }
+
+    $.get("{% url 'buscar_personas' %}", { q: query }, function(data) {
+      $('#resultadosPersona').empty();
+      if (data.length === 0) {
+        $('#resultadosPersona').append('<li class="list-group-item text-muted">No se encontraron resultados.</li>');
+      } else {
+        data.forEach(function(persona) {
+          $('#resultadosPersona').append(`
+            <li class="list-group-item list-group-item-action persona-item" data-id="${persona.id}" data-nombre="${persona.text}">
+              ${persona.text}
+            </li>
+          `);
+        });
+      }
+    });
+  });
+
+  // Seleccionar persona
+  $(document).on('click', '.persona-item', function() {
+    const personaId = $(this).data('id');
+    const nombre = $(this).data('nombre');
+
+    // Setear el ID en el input oculto
+    $('#id_persona').val(personaId);
+
+    // Mostrar el nombre en pantalla
+    $('#persona-seleccionada').text(`Seleccionado: ${nombre}`);
+
+    // Cerrar modal
+    $('#buscarPersonaModal').modal('hide');
+  });
+});
+</script>
