@@ -93,6 +93,15 @@ class PersonaForm(forms.ModelForm):
             'situacion_habitacional': 'Situación habitacional',
             'observaciones': 'Observaciones',
         }
+        
+
+
+    def clean_numero_documento(self):
+        numero_documento = self.cleaned_data.get("numero_documento")
+        if Persona.objects.filter(numero_documento=numero_documento).exists():
+            raise forms.ValidationError("⚠️ La persona con este DNI ya se encuentra registrada.")
+        return numero_documento
+
 
     def clean(self):
         cleaned_data = super().clean()

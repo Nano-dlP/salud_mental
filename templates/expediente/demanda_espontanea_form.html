@@ -45,29 +45,31 @@
 
               <div class="form-row align-items-end mt-3">
                 
-<div class="form-group col-md-6">
-    {{ form.persona.label_tag }}
-    <div class="input-group">
-      <!-- Campo oculto para enviar ID -->
-      <input type="hidden" name="persona" id="id_persona" value="{{ form.persona.value }}">
-      
-      <!-- Campo visible para mostrar nombre -->
-      <input type="text" id="nombre_persona_display" class="form-control" placeholder="Seleccione persona"
-       value="{% if form.persona.value %}{{ form.persona.instance.apellido }}{% endif %}" readonly>
 
-      
-      <!-- Botón para agregar nueva persona -->
-      <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
-         class="btn btn-outline-secondary ms-2" title="Agregar nueva persona">
-        <i class="fas fa-plus"></i>
-      </a>
-      
-      <!-- Botón para buscar persona en modal -->
-      <a href="#" class="btn btn-outline-primary ms-1" data-bs-toggle="modal" data-bs-target="#modalBuscarPersona">
-        <i class="fas fa-search"></i>
-      </a>
-    </div>
+<div class="form-group col-md-6">
+  {{ form.persona }} <!-- campo oculto (select) -->
+
+  <label>Persona</label>
+  <div class="input-group">
+    <!-- Campo visible con nombre/apellido -->
+    <input type="text" id="nombre_persona_display" class="form-control"
+          value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
+          placeholder="Seleccione persona"
+          readonly>
+
+    <!-- Botón agregar nueva persona -->
+    <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+       class="btn btn-outline-secondary ms-2" title="Agregar persona">
+      <i class="fas fa-plus"></i>
+    </a>
+
+    <!-- Botón buscar persona -->
+    <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
+       class="btn btn-outline-primary ms-1" title="Buscar persona">
+      <i class="fas fa-search"></i>
+    </a>
   </div>
+</div>
 
 
 
@@ -145,7 +147,7 @@
 </div>
 
 
-{% include "persona/modal_buscar_persona.html" %}
+
 
 
 <!-- Modal persona -->

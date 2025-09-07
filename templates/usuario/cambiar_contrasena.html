@@ -10,7 +10,7 @@ Cambiar contraseña de {{ user.first_name }} {{ user.last_name }}
 
 {% block form_fields %}
   <div class="mb-3">
-    <label for="{{ form.old_password.id_for_label }}" class="form-label fw-semibold">
+    <label for="{{ form.old_password.id_for_label }}" class="form-label">
       Contraseña actual
     </label>
     {% render_field form.old_password class="form-control rounded-3" placeholder="Ingrese su contraseña actual" %}

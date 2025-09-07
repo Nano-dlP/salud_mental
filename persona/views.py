@@ -49,18 +49,6 @@ class PersonaListView(LoginRequiredMixin, ListView):
     
 
 
-class BusquedaAvanzadaListView(LoginRequiredMixin, ListView):
-    model = Persona
-    template_name = "persona/busqueda_avanzada.html"
-    context_object_name = 'personas'
-    login_url = 'core:login'
-    
-    def get_queryset(self):
-        return Persona.objects.busqueda_fecha()
-    
-
-
-
 class PersonaUpdateView(LoginRequiredMixin, UpdateView):
     model = Persona
     template_name = 'persona/persona_form.html'
@@ -86,40 +74,13 @@ class PersonaDetailView(TemplateView):
         return context
     
 
-
-class PersonaAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        # filtrar según lo que escribe el usuario
-        
-        if not self.request.user.is_authenticated:
-            return Persona.objects.none()
-
-        qs = Persona.objects.all()
-
-        if self.q:
-            qs = qs.filter(nombre__icontains=self.q) | qs.filter(apellido__icontains=self.q)
-
-        return qs
+def persona_list(request):
+    personas = Persona.objects.all()
+    medio_id = 1   # viene del querystring
+    next_url = request.GET.get("next")       # para redirigir después
     
-
-
-
-
-@require_GET
-def buscar_personas(request):
-    q = request.GET.get("q", "").strip()
-    personas = Persona.objects.filter(
-        apellido__icontains=q
-    ) | Persona.objects.filter(
-        nombre__icontains=q
-    ) | Persona.objects.filter(
-        numero_documento__icontains=q
-    )
-
-    personas = personas.distinct()[:20]
-
-    data = [
-        {"id": p.id, "nombre": p.nombre, "apellido": p.apellido, "dni": p.numero_documento}
-        for p in personas
-    ]
-    return JsonResponse(data, safe=False)
+    return render(request, "persona/persona_agregar_expediente.html", {
+        "personas": personas,
+        "medio_id": medio_id,
+        "next_url": next_url,   # lo mandamos al template
+    })

@@ -40,9 +40,11 @@ class DemandaEspontanea(forms.Form):
         input_formats=['%Y-%m-%d']
     )
 
-    persona = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+    persona = forms.ModelChoiceField(
+        queryset=Persona.objects.all(),
+        widget=forms.Select(attrs={"class": "form-select d-none"}),  # oculto en UI
+        required=True,
+        label="Persona"
     )
     sede = forms.ModelChoiceField(
         queryset=Sede.objects.all(),

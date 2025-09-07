@@ -30,10 +30,12 @@
   <!-- Custom CSS -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet" />
   <link href="{% static 'css/stilo_persona.css' %}" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/expedientes.css' %}">
 
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-  <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+  {% block estilos %}
+  {% endblock estilos %}
+  
+ 
 </head>
 {% endblock head %}
 
@@ -77,21 +79,21 @@
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePersona" aria-expanded="true" aria-controls="collapsePersona">
-          <i class="fas fa-fw fa-cog"></i>
+          <i class="fa fa-users"></i>
           <span>Personas</span>
         </a>
         <div id="collapsePersona" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="{% url "persona:persona_list" %} ">Listado</a>
-            <a class="collapse-item" href="{% url "persona:persona_create" %} ">Nueva</a>
+            <a class="collapse-item" href="{% url 'persona:persona_list' %} ">Listado</a>
+            <a class="collapse-item" href="{% url 'persona:persona_create' %} ">Nueva</a>
           </div>
         </div>
       </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInstitucion" aria-expanded="true" aria-controls="collapseInstitucion">
-          <i class="fas fa-fw fa-cog"></i>
+          <i class="fas fa-landmark"></i>
           <span>Instituciones</span>
         </a>
         <div id="collapseInstitucion" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -105,7 +107,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseExpediente" aria-expanded="true" aria-controls="collapseExpediente">
-          <i class="fas fa-fw fa-cog"></i>
+          <i class="far fa-file"></i>
           <span>Expedientes</span>
         </a>
         <div id="collapseExpediente" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -114,6 +116,19 @@
             <a class="collapse-item" href="{% url 'expediente:medio_ingreso_select' %}">Medio de Ingreso</a>
             <a class="collapse-item" href="#">Listado</a>
             <a class="collapse-item" href="#">Busqueda</a>
+          </div>
+        </div>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProfesional" aria-expanded="true" aria-controls="collapseProfesional">
+          <i class="fas fa-user-tie"></i>
+          <span>Profesionales</span>
+        </a>
+        <div id="collapseProfesional" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Custom Components:</h6>
+            <a class="collapse-item" href="{% url 'profesional:profesional_list' %}">Listado</a>
+            <a class="collapse-item" href="{% url 'profesional:profesional_create' %}">Nueva</a>
           </div>
         </div>
       </li>
@@ -186,6 +201,8 @@
       </div>
 
     </ul>
+
+    
     <!-- End of Sidebar -->
 
     {% endblock sidebar %}
@@ -387,13 +404,8 @@
   <script src="{% static 'js/bootstrap5/dataTables.bootstrap5.min.js' %}"></script>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-  <script>
-    $(document).ready(function() {
-      $('.select2').select2();
-    });
-  </script>
+  <script src="{% static 'vendor/fontawesome-free/js/all.min.js' %}"></script>
 
   {% block js_page %}
 

@@ -10,6 +10,7 @@ from django.views.generic import ListView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, TipoPatrocinio, ExpedienteDocumento
+from persona.models import Persona
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -73,7 +74,10 @@ class DemandaEspontaneaCreateView(FormView):
             initial['medio_ingreso'] = medio_id
             initial['fecha_creacion'] = datetime.date.today
         if persona_id:
-            initial['persona'] = persona_id    
+            try:
+                initial['persona'] = Persona.objects.get(pk=persona_id)
+            except Persona.DoesNotExist:
+                pass    
 
         return initial
 
@@ -92,6 +96,11 @@ class DemandaEspontaneaCreateView(FormView):
             )
         else:
             context['documento_formset'] = ExpedienteDocumentoFormSet(queryset=ExpedienteDocumento.objects.none())
+        
+        persona_id = self.request.GET.get('persona_id')
+        if persona_id:
+            context['persona_seleccionada'] = Persona.objects.filter(pk=persona_id).first()    
+            
         return context
 
     def form_valid(self, form):
