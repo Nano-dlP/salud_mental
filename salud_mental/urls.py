@@ -27,6 +27,7 @@ urlpatterns = [
     path('', include('expediente.urls')),
     path('', include('usuario.urls')),
     path('', include('profesional.urls')),
+    path('', include('internacion.urls')),
 
 ]
 if settings.DEBUG:
