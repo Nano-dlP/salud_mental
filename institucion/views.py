@@ -77,12 +77,9 @@ class InstitucionDetailView(LoginRequiredMixin, TemplateView):
         return context
     
 
-def institucion_desactivar(request, pk):
+def desactivar_institucion(request, pk):
     institucion = get_object_or_404(Institucion, pk=pk)
-
-    if request.method == 'POST':
-        institucion.estado=False
-        institucion.save()
-        messages.success(request, f"{institucion} fue desactivada exitosamente")
-
+    institucion.estado = False
+    institucion.save()
+    messages.success(request, "Institución desactivada correctamente.")
     return redirect('institucion:institucion_list')

@@ -21,7 +21,7 @@ class InternacionCreateView(LoginRequiredMixin, CreateView):
 
 class InternacionListView(LoginRequiredMixin, ListView):
     model = Internacion
-    template_name = 'internacion/internacion_list.html'
+    template_name = 'internacion/internacion_detail.html'
     context_object_name = 'internaciones'
     login_url = 'core:login'
     

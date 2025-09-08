@@ -34,6 +34,7 @@ class Persona(models.Model):
     carnet_discapacidad = models.CharField(max_length=50, verbose_name=("Carnet de discapacidad"), blank=True, null=True)
     situacion_habitacional = models.CharField(max_length=100, verbose_name=("Situación habitacional"), blank=True, null=True)
     observaciones = models.TextField(blank=True, null=True)
+    estado = models.BooleanField(default=True, verbose_name=("Estado"))
 
     #Establezco la conexión a la clase
     objects = PersonaManagers()

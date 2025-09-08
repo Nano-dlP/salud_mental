@@ -9,6 +9,7 @@ from .models import Persona
 from .forms import PersonaForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect
 
 
 from django.http import JsonResponse
@@ -44,8 +45,10 @@ class PersonaListView(LoginRequiredMixin, ListView):
     context_object_name = 'personas'
     login_url = 'core:login'
     
+    
     def get_queryset(self):
-        return Persona.objects.all().order_by('apellido', 'nombre')
+        # Solo personas activas
+        return Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
     
 
 
@@ -84,3 +87,11 @@ def persona_list(request):
         "medio_id": medio_id,
         "next_url": next_url,   # lo mandamos al template
     })
+
+
+def desactivar_persona(request, pk):
+    persona = get_object_or_404(Persona, pk=pk)
+    persona.estado = False
+    persona.save()
+    messages.success(request, "Persona desactivada correctamente.")
+    return redirect('persona:persona_list')

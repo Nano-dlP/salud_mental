@@ -14,7 +14,7 @@ class PersonaForm(forms.ModelForm):
             'nivel_educativo', 'ocupacion', 'posee_cobertura_salud', 'cobertura_salud',
             'posee_grupo_apoyo', 'grupo_apoyo', 'derecho_seguridad_social',
             'administra_recursos', 'carnet_discapacidad', 'situacion_habitacional',
-            'observaciones'
+            'observaciones', 'estado'
         ]
         widgets = {
             'tipo_documento': forms.Select(attrs={'class': 'form-control form-control-sm'}),
@@ -65,6 +65,12 @@ class PersonaForm(forms.ModelForm):
             'carnet_discapacidad': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'situacion_habitacional': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'estado': forms.CheckboxInput(attrs={
+                                                'class': 'form-check-input',
+                                                'style': """transform: scale(1.5); 
+                                                            cursor: pointer; 
+                                                            box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                            border: 1px solid rgba(128, 128, 128, 1);"""}), 
         }
         labels = {
             'tipo_documento': 'Tipo de documento',
@@ -92,6 +98,7 @@ class PersonaForm(forms.ModelForm):
             'carnet_discapacidad': 'Carnet de discapacidad',
             'situacion_habitacional': 'Situación habitacional',
             'observaciones': 'Observaciones',
+            'estado': 'Estado',
         }
         
 
