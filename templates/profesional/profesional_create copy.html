@@ -2,7 +2,14 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% block estilos %}
+
+<link href="{% static 'css/datatables_custom.css' %}" rel="stylesheet">
+
+{% endblock estilos %}
+
 {% block page_content %}
+
 <div class="container mt-4">
   <div class="card shadow-sm border-0 rounded">
     <!-- Encabezado -->

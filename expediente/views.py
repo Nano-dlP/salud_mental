@@ -50,7 +50,7 @@ class MedioIngresoSelectView(FormView):
 
         if medio_ingreso_id in [1,] :
             return redirect('expediente:expediente_create_with_medio', medio_id=medio_ingreso_id)
-        elif  medio_ingreso_id in [2,3, 4, 5, 6] :
+        elif  medio_ingreso_id in [2, 3, 4, 5, 6] :
             return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
         elif  medio_ingreso_id in [7,] :
             return redirect('expediente:expediente_create', medio_id=medio_ingreso_id)

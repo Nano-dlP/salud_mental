@@ -2,6 +2,7 @@ from django import forms
 from .models import Institucion, TipoInstitucion
 import re
 
+
 class InstitucionForm(forms.ModelForm):
     class Meta:
         model = Institucion
@@ -32,6 +33,19 @@ class InstitucionForm(forms.ModelForm):
             'cuit': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el CUIT'}),
             'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+        labels = {
+            'institucion': 'Institución',
+            'tipo_institucion': 'Tipo de Institución',
+            'domicilio_calle': 'Calle',
+            'domicilio_numero': 'Número',
+            'domicilio_piso': 'Piso',
+            'domicilio_depto': 'Departamento',
+            'localidad': 'Localidad',
+            'telefono': 'Teléfono',
+            'email': 'Email',
+            'cuit': 'CUIT',
+            'estado': 'Activo',
+        }
 
     def clean_institucion(self):
         institucion = self.cleaned_data.get('institucion')
@@ -60,3 +74,17 @@ class InstitucionForm(forms.ModelForm):
         # Filtra solo localidades activas
         #self.fields['localidad'].queryset = Localidad.objects.filter(estado=True)
         self.fields['tipo_institucion'].queryset = TipoInstitucion.objects.filter(estado=True)
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Transformación de valores de texto
+        for field_name, value in cleaned_data.items():
+            if isinstance(value, str):
+                if field_name == 'email':
+                    cleaned_data[field_name] = value.lower()  # Email en minúsculas
+                else:
+                    cleaned_data[field_name] = value.upper()  # Todo lo demás en mayúsculas
+
+        return cleaned_data

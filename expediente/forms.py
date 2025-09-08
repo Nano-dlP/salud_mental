@@ -9,14 +9,9 @@ from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, Resume
 from core.models import Sede
 from django.conf import settings
 
-from dal import autocomplete
-
-
 
 
 #usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-
-
 
 class MedioIngresoForm(forms.Form):
     medio_ingreso = forms.ModelChoiceField(

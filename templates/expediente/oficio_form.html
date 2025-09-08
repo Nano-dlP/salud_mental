@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block page_content %}
-<link href=" {% static 'css/expedientes.css' %} " rel="stylesheet">
+<link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 
 <div class="container-fluid">
   <div class="container mt-4">
@@ -11,7 +11,7 @@
       <!-- Encabezado -->
       <div class="card-header text-center">
         <h5 class="mb-0">
-          {% if form.instance.pk %}EDITAR EXPENDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
+          {% if form.instance.pk %}EDITAR EXPEDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
           <span id="medioIngresoTexto">{{ form.instance.medio_ingreso }}</span>
         </h5>
       </div>
@@ -31,15 +31,15 @@
               <div class="form-row">
                 <div class="form-group col-md-4">
                   {{ form.medio_ingreso.label_tag }}
-                  {{ form.medio_ingreso }}
+                  {{ form.medio_ingreso|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.sede.label_tag }}
-                  {{ form.sede }}
+                  {{ form.sede|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.fecha_creacion.label_tag }}
-                  {{ form.fecha_creacion }}
+                  {{ form.fecha_creacion|add_class:"form-control" }}
                 </div>
               </div>
             </div>  
@@ -51,17 +51,29 @@
               <h6 class="border-bottom pb-2 mb-3">Datos del oficio</h6>
 
               <div class="form-row">
-                <!-- Institución (col-7) + botón agregar (col-1) -->
+                <!-- Institución (col-8) + botones agregar/buscar (col-4) -->
                 <div class="form-group col-md-8">
-                  {{ form.institucion.label_tag }}
-                    <div class="input-group">
-                      {{ form.institucion|add_class:"form-select" }}
-                        <a href="{% url 'institucion:institucion_create' %}?next={{ request.path }}" 
-                          class="btn btn-outline-secondary ms-2" 
-                          title="Agregar nueva Institución">
-                          <i class="fas fa-plus"></i>
-                        </a>
-                    </div>
+                  {{ form.institucion|add_class:"d-none" }} <!-- campo oculto select -->
+                  <label>Institución</label>
+                  <div class="input-group">
+                    <!-- Campo visible con nombre de la institución -->
+                    <input type="text" id="nombre_institucion_display" class="form-control"
+                           value="{% if institucion_seleccionada %}{{ institucion_seleccionada.institucion }}{% endif %}"
+                           placeholder="Seleccione institución"
+                           readonly>
+
+                    <!-- Botón agregar nueva institución -->
+                    <a href="{% url 'institucion:institucion_create' %}?next={{ request.path }}" 
+                       class="btn btn-outline-secondary ms-2" title="Agregar institución">
+                      <i class="fas fa-plus"></i>
+                    </a>
+
+                    <!-- Botón buscar institución -->
+                    <a href="{% url 'institucion:institucion_list' %}?next={{ request.path }}" 
+                       class="btn btn-outline-secondary ms-2" title="Buscar institución">
+                      <i class="fas fa-search"></i>
+                    </a>
+                  </div>
                 </div>
 
                 <!-- Fecha de Juzgado -->
@@ -71,7 +83,7 @@
                 </div>
               </div>
 
-              <div class="form-row">
+              <div class="form-row mt-3">
                 <!-- Fecha de Recepción -->
                 <div class="form-group col-md-4">
                   {{ form.fecha_de_recepcion.label_tag }}
@@ -90,20 +102,21 @@
                   {{ form.clave_sisfe|add_class:"form-control" }}
                 </div>
               </div>
-              <div class="form-row">
+
+              <div class="form-row mt-2">
                 <!-- Expediente Físico (checkbox) -->
                 <div class="form-group col-md-10 mt-0 mb-0">
                   <div class="form-check d-flex align-items-center">
                     {{ form.expediente_fisico|add_class:"form-check-input" }}
                     <label for="{{ form.expediente_fisico.id_for_label }}" class="form-check-label mt-0 mb-0 ms-2">
-                    {{ form.expediente_fisico.label }}
+                      {{ form.expediente_fisico.label }}
                     </label>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
-
 
           <!-- Información complementaria -->
           <div class="card mb-3">
@@ -112,47 +125,50 @@
               <div class="form-row align-items-end">
                 <div class="form-group col-md-4">
                   {{ form.tipo_solicitud.label_tag }}
-                  {{ form.tipo_solicitud }}
+                  {{ form.tipo_solicitud|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.estado_expediente.label_tag }}
-                  {{ form.estado_expediente }}
+                  {{ form.estado_expediente|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-1">
                   {{ form.edad_persona.label_tag }}
-                  {{ form.edad_persona }}
+                  {{ form.edad_persona|add_class:"form-control" }}
                 </div>
                 <div class="form-group col-md-3">
                   {{ form.grupo_etario.label_tag }}
-                  {{ form.grupo_etario }}
+                  {{ form.grupo_etario|add_class:"form-select" }}
                 </div>
               </div>
+
               <!-- Row 2 -->
-              <div class="form-row align-items-end">
+              <div class="form-row align-items-end mt-2">
                 <div class="form-group col-md-6">
                   {{ form.tipo_patrocinio.label_tag }}
-                  {{ form.tipo_patrocinio }}
+                  {{ form.tipo_patrocinio|add_class:"form-select" }}
                 </div>
                 <div class="form-group col-md-6">
                   {{ form.resumen_intervencion.label_tag }}
-                  {{ form.resumen_intervencion }}
+                  {{ form.resumen_intervencion|add_class:"form-control" }}
                 </div>
               </div>
+
               <!-- Row 3 -->
-              <div class="form-row align-items-end">
+              <div class="form-row align-items-end mt-2">
                 <div class="form-group col-md-6">
                   {{ form.situacion_habitacional_hist.label_tag }}
-                  {{ form.situacion_habitacional_hist }}
+                  {{ form.situacion_habitacional_hist|add_class:"form-control" }}
                 </div>
                 <div class="form-group col-md-6">
                   {{ form.observaciones.label_tag }}
-                  {{ form.observaciones }}
+                  {{ form.observaciones|add_class:"form-control" }}
                 </div>
               </div>
             </div>
           </div>
 
-        <div class="text-end mt-4">
+          <!-- Botones -->
+          <div class="text-end mt-4">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <a href="{% url 'persona:persona_list' %}" class="btn btn-secondary">Cancelar</a>
           </div>
@@ -163,23 +179,39 @@
 </div>
 
 {{ form.media }}
+
+<!-- Script Medio Ingreso -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const medioIngresoSelect = document.getElementById("id_medio_ingreso");
-    const textoMedioIngreso = document.getElementById("medioIngresoTexto");
+document.addEventListener('DOMContentLoaded', function () {
+  const medioIngresoSelect = document.getElementById("id_medio_ingreso");
+  const textoMedioIngreso = document.getElementById("medioIngresoTexto");
 
-    if (medioIngresoSelect) {
-      const actualizarTexto = () => {
-        const texto = medioIngresoSelect.options[medioIngresoSelect.selectedIndex]?.text || "";
-        textoMedioIngreso.textContent = texto;
-      };
+  if (medioIngresoSelect && textoMedioIngreso) {
+    const actualizarTexto = () => {
+      const texto = medioIngresoSelect.options[medioIngresoSelect.selectedIndex]?.text || "";
+      textoMedioIngreso.textContent = texto;
+    };
+    medioIngresoSelect.addEventListener("change", actualizarTexto);
+    actualizarTexto();
+  }
+});
+</script>
 
-      medioIngresoSelect.addEventListener("change", actualizarTexto);
-      
-      // Inicializar con el valor actual (en caso de carga inicial vacía)
-      actualizarTexto();
-    }
-  });
+<!-- Script Institución Display -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const institucionSelect = document.getElementById("id_institucion");
+  const nombreInstitucionDisplay = document.getElementById("nombre_institucion_display");
+
+  if (institucionSelect && nombreInstitucionDisplay) {
+    const actualizarTexto = () => {
+      const texto = institucionSelect.options[institucionSelect.selectedIndex]?.text || "";
+      nombreInstitucionDisplay.value = texto;
+    };
+    institucionSelect.addEventListener("change", actualizarTexto);
+    actualizarTexto();
+  }
+});
 </script>
 
 {% endblock page_content %}

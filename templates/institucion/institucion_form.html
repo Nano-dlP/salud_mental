@@ -1,133 +1,120 @@
 {% extends 'core/index.html' %}
 {% load static %}
-
+{% load widget_tweaks %}
 
 {% block page_content %}
+<div class="container mt-5">
+  <div class="card shadow-sm border-0 rounded">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+        {% if form.instance.pk %}Editar Institución{% else %}Registrar Institución{% endif %}
+      </h5>
+    </div>
 
-<!-- Begin Page Content -->
-<div class="container-fluid">
-<body>
-  <div class="container mt-5">
-    {% if form.instance.pk %}
-      <h2 class="mb-4">Editar Institución</h2>
-    {% else %}
-      <h2 class="mb-4">Registrar Institución</h2>
-    {% endif %}
+    <div class="card-body">
+      <form method="POST" novalidate>
+        {% csrf_token %}
 
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
 
-    <form method="POST" novalidate>
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-          {{ form.non_field_errors }}
-        </div>
-      {% endif %}
-
-      <!-- Tipo Institución e Institución lado a lado -->
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <label for="{{ form.tipo_institucion.id_for_label }}" class="form-label">{{ form.tipo_institucion.label }}</label>
-          {{ form.tipo_institucion }}
-          {% if form.tipo_institucion.errors %}
-            <div class="text-danger small">{{ form.tipo_institucion.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-8">
-          <label for="{{ form.institucion.id_for_label }}" class="form-label">{{ form.institucion.label }}</label>
-          {{ form.institucion }}
-          {% if form.institucion.errors %}
-            <div class="text-danger small">{{ form.institucion.errors|striptags }}</div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Domicilio: calle, número, piso, departamento -->
-      <div class="row mb-3">
-        <div class="col-md-5">
-          <label for="{{ form.domicilio_calle.id_for_label }}" class="form-label">{{ form.domicilio_calle.label }}</label>
-          {{ form.domicilio_calle }}
-          {% if form.domicilio_calle.errors %}
-            <div class="text-danger small">{{ form.domicilio_calle.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-2">
-          <label for="{{ form.domicilio_numero.id_for_label }}" class="form-label">{{ form.domicilio_numero.label }}</label>
-          {{ form.domicilio_numero }}
-          {% if form.domicilio_numero.errors %}
-            <div class="text-danger small">{{ form.domicilio_numero.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-2">
-          <label for="{{ form.domicilio_piso.id_for_label }}" class="form-label">{{ form.domicilio_piso.label }}</label>
-          {{ form.domicilio_piso }}
-          {% if form.domicilio_piso.errors %}
-            <div class="text-danger small">{{ form.domicilio_piso.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-3">
-          <label for="{{ form.domicilio_depto.id_for_label }}" class="form-label">{{ form.domicilio_depto.label }}</label>
-          {{ form.domicilio_depto }}
-          {% if form.domicilio_depto.errors %}
-            <div class="text-danger small">{{ form.domicilio_depto.errors|striptags }}</div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Localidad y Teléfono -->
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="{{ form.localidad.id_for_label }}" class="form-label">{{ form.localidad.label }}</label>
-          {{ form.localidad }}
-          {% if form.localidad.errors %}
-            <div class="text-danger small">{{ form.localidad.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-6">
-          <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
-          {{ form.telefono }}
-          {% if form.telefono.errors %}
-            <div class="text-danger small">{{ form.telefono.errors|striptags }}</div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Email, CUIT y Estado -->
-      <div class="row mb-4">
-        <div class="col-md-4">
-          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
-          {{ form.email }}
-          {% if form.email.errors %}
-            <div class="text-danger small">{{ form.email.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-4">
-          <label for="{{ form.cuit.id_for_label }}" class="form-label">{{ form.cuit.label }}</label>
-          {{ form.cuit }}
-          {% if form.cuit.errors %}
-            <div class="text-danger small">{{ form.cuit.errors|striptags }}</div>
-          {% endif %}
-        </div>
-        <div class="col-md-4 d-flex align-items-center mt-4">
-          <div class="form-check">
-            {{ form.estado }}
-            <label class="form-check-label ms-2" for="{{ form.estado.id_for_label }}">
-              {{ form.estado.label }}
+        <!-- Tipo Institución + Institución -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="{{ form.tipo_institucion.id_for_label }}" class="form-label">
+              {{ form.tipo_institucion.label }}
             </label>
-            {% if form.estado.errors %}
-              <div class="text-danger small">{{ form.estado.errors|striptags }}</div>
+            {{ form.tipo_institucion|add_class:"form-select" }}
+            {% if form.tipo_institucion.errors %}
+              <div class="invalid-feedback d-block">{{ form.tipo_institucion.errors|striptags }}</div>
             {% endif %}
           </div>
+          <div class="col-md-8">
+            <label for="{{ form.institucion.id_for_label }}" class="form-label">{{ form.institucion.label }}</label>
+            {{ form.institucion }}
+              {% if form.institucion.errors %}
+                  <div class="text-danger small">
+                    {% for error in form.institucion.errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+              {% endif %}
+          </div>
+
+        <!-- Domicilio -->
+        <div class="row mb-3">
+          <div class="col-md-5">
+            <label class="form-label">{{ form.domicilio_calle.label }}</label>
+            {{ form.domicilio_calle|add_class:"form-control" }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ form.domicilio_numero.label }}</label>
+            {{ form.domicilio_numero|add_class:"form-control" }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ form.domicilio_piso.label }}</label>
+            {{ form.domicilio_piso|add_class:"form-control" }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">{{ form.domicilio_depto.label }}</label>
+            {{ form.domicilio_depto|add_class:"form-control" }}
+          </div>
         </div>
-      </div>
 
-      <!-- Botones -->
-      <button type="submit" class="btn btn-primary">Guardar</button>
-      <a href="{% url 'institucion:institucion_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
-    </form>
+        <!-- Localidad y Teléfono -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">{{ form.localidad.label }}</label>
+            {{ form.localidad|add_class:"form-select" }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.telefono.label }}</label>
+            {{ form.telefono|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Email, CUIT y Estado -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label class="form-label">{{ form.email.label }}</label>
+            {{ form.email|add_class:"form-control" }}
+            {% if form.email.errors %}
+            <div class="text-danger small">
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.cuit.label }}</label>
+            {{ form.cuit|add_class:"form-control" }}
+            {% if form.cuit.errors %}
+            <div class="text-danger small">
+                {% for error in form.cuit.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+           </div>
+          <div class="col-md-4 d-flex align-items-center">
+            <div class="form-check">
+              {{ form.estado|add_class:"form-check-input" }}
+              <label class="form-check-label ms-2">{{ form.estado.label }}</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end">
+          <a href="{% url 'institucion:institucion_list' %}" class="btn btn-outline-secondary me-2">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
   </div>
-
-  <script src=" {% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
-</body>
-
 </div>
 {% endblock page_content %}

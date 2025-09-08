@@ -4,16 +4,20 @@
 
 {% block page_content %}
 
-<link href=" {% static 'css/expedientes.css' %} " rel="stylesheet">
+
 <div class="container-fluid">
   <div class="container mt-4">
     <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+
+      <!-- Encabezado -->
       <div class="card-header text-center">
         <h5 class="mb-0">
           {% if form.instance.pk %}EDITAR EXPENDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
           <span id="medioIngresoTexto">{{ form.instance.medio_ingreso }}</span>
         </h5>
       </div>
+
+      <!-- Formulario -->
       <div class="card-body">
         <form method="post" novalidate class="small-form" enctype="multipart/form-data">
           {% csrf_token %}
@@ -46,30 +50,30 @@
               <div class="form-row align-items-end mt-3">
                 
 
-<div class="form-group col-md-6">
-  {{ form.persona }} <!-- campo oculto (select) -->
+              <div class="form-group col-md-6">
+                {{ form.persona }} <!-- campo oculto (select) -->
 
-  <label>Persona</label>
-  <div class="input-group">
-    <!-- Campo visible con nombre/apellido -->
-    <input type="text" id="nombre_persona_display" class="form-control"
-          value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
-          placeholder="Seleccione persona"
-          readonly>
+                <label>Persona</label>
+                <div class="input-group">
+                  <!-- Campo visible con nombre/apellido -->
+                  <input type="text" id="nombre_persona_display" class="form-control"
+                        value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
+                        placeholder="Seleccione persona"
+                        readonly>
 
-    <!-- Botón agregar nueva persona -->
-    <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
-       class="btn btn-outline-secondary ms-2" title="Agregar persona">
-      <i class="fas fa-plus"></i>
-    </a>
+                  <!-- Botón agregar nueva persona -->
+                  <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+                    class="btn btn-outline-secondary ms-2" title="Agregar persona">
+                    <i class="fas fa-plus"></i>
+                  </a>
 
-    <!-- Botón buscar persona -->
-    <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
-       class="btn btn-outline-primary ms-1" title="Buscar persona">
-      <i class="fas fa-search"></i>
-    </a>
-  </div>
-</div>
+                  <!-- Botón buscar persona -->
+                  <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
+                    class="btn btn-outline-secondary ms-2" title="Buscar persona">
+                    <i class="fas fa-search"></i>
+                  </a>
+                </div>
+              </div>
 
 
 

@@ -59,22 +59,3 @@
   overflow-x: auto;
 }
 
-/*
-.table {
-  table-layout: auto;
-  width: 100%;
-  word-wrap: break-word;
-}
-
-.table th, .table td {
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  
-}
-
-.table th, .table td {
-  font-size: 0.95rem;
-   /* menos espacio interno 
-}*/
-

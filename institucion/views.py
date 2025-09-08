@@ -65,8 +65,9 @@ class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class InstitucionDetailView(TemplateView):
+class InstitucionDetailView(LoginRequiredMixin, TemplateView):
     template_name = 'institucion/institucion_detail.html'  # Tu template
+    login_url = 'core:login'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

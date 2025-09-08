@@ -77,7 +77,7 @@ body {
 /* Inputs */
 .form-control {
   border-radius: 0.6rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.75rem;
   border: 1px solid #d1d5db;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -147,6 +147,14 @@ body {
   padding: 0.9rem 1rem;   /* restaura el alto normal */
   height: auto;           /* que se ajuste al texto */
 }
+
+  
+.form-select {
+  font-size: 0.9rem;        /* tamaño normal */
+  padding: 0.5rem 0.5rem;   /* restaura el alto normal */
+  height: auto;           /* que se ajuste al texto */
+}
+
 
 .form-control.rounded-3.perfil {
   padding: 0.5rem 1rem;   /* ajusta el alto */
