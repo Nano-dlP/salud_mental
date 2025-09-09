@@ -1,8 +1,8 @@
 
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from urllib.parse import urlencode
 from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 from .models import Persona
@@ -19,14 +19,20 @@ from dal import autocomplete
 
 
 
-class PersonaCreateView(LoginRequiredMixin, CreateView):
+class PersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Persona
     template_name = "persona/persona_form.html"
     form_class = PersonaForm
     success_url = reverse_lazy('persona:persona_list')
     context_object_name = 'persona'
     login_url = 'core:login'
+    permission_required = 'persona.puede_crear_persona'  # reemplaza 'persona' por tu app_label
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
+    # Opcional: manejar 403 de forma personalizada
+    def handle_no_permission(self):
+        return render(self.request, 'core/403.html', status=403)
+    
     def form_valid(self, form):
         form.instance.usuario = self.request.user
         response = super().form_valid(form)

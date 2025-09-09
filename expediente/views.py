@@ -3,13 +3,13 @@ import datetime
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 
-from django.http import Http404
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
-from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, TipoPatrocinio, ExpedienteDocumento
+from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento
 from persona.models import Persona
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -30,9 +30,10 @@ class ExpedienteListView(LoginRequiredMixin, ListView):
     
 
 # Paso 1: Selección del Medio de Ingreso
-class MedioIngresoSelectView(FormView):
+class MedioIngresoSelectView(LoginRequiredMixin, FormView):
     template_name = 'expediente/medio_ingreso.html'
     form_class = MedioIngresoForm
+    login_url = 'core:login'
 
     def get_initial(self):
         initial = super().get_initial()
@@ -58,12 +59,12 @@ class MedioIngresoSelectView(FormView):
             return redirect('expediente:medio_ingreso_select')
 
 
-
 # Paso 2: Formulario de Expediente con MedioIngreso preseleccionado
-class DemandaEspontaneaCreateView(FormView):
+class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
     template_name = 'expediente/demanda_espontanea_form.html'
     form_class = DemandaEspontanea
     success_url = reverse_lazy('expediente:expediente_list')
+    login_url = 'core:login'
 
     def get_initial(self):
         initial = super().get_initial()
@@ -153,14 +154,121 @@ class DemandaEspontaneaCreateView(FormView):
                 documento.expediente = expediente
                 documento.save()
 
-        messages.success(self.request, "Expediente creado con sus documentos.")
+        #messages.success(self.request, "Expediente creado con sus documentos.")
         return super().form_valid(form)
     
-    
-class OficioCreateView(FormView):
+
+
+class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
+    template_name = 'expediente/demanda_espontanea_form.html'
+    form_class = DemandaEspontanea
+    success_url = reverse_lazy('expediente:expediente_list')
+    login_url = 'core:login'
+
+    def get_object(self):
+        return get_object_or_404(Expediente, pk=self.kwargs['pk'])
+
+    def get_initial(self):
+        expediente = self.get_object()
+        initial = super().get_initial()
+
+        # Persona vinculada
+        persona_rel = expediente.expedientepersona_expediente.first()
+        initial.update({
+            'persona': persona_rel.persona if persona_rel else None,
+            'sede': expediente.sede,
+            'fecha_creacion': expediente.fecha_creacion,
+            'medio_ingreso': expediente.medio_ingreso,
+            'tipo_solicitud': expediente.tipo_solicitud,
+            'estado_expediente': expediente.estado_expediente,
+            'grupo_etario': expediente.grupo_etario,
+            'edad_persona': expediente.edad_persona,
+            'situacion_habitacional_hist': expediente.situacion_habitacional_hist,
+            'resumen_intervencion': expediente.resumen_intervencion,
+            'observaciones': expediente.observaciones,
+        })
+        return initial
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        form = form_class(user=self.request.user, **self.get_form_kwargs())
+        form.fields['medio_ingreso'].disabled = True
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expediente = self.get_object()
+
+        if self.request.POST:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                self.request.POST,
+                self.request.FILES,
+                queryset=expediente.documentos.all()
+            )
+        else:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                queryset=expediente.documentos.all()
+            )
+
+        # Persona seleccionada para mostrar en template
+        context['persona_seleccionada'] = (
+            expediente.expedientepersona_expediente.first().persona
+            if expediente.expedientepersona_expediente.exists()
+            else None
+        )
+         # Indicar que es edición
+        context['editar'] = True
+
+        # Número de expediente
+        context['numero_expediente'] = expediente.identificador  # ajustar según tu campo real
+        return context
+
+    def form_valid(self, form):
+        expediente = self.get_object()
+        context = self.get_context_data()
+        documento_formset = context['documento_formset']
+
+        if not documento_formset.is_valid():
+            return self.form_invalid(form)
+
+        # Actualizar campos del expediente
+        expediente.sede = form.cleaned_data['sede']
+        expediente.fecha_creacion = form.cleaned_data['fecha_creacion']
+        expediente.tipo_solicitud = form.cleaned_data['tipo_solicitud']
+        expediente.estado_expediente = form.cleaned_data['estado_expediente']
+        expediente.grupo_etario = form.cleaned_data['grupo_etario']
+        expediente.edad_persona = form.cleaned_data['edad_persona']
+        expediente.situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
+        expediente.resumen_intervencion = form.cleaned_data['resumen_intervencion']
+        expediente.observaciones = form.cleaned_data['observaciones']
+        expediente.save()
+
+        # Actualizar o crear relación con persona
+        persona = form.cleaned_data['persona']
+        rol = Rol.objects.get(pk=1)
+        ExpedientePersona.objects.update_or_create(
+            expediente=expediente,
+            rol=rol,
+            defaults={'persona': persona}
+        )
+
+        # Guardar documentos
+        for documento_form in documento_formset:
+            if documento_form.cleaned_data:
+                documento = documento_form.save(commit=False)
+                documento.expediente = expediente
+                documento.save()
+
+        return super().form_valid(form)
+
+
+
+class OficioCreateView(LoginRequiredMixin, FormView):
     template_name = 'expediente/oficio_form.html'
     form_class = OficioForm
     success_url = reverse_lazy('expediente:expediente_list')
+    login_url = 'core:login'
 
     def get_initial(self):
         initial = super().get_initial()
@@ -188,7 +296,6 @@ class OficioCreateView(FormView):
         medio_ingreso = form.cleaned_data['medio_ingreso']
         fecha_de_juzgado = form.cleaned_data['fecha_de_juzgado']
         fecha_de_recepcion = form.cleaned_data['fecha_de_recepcion']
-        persona = form.cleaned_data['persona']
         expediente_fisico = form.cleaned_data['expediente_fisico']
         cuij = form.cleaned_data['cuij']
         clave_sisfe = form.cleaned_data['clave_sisfe']
@@ -214,7 +321,6 @@ class OficioCreateView(FormView):
             medio_ingreso = medio_ingreso,
             fecha_de_juzgado = fecha_de_juzgado,
             fecha_de_recepcion = fecha_de_recepcion,
-            persona = persona,
             expediente_fisico = expediente_fisico,
             cuij = cuij,
             clave_sisfe = clave_sisfe,
@@ -241,10 +347,12 @@ class OficioCreateView(FormView):
         
         
         
-class SecretariaCreateView(FormView):
+class SecretariaCreateView(LoginRequiredMixin, FormView):
     template_name = 'expediente/secretaria_form.html'
     form_class = SecretariaForm
     success_url = reverse_lazy('expediente:expediente_list')
+    login_url = 'core:login'
+    
 
     def get_initial(self):
         initial = super().get_initial()
@@ -307,6 +415,7 @@ class SecretariaCreateView(FormView):
         expediente.save()  # Identificador generado automáticamente
 
 
+@login_required(login_url = 'core:login')
 def expediente_documentos_view(request, expediente_id):
     expediente = get_object_or_404(Expediente, id=expediente_id)
 

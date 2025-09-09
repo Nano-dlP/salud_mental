@@ -12,8 +12,8 @@
       <!-- Encabezado -->
       <div class="card-header text-center">
         <h5 class="mb-0">
-          {% if form.instance.pk %}EDITAR EXPENDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
-          <span id="medioIngresoTexto">{{ form.instance.medio_ingreso }}</span>
+          {% if editar %}EDITAR EXPEDIENTE{% else %}NUEVO EXPEDIENTE{% endif %}
+          <span id="medioIngresoTexto">{{ form.initial.medio_ingreso }}</span>
         </h5>
       </div>
 
@@ -31,7 +31,14 @@
           <!-- Encabezado -->
           <div class="card mb-3 border-0 shadow-sm">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3 text-muted">Encabezado</h6>
+              <h6 class="border-bottom pb-2 mb-3 text-muted">
+                <div class="d-flex justify-content-between">
+                  <span>Encabezado</span>
+                    {% if editar and numero_expediente %}
+                  <span class="fw-bold">{{ numero_expediente }}</span>
+                    {% endif %}
+                </div>
+              </h6>
               <div class="form-row">
                 <div class="form-group col-md-4">
                   {{ form.sede.label_tag }}
@@ -51,35 +58,35 @@
                 
 
               <div class="form-group col-md-6">
-                {{ form.persona }} <!-- campo oculto (select) -->
+                {{ form.persona|add_class:"d-none"  }} <!-- campo oculto (select) -->
 
                 <label>Persona</label>
-                <div class="input-group">
-                  <!-- Campo visible con nombre/apellido -->
-                  <input type="text" id="nombre_persona_display" class="form-control"
-                        value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
-                        placeholder="Seleccione persona"
-                        readonly>
+             <div class="input-group">
+  <!-- Campo visible con nombre/apellido -->
+  <input type="text" id="nombre_persona_display" class="form-control"
+        value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
+        placeholder="Seleccione persona"
+        {% if editar %}readonly{% endif %}>
 
-                  <!-- Botón agregar nueva persona -->
-                  <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
-                    class="btn btn-outline-secondary ms-2" title="Agregar persona">
-                    <i class="fas fa-plus"></i>
-                  </a>
+  <!-- Botón agregar nueva persona -->
+  <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+     class="btn btn-outline-secondary ms-2"
+     title="Agregar persona"
+     {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
+    <i class="fas fa-plus"></i>
+  </a>
 
-                  <!-- Botón buscar persona -->
-                  <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
-                    class="btn btn-outline-secondary ms-2" title="Buscar persona">
-                    <i class="fas fa-search"></i>
-                  </a>
-                </div>
+  <!-- Botón buscar persona -->
+  <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
+     class="btn btn-outline-secondary ms-2"
+     title="Buscar persona"
+     {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
+    <i class="fas fa-search"></i>
+  </a>
+</div>
+
               </div>
-
-
-
-
-
-                <div class="form-group col-md-2">
+               <div class="form-group col-md-2">
                   {{ form.edad_persona.label_tag }}
                   {{ form.edad_persona|add_class:"form-control" }}
                 </div>
@@ -142,7 +149,7 @@
             <button type="submit" class="btn btn-primary btn-sm px-4">
               <i class="fas fa-save me-1"></i> Guardar
             </button>
-            <a href="{% url 'persona:persona_list' %}" class="btn btn-outline-secondary btn-sm px-4">Cancelar</a>
+            <a href="{% url 'institucion:institucion_list' %}" class="btn btn-outline-secondary btn-sm px-4">Cancelar</a>
           </div>
         </form>
       </div>

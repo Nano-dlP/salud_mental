@@ -39,6 +39,11 @@ class Persona(models.Model):
     #Establezco la conexión a la clase
     objects = PersonaManagers()
 
+    class Meta:
+        permissions = [
+            ("puede_crear_persona", "Puede crear una persona"),
+        ]
+
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
     

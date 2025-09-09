@@ -57,9 +57,9 @@
                     <td>{{ expediente.identificador }}</td>
                     <td>{{ expediente.sede }}</td>
                     <td>{{ expediente.medio_ingreso }}</td>
-                    <td>{{ expediente.fecha }}</td>
+                    <td>{{ expediente.fecha_creacion }}</td>
                     <td>
-                      <a href="#" class="btn btn-sm btn-outline-warning me-1" title="Editar"><i class="far fa-edit"></i></a>
+                      <a href="{% url 'expediente:demanda_espontanea_update' expediente.id %}"  class="btn btn-sm btn-outline-warning me-1" title="Editar"><i class="far fa-edit"></i></a>
                       <a href="#" class="btn btn-sm btn-outline-info me-1" title="Detalles"><i class="fas fa-eye"></i></a>
                       <a href="#" class="btn btn-sm btn-outline-danger me-1" title="Desactivar"><i class="far fa-trash-alt"></i></a>
                     </td>
