@@ -155,7 +155,7 @@ class OficioForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     clave_sisfe = forms.CharField(
-        label = "SISFE, o Sistema Integrado de Consultas Judiciales",
+        label = "SISFE",
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )

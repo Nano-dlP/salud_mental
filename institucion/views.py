@@ -83,3 +83,14 @@ def desactivar_institucion(request, pk):
     institucion.save()
     messages.success(request, "Institución desactivada correctamente.")
     return redirect('institucion:institucion_list')
+
+
+def listar_institucion(request, medio_id):
+    instituciones = Institucion.objects.all()
+    next_url = request.GET.get("next")       # para redirigir después
+    
+    return render(request, "institucion/institucion_agregar_expediente.html",{ 
+        "instituciones": instituciones,
+        "medio_id": medio_id,
+        "next_url": next_url,   # lo mandamos al template
+    })

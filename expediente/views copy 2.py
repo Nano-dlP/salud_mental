@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento, MedioIngreso
@@ -16,7 +16,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
 from .forms import ExpedienteDocumentoFormSet
-from django.views import View
 
 
 
@@ -29,7 +28,6 @@ class ExpedienteListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Expediente.objects.all().order_by('identificador')
     
-
 
 # Paso 1: Selección del Medio de Ingreso
 class MedioIngresoSelectView(LoginRequiredMixin, FormView):
@@ -59,26 +57,6 @@ class MedioIngresoSelectView(LoginRequiredMixin, FormView):
             return redirect('expediente:expediente_create', medio_id=medio_ingreso_id)
         else:
             return redirect('expediente:medio_ingreso_select')
-
-
-class ExpedienteUpdateDispatcherView(LoginRequiredMixin, View):
-    login_url = 'core:login'
-
-    def get(self, request, pk):
-        expediente = get_object_or_404(Expediente, pk=pk)
-        medio = expediente.medio_ingreso.medio_ingreso if expediente.medio_ingreso else ""
-
-        # Redirigir a la vista correspondiente según medio de ingreso
-        if medio == "DEMANDA ESPONTANEA":
-            return redirect('expediente:demanda_espontanea_update', pk=pk)
-        elif medio == "OFICIO POR MAIL":
-            return redirect('expediente:oficio_update', pk=pk)
-        elif medio == "Secretaria":
-            return redirect('expediente:secretaria_update', pk=pk)
-        else:
-            messages.error(request, "No se pudo determinar el tipo de expediente.")
-            return redirect('expediente:expediente_list')
-
 
 
 # Paso 2: Formulario de Expediente con MedioIngreso preseleccionado
@@ -296,92 +274,77 @@ class OficioCreateView(LoginRequiredMixin, FormView):
         initial = super().get_initial()
         medio_id = self.kwargs.get('medio_id')
         institucion_id = self.request.GET.get('institucion_id')
-
-        # Medio de ingreso
         if medio_id:
-            medio = get_object_or_404(MedioIngreso, pk=medio_id)
-            initial['medio_ingreso'] = medio
+            initial['medio_ingreso'] = MedioIngreso.objects.get(pk=medio_id)
             initial['fecha_creacion'] = datetime.date.today()
-
-        # Institución opcional (solo si viene por GET)
         if institucion_id:
-            from .models import Institucion
-            institucion = get_object_or_404(Institucion, pk=institucion_id)
-            initial['institucion'] = institucion
-
+            initial['institucion'] = institucion_id   
         return initial
 
+    #Función del formulario para obtener usuario y medio de ingreso
     def get_form(self, form_class=None):
         if form_class is None:
             form_class = self.get_form_class()
         form = form_class(user=self.request.user, **self.get_form_kwargs())
-        # Deshabilitar campo de medio_ingreso para que no se modifique
         form.fields['medio_ingreso'].disabled = True
         return form
 
     def form_valid(self, form):
-        # Obtener datos del formulario
-        institucion = form.cleaned_data.get('institucion')
-        sede = form.cleaned_data.get('sede')
-        fecha_creacion = form.cleaned_data.get('fecha_creacion')
-        medio_ingreso = form.cleaned_data.get('medio_ingreso')
-        fecha_de_juzgado = form.cleaned_data.get('fecha_de_juzgado')
-        fecha_de_recepcion = form.cleaned_data.get('fecha_de_recepcion')
-        expediente_fisico = form.cleaned_data.get('expediente_fisico')
-        cuij = form.cleaned_data.get('cuij')
-        clave_sisfe = form.cleaned_data.get('clave_sisfe')
-        tipo_solicitud = form.cleaned_data.get('tipo_solicitud')
-        estado_expediente = form.cleaned_data.get('estado_expediente')
-        grupo_etario = form.cleaned_data.get('grupo_etario')
-        edad_persona = form.cleaned_data.get('edad_persona')
-        situacion_habitacional_hist = form.cleaned_data.get('situacion_habitacional_hist')
-        tipo_patrocinio = form.cleaned_data.get('tipo_patrocinio')
-        resumen_intervencion = form.cleaned_data.get('resumen_intervencion')
-        observaciones = form.cleaned_data.get('observaciones')
-
-        # Obtener rol predeterminado
+        institucion = form.cleaned_data['institucion']
+        sede = form.cleaned_data['sede']
+        fecha_creacion = form.cleaned_data['fecha_creacion']
+        medio_ingreso = form.cleaned_data['medio_ingreso']
+        fecha_de_juzgado = form.cleaned_data['fecha_de_juzgado']
+        fecha_de_recepcion = form.cleaned_data['fecha_de_recepcion']
+        expediente_fisico = form.cleaned_data['expediente_fisico']
+        cuij = form.cleaned_data['cuij']
+        clave_sisfe = form.cleaned_data['clave_sisfe']
+        tipo_solicitud = form.cleaned_data['tipo_solicitud']
+        estado_expediente = form.cleaned_data['estado_expediente']
+        grupo_etario = form.cleaned_data['grupo_etario']
+        edad_persona = form.cleaned_data['edad_persona']
+        situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
+        tipo_patrocinio = form.cleaned_data['tipo_patrocinio']
+        resumen_intervencion = form.cleaned_data['resumen_intervencion']
+        observaciones = form.cleaned_data['observaciones']
+        
         try:
             rol = Rol.objects.get(pk=1)
         except Rol.DoesNotExist:
-            form.add_error(None, 'El rol predeterminado no existe.')
+            form.add_error(None, 'El rol no existe.')
             return self.form_invalid(form)
 
-        # Crear expediente sin pasar institucion (se guarda en relación aparte)
         expediente = Expediente(
-            sede=sede,
-            fecha_creacion=fecha_creacion,
-            medio_ingreso=medio_ingreso,
-            fecha_de_juzgado=fecha_de_juzgado,
-            fecha_de_recepcion=fecha_de_recepcion,
-            expediente_fisico=expediente_fisico,
-            cuij=cuij,
-            clave_sisfe=clave_sisfe,
-            tipo_solicitud=tipo_solicitud,
-            estado_expediente=estado_expediente,
-            grupo_etario=grupo_etario,
-            edad_persona=edad_persona,
-            situacion_habitacional_hist=situacion_habitacional_hist,
-            tipo_patrocinio=tipo_patrocinio,
-            resumen_intervencion=resumen_intervencion,
-            observaciones=observaciones
+            sede = sede,
+            fecha_creacion = fecha_creacion,
+            medio_ingreso = medio_ingreso,
+            fecha_de_juzgado = fecha_de_juzgado,
+            fecha_de_recepcion = fecha_de_recepcion,
+            expediente_fisico = expediente_fisico,
+            cuij = cuij,
+            clave_sisfe = clave_sisfe,
+            tipo_solicitud = tipo_solicitud,
+            estado_expediente = estado_expediente,
+            grupo_etario = grupo_etario,
+            edad_persona = edad_persona,
+            situacion_habitacional_hist = situacion_habitacional_hist,
+            tipo_patrocinio = tipo_patrocinio,
+            resumen_intervencion = resumen_intervencion,
+            observaciones = observaciones,
         )
-        expediente.save()
+        expediente.save()  # Identificador generado automáticamente
 
-        # Guardar relación con institución (si existe)
-        if institucion:
-            try:
+        try:
+            if institucion:
                 ExpedienteInstitucion.objects.create(
                     expediente=expediente,
                     institucion=institucion,
                     rol=rol
-                )
-            except Exception as e:
-                messages.error(self.request, f"No se pudo registrar la institución: {e}")
-                return self.form_invalid(form)
-
-        # Retornar HttpResponse correcto
-        return super().form_valid(form)        
-
+            )
+        except Exception as e:
+            messages.error(self.request, f"No se pudo registrar la institución en el expediente: {e}")
+            return self.form_invalid(form)
+        
 
 
 class OficioUpdateView(LoginRequiredMixin, FormView):
@@ -390,24 +353,26 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
 
+    # Obtener el expediente a editar
     def get_object(self):
         pk = self.kwargs.get("pk")
-        return get_object_or_404(Expediente, pk=self.kwargs['pk'])
+        return get_object_or_404(Expediente, pk=pk)
 
     def get_initial(self):
         initial = super().get_initial()
         expediente = self.get_object()
 
-        #Institución vinculada al expediente
+        # Si el expediente tiene institución relacionada
         institucion_rel = expediente.expedienteinstitucion_expediente.first()
         if institucion_rel:
-            initial['institucion'] = institucion_rel.institucion
-            initial['sede'] = getattr(institucion_rel, 'sede', None)
-        
-        # Otros campos del expediente
+            initial.update({
+                'institucion': institucion_rel.institucion,
+                'sede': getattr(institucion_rel, 'sede', None),
+            })
+
+        # Otros campos que vienen directo del expediente
         initial.update({
             'fecha_creacion': expediente.fecha_creacion,
-            'sede': expediente.sede,
             'medio_ingreso': expediente.medio_ingreso,
             'fecha_de_juzgado': expediente.fecha_de_juzgado,
             'fecha_de_recepcion': expediente.fecha_de_recepcion,
@@ -424,73 +389,81 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
             'observaciones': expediente.observaciones,
         })
         return initial
-
+    
     def get_form(self, form_class=None):
         if form_class is None:
             form_class = self.get_form_class()
         form = form_class(user=self.request.user, **self.get_form_kwargs())
         form.fields['medio_ingreso'].disabled = True
         return form
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         expediente = self.get_object()
-        context['documento_formset'] = ExpedienteDocumentoFormSet(
-            self.request.POST or None,
-            self.request.FILES or None,
-            queryset=expediente.documentos.all()
-        )
+
+        # Formset de documentos
+        if self.request.POST:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                self.request.POST,
+                self.request.FILES,
+                queryset=expediente.documentos.all()
+            )
+        else:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                queryset=expediente.documentos.all()
+            )
+
+        # Institución seleccionada
         context['institucion_seleccionada'] = (
             expediente.expedienteinstitucion_expediente.first().institucion
-            if expediente.expedienteinstitucion_expediente.exists() else None
+            if expediente.expedienteinstitucion_expediente.exists()
+            else None
         )
-        context['medio_id'] = expediente.medio_ingreso.id if expediente.medio_ingreso else None
+        
+        # Medio de ingreso (usamos el id del medio asociado al expediente)
+        context["medio_id"] = expediente.medio_ingreso.id if expediente.medio_ingreso else None  
+
         context['editar'] = True
         context['numero_expediente'] = expediente.identificador
+
         return context
 
+    
     def form_valid(self, form):
         expediente = self.get_object()
         context = self.get_context_data()
-        documento_formset = context.get('documento_formset')
+        documento_formset = context['documento_formset']
 
-        # Validar formset
-        if documento_formset and not documento_formset.is_valid():
+        if not documento_formset.is_valid():
             return self.form_invalid(form)
 
-        # Actualizar campos del expediente manualmente
+        # Actualizar los campos del expediente
         for field, value in form.cleaned_data.items():
-            if field != 'institucion':  # Institución se guarda en la relación
-                setattr(expediente, field, value)
+            setattr(expediente, field, value)
         expediente.save()
 
         # Actualizar relación con institución
         institucion = form.cleaned_data.get('institucion')
-        rol_id = self.request.POST.get('rol_id')  # Debe venir del template
+        rol_id = self.request.POST.get('rol_id')  # pasar desde el template
         if institucion and rol_id:
-            try:
-                rol = Rol.objects.get(pk=rol_id)
-                ExpedienteInstitucion.objects.update_or_create(
-                    expediente=expediente,
-                    rol=rol,
-                    defaults={'institucion': institucion}
-                )
-            except Rol.DoesNotExist:
-                messages.error(self.request, 'El rol seleccionado no existe.')
-                return self.form_invalid(form)
+            rol = Rol.objects.get(pk=rol_id)
+            ExpedienteInstitucion.objects.update_or_create(
+                expediente=expediente,
+                rol=rol,
+                defaults={'institucion': institucion}
+            )
 
         # Guardar documentos
-        if documento_formset:
-            for doc_form in documento_formset:
-                if doc_form.cleaned_data and not doc_form.cleaned_data.get('DELETE', False):
-                    documento = doc_form.save(commit=False)
-                    documento.expediente = expediente
-                    documento.save()
+        for documento_form in documento_formset:
+            if documento_form.cleaned_data and not documento_form.cleaned_data.get('DELETE', False):
+                documento = documento_form.save(commit=False)
+                documento.expediente = expediente
+                documento.save()
 
-        return super().form_valid(form)
-    
+        return super().form_valid(form) 
 
-
+        
 class SecretariaCreateView(LoginRequiredMixin, FormView):
     template_name = 'expediente/secretaria_form.html'
     form_class = SecretariaForm

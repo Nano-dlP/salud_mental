@@ -4,7 +4,7 @@
 
 {% block page_content %}
 
-
+<!--Funciona correctamente, trae la persona y no permite su edición-->
 <div class="container-fluid">
   <div class="container mt-4">
     <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
@@ -62,28 +62,28 @@
 
                 <label>Persona</label>
              <div class="input-group">
-              <!-- Campo visible con nombre/apellido -->
-              <input type="text" id="nombre_persona_display" class="form-control"
-                    value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
-                    placeholder="Seleccione persona"
-                    {% if editar %}readonly{% endif %}>
+  <!-- Campo visible con nombre/apellido -->
+  <input type="text" id="nombre_persona_display" class="form-control"
+        value="{% if persona_seleccionada %}{{ persona_seleccionada.apellido }} {{ persona_seleccionada.nombre }}{% endif %}"
+        placeholder="Seleccione persona"
+        {% if editar %}readonly{% endif %}>
 
-              <!-- Botón agregar nueva persona -->
-              <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
-                class="btn btn-outline-secondary ms-2"
-                title="Agregar persona"
-                {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                <i class="fas fa-plus"></i>
-              </a>
+  <!-- Botón agregar nueva persona -->
+  <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+     class="btn btn-outline-secondary ms-2"
+     title="Agregar persona"
+     {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
+    <i class="fas fa-plus"></i>
+  </a>
 
-              <!-- Botón buscar persona -->
-              <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
-                class="btn btn-outline-secondary ms-2"
-                title="Buscar persona"
-                {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                <i class="fas fa-search"></i>
-              </a>
-            </div>
+  <!-- Botón buscar persona -->
+  <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
+     class="btn btn-outline-secondary ms-2"
+     title="Buscar persona"
+     {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
+    <i class="fas fa-search"></i>
+  </a>
+</div>
 
               </div>
                <div class="form-group col-md-2">
@@ -156,5 +156,65 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+<!-- Modal persona -->
+<div class="modal fade" id="modalPersona" tabindex="-1" aria-labelledby="modalPersonaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalPersonaLabel">Agregar Persona</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modalPersonaBody" class="text-center">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const medioIngresoSelect = document.getElementById("id_medio_ingreso");
+    const textoMedioIngreso = document.getElementById("medioIngresoTexto");
+
+    if (medioIngresoSelect && textoMedioIngreso) {
+      const actualizarTexto = () => {
+        const texto = medioIngresoSelect.options[medioIngresoSelect.selectedIndex]?.text || "";
+        textoMedioIngreso.textContent = texto;
+      };
+      medioIngresoSelect.addEventListener("change", actualizarTexto);
+      actualizarTexto();
+    }
+  });
+</script>
+
+<script>
+  (() => {
+    'use strict'
+    const forms = document.querySelectorAll('form')
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
+<script src="{% static 'autocomplete_light/autocomplete_light.js' %}"></script>
+<link href="{% static 'autocomplete_light/autocomplete_light.css' %}" rel="stylesheet">
+
 
 {% endblock page_content %}

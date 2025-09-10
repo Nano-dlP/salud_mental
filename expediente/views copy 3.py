@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento, MedioIngreso
@@ -392,18 +392,20 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
 
     def get_object(self):
         pk = self.kwargs.get("pk")
-        return get_object_or_404(Expediente, pk=self.kwargs['pk'])
+        return get_object_or_404(Expediente, pk=pk)
 
     def get_initial(self):
         initial = super().get_initial()
         expediente = self.get_object()
 
-        #Institución vinculada al expediente
+        # Institución relacionada
         institucion_rel = expediente.expedienteinstitucion_expediente.first()
         if institucion_rel:
-            initial['institucion'] = institucion_rel.institucion
-            initial['sede'] = getattr(institucion_rel, 'sede', None)
-        
+            initial.update({
+                'institucion': institucion_rel.institucion,
+                'sede': getattr(institucion_rel, 'sede', None),
+            })
+
         # Otros campos del expediente
         initial.update({
             'fecha_creacion': expediente.fecha_creacion,
@@ -423,6 +425,7 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
             'resumen_intervencion': expediente.resumen_intervencion,
             'observaciones': expediente.observaciones,
         })
+
         return initial
 
     def get_form(self, form_class=None):
@@ -435,16 +438,29 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         expediente = self.get_object()
-        context['documento_formset'] = ExpedienteDocumentoFormSet(
-            self.request.POST or None,
-            self.request.FILES or None,
-            queryset=expediente.documentos.all()
-        )
+
+        # Formset de documentos
+        if self.request.POST:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                self.request.POST,
+                self.request.FILES,
+                queryset=expediente.documentos.all()
+            )
+        else:
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                queryset=expediente.documentos.all()
+            )
+
+        # Institución seleccionada
         context['institucion_seleccionada'] = (
             expediente.expedienteinstitucion_expediente.first().institucion
-            if expediente.expedienteinstitucion_expediente.exists() else None
+            if expediente.expedienteinstitucion_expediente.exists()
+            else None
         )
-        context['medio_id'] = expediente.medio_ingreso.id if expediente.medio_ingreso else None
+
+        # Medio de ingreso (desde expediente)
+        context["medio_id"] = expediente.medio_ingreso.id if expediente.medio_ingreso else None
+
         context['editar'] = True
         context['numero_expediente'] = expediente.identificador
         return context
@@ -458,13 +474,13 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
         if documento_formset and not documento_formset.is_valid():
             return self.form_invalid(form)
 
-        # Actualizar campos del expediente manualmente
+        # Guardar campos del expediente, ignorando institucion
         for field, value in form.cleaned_data.items():
-            if field != 'institucion':  # Institución se guarda en la relación
+            if field != 'institucion':
                 setattr(expediente, field, value)
         expediente.save()
 
-        # Actualizar relación con institución
+        # Guardar relación con institución
         institucion = form.cleaned_data.get('institucion')
         rol_id = self.request.POST.get('rol_id')  # Debe venir del template
         if institucion and rol_id:
@@ -481,14 +497,14 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
 
         # Guardar documentos
         if documento_formset:
-            for doc_form in documento_formset:
-                if doc_form.cleaned_data and not doc_form.cleaned_data.get('DELETE', False):
-                    documento = doc_form.save(commit=False)
+            for documento_form in documento_formset:
+                if documento_form.cleaned_data and not documento_form.cleaned_data.get('DELETE', False):
+                    documento = documento_form.save(commit=False)
                     documento.expediente = expediente
                     documento.save()
 
         return super().form_valid(form)
-    
+
 
 
 class SecretariaCreateView(LoginRequiredMixin, FormView):

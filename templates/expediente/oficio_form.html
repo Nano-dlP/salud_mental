@@ -6,24 +6,38 @@
 
 <div class="container-fluid">
   <div class="container mt-4">
-    <div class="card shadow-sm col-md-12 mx-auto">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
 
       <!-- Encabezado -->
       <div class="card-header text-center">
         <h5 class="mb-0">
-          {% if form.instance.pk %}EDITAR EXPEDIENTE {% else %}NUEVO EXPEDIENTE{% endif %}
-          <span id="medioIngresoTexto">{{ form.instance.medio_ingreso }}</span>
+          {% if editar %}EDITAR EXPEDIENTE{% else %}NUEVO EXPEDIENTE{% endif %}
+          <span id="medioIngresoTexto">{{ form.initial.medio_ingreso }}</span>
         </h5>
       </div>
 
       <!-- Formulario -->
       <div class="card-body">
-        <form method="post" novalidate class="small-form">
+        <form method="post" novalidate class="small-form" enctype="multipart/form-data">
           {% csrf_token %}
+
           {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
           {% endif %}
 
+          <!-- Encabezado -->
+          <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3 text-muted">
+                <div class="d-flex justify-content-between">
+                  <span>Encabezado</span>
+                    {% if editar and numero_expediente %}
+                  <span class="fw-bold">{{ numero_expediente }}</span>
+                    {% endif %}
+                </div>
+              </h6>
           <!-- Inicio -->
           <div class="card mb-3">
             <div class="card-body">
@@ -69,7 +83,7 @@
                     </a>
 
                     <!-- Botón buscar institución -->
-                    <a href="{% url 'institucion:institucion_list' %}?next={{ request.path }}" 
+                    <a href="{% url 'institucion:agregar_expediente' %}?next={{ request.path }}" 
                        class="btn btn-outline-secondary ms-2" title="Buscar institución">
                       <i class="fas fa-search"></i>
                     </a>
@@ -101,6 +115,7 @@
                   {{ form.clave_sisfe.label_tag }}
                   {{ form.clave_sisfe|add_class:"form-control" }}
                 </div>
+
               </div>
 
               <div class="form-row mt-2">
