@@ -131,15 +131,9 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
         documento_formset = context['documento_formset']
 
         if not documento_formset.is_valid():
-            messages.error(self.request, "Hay errores en los documentos. Corrígelos antes de continuar.")
             return self.form_invalid(form)
 
-        persona = form.cleaned_data.get('persona')
-        if not persona:
-            form.add_error('persona', 'Debe seleccionar una persona')
-            messages.error(self.request, "Debe seleccionar una persona para crear el expediente.")
-            return self.form_invalid(form)
-            
+        persona = form.cleaned_data['persona']
         sede = form.cleaned_data['sede']
         fecha_creacion = form.cleaned_data['fecha_creacion']
         medio_ingreso = form.cleaned_data['medio_ingreso']
@@ -170,17 +164,11 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
             observaciones=observaciones,
         )
 
-        # Retornar HttpResponse correcto
-        if persona:
-            try:
-                ExpedientePersona.objects.create(
-                    expediente=expediente,
-                    persona=persona,
-                    rol=rol
-                )
-            except Exception as e:
-                messages.error(self.request, f"No se pudo registrar la persona: {e}")
-                return self.form_invalid(form)
+        ExpedientePersona.objects.create(
+            expediente=expediente,
+            persona=persona,
+            rol=rol
+        )
 
         for documento_form in documento_formset:
             if documento_form.cleaned_data.get('archivo'):
@@ -188,14 +176,22 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
                 documento.expediente = expediente
                 documento.save()
 
-        messages.success(self.request, "El expediente fue creado correctamente.")
+        #messages.success(self.request, "Expediente creado con sus documentos.")
         return super().form_valid(form)
     
-    def form_invalid(self, form):
-        messages.error(self.request, "Hubo errores al guardar el expediente. Verifique los campos.")
-        return super().form_invalid(form)
-        
 
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView
+from .forms import DemandaEspontanea, ExpedienteDocumentoFormSet
+from .models import Expediente, ExpedientePersona, Rol
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView
+from .forms import DemandaEspontanea, ExpedienteDocumentoFormSet
+from .models import Expediente, ExpedientePersona, Rol
 
 class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
     template_name = 'expediente/demanda_espontanea_form.html'
@@ -205,6 +201,13 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
 
     def get_object(self):
         return get_object_or_404(Expediente, pk=self.kwargs['pk'])
+
+    def get_form_kwargs(self):
+        """Pasar la instancia al formulario para que sea un update"""
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        kwargs['user'] = self.request.user  # si tu formulario lo necesita
+        return kwargs
 
     def get_initial(self):
         expediente = self.get_object()
@@ -228,9 +231,7 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
         return initial
 
     def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        form = form_class(user=self.request.user, **self.get_form_kwargs())
+        form = super().get_form(form_class)
         form.fields['medio_ingreso'].disabled = True
         return form
 
@@ -238,6 +239,7 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         expediente = self.get_object()
 
+        # Formset de documentos
         if self.request.POST:
             context['documento_formset'] = ExpedienteDocumentoFormSet(
                 self.request.POST,
@@ -249,37 +251,25 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
                 queryset=expediente.documentos.all()
             )
 
-        # Persona seleccionada para mostrar en template
-        context['persona_seleccionada'] = (
-            expediente.expedientepersona_expediente.first().persona
-            if expediente.expedientepersona_expediente.exists()
-            else None
-        )
-         # Indicar que es edición
+        # Persona seleccionada
+        persona_rel = expediente.expedientepersona_expediente.first()
+        context['persona_seleccionada'] = persona_rel.persona if persona_rel else None
+
+        # Indicar que es edición
         context['editar'] = True
 
         # Número de expediente
-        context['numero_expediente'] = expediente.identificador  # ajustar según tu campo real
+        context['numero_expediente'] = expediente.identificador
+
+        # Medio de ingreso
+        context['medio'] = expediente.medio_ingreso
+        context['medio_id'] = expediente.medio_ingreso.id if expediente.medio_ingreso else None
+
         return context
 
     def form_valid(self, form):
-        expediente = self.get_object()
-        context = self.get_context_data()
-        documento_formset = context['documento_formset']
-
-        if not documento_formset.is_valid():
-            return self.form_invalid(form)
-
-        # Actualizar campos del expediente
-        expediente.sede = form.cleaned_data['sede']
-        expediente.fecha_creacion = form.cleaned_data['fecha_creacion']
-        expediente.tipo_solicitud = form.cleaned_data['tipo_solicitud']
-        expediente.estado_expediente = form.cleaned_data['estado_expediente']
-        expediente.grupo_etario = form.cleaned_data['grupo_etario']
-        expediente.edad_persona = form.cleaned_data['edad_persona']
-        expediente.situacion_habitacional_hist = form.cleaned_data['situacion_habitacional_hist']
-        expediente.resumen_intervencion = form.cleaned_data['resumen_intervencion']
-        expediente.observaciones = form.cleaned_data['observaciones']
+        # Guardar formulario con la instancia existente
+        expediente = form.save(commit=False)
         expediente.save()
 
         # Actualizar o crear relación con persona
@@ -292,13 +282,18 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
         )
 
         # Guardar documentos
-        for documento_form in documento_formset:
-            if documento_form.cleaned_data:
-                documento = documento_form.save(commit=False)
-                documento.expediente = expediente
-                documento.save()
+        documento_formset = self.get_context_data()['documento_formset']
+        if documento_formset.is_valid():
+            for doc_form in documento_formset:
+                if doc_form.cleaned_data:
+                    doc = doc_form.save(commit=False)
+                    doc.expediente = expediente
+                    doc.save()
 
-        return super().form_valid(form)
+        # Redirigir al success_url
+        return redirect(self.get_success_url())
+
+
 
 
 
@@ -596,4 +591,6 @@ def expediente_documentos_view(request, expediente_id):
         "formset": formset,
         "expediente": expediente,
     })
+
+
 

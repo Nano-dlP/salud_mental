@@ -13,5 +13,6 @@ urlpatterns = [
     path('institucion/editar/<int:pk>/', InstitucionUpdateView.as_view(), name='institucion_edit'),
     path('institucion/detalle/<int:pk>/', InstitucionDetailView.as_view(), name='institucion_detail'),
     path('institucion/desactivar/<int:pk>', desactivar_institucion, name="institucion_deactivate"),
+    
     path('institucion/agregar_expediente/', listar_institucion, name='agregar_expediente'),
 ]

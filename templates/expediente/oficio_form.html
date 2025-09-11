@@ -83,10 +83,8 @@
                     </a>
 
                     <!-- Botón buscar institución -->
-                    <a href="{% url 'institucion:agregar_expediente' %}?next={{ request.path }}" 
-                       class="btn btn-outline-secondary ms-2" title="Buscar institución">
-                      <i class="fas fa-search"></i>
-                    </a>
+                    <a href="{% url 'institucion:agregar_expediente'%}?next={{ request.get_full_path }}"
+                    class="btn btn-outline-secondary ms-2" title="Buscar institución"><i class="fas fa-search"></i></a>
                   </div>
                 </div>
 

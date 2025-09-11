@@ -85,9 +85,11 @@ def desactivar_institucion(request, pk):
     return redirect('institucion:institucion_list')
 
 
-def listar_institucion(request, medio_id):
+def listar_institucion(request):
     instituciones = Institucion.objects.all()
+    medio_id = 2
     next_url = request.GET.get("next")       # para redirigir después
+    print(medio_id)
     
     return render(request, "institucion/institucion_agregar_expediente.html",{ 
         "instituciones": instituciones,
