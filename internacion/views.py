@@ -6,10 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Internacion
 from .forms import InternacionForm
 # Create your views here.
+
 class InternacionCreateView(LoginRequiredMixin, CreateView):
     model = Internacion
     form_class = InternacionForm
-    template_name = 'internacion/internacion_form.html'
+    template_name = 'internacion/internacion_crear.html'
     success_url = reverse_lazy('internacion:internacion_list')
     context_object_name = 'internaciones'
     login_url = 'core:login'
@@ -21,7 +22,7 @@ class InternacionCreateView(LoginRequiredMixin, CreateView):
 
 class InternacionListView(LoginRequiredMixin, ListView):
     model = Internacion
-    template_name = 'internacion/internacion_detail.html'
+    template_name = 'internacion/internacion_listar.html'
     context_object_name = 'internaciones'
     login_url = 'core:login'
     

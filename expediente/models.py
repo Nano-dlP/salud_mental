@@ -157,8 +157,16 @@ class ExpedientePersona(models.Model):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='expedientepersona_persona')
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='expedientepersona_rol')
 
+    def __str__(self):
+        return f"{self.expediente} - {self.persona}"
+
+
 
 class ExpedienteInstitucion(models.Model):
     expediente = models.ForeignKey(Expediente, on_delete=models.CASCADE, related_name='expedienteinstitucion_expediente')
     institucion = models.ForeignKey(Institucion, on_delete=models.CASCADE, related_name='expedienteinstitucion_institucion')
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='expedienteinstitucion_rol')
+
+    def __str__(self):
+        return f"{self.expediente} - {self.institucion}"
+

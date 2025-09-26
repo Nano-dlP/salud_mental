@@ -105,7 +105,11 @@ class PersonaForm(forms.ModelForm):
 
     def clean_numero_documento(self):
         numero_documento = self.cleaned_data.get("numero_documento")
-        if Persona.objects.filter(numero_documento=numero_documento).exists():
+        # Excluye el propio registro si está editando
+        qs = Persona.objects.filter(numero_documento=numero_documento)
+        if self.instance.pk:  # Si está editando (el objeto tiene pk)
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise forms.ValidationError("⚠️ La persona con este DNI ya se encuentra registrada.")
         return numero_documento
 

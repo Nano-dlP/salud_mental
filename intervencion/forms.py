@@ -21,3 +21,23 @@ class IntervencionForm(forms.Form):
         )
         intervencion.save()
         return intervencion
+    
+
+class IntervencionModelForm(forms.ModelForm):
+    class Meta:
+        model = Intervencion
+        fields = ['expediente', 'profesional', 'tipo_intervencion', 'fecha_intervencion', 'observacion']
+        widgets = {
+            'expediente': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'profesional': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'tipo_intervencion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'fecha_intervencion': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control form-control-sm'}),
+            'observacion': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+        labels = {
+            'expediente': 'Expediente',
+            'profesional': 'Profesional',
+            'tipo_intervencion': 'Tipo de intervención',
+            'fecha_intervencion': 'Fecha de intervención',
+            'observacion': 'Observaciones',
+        }

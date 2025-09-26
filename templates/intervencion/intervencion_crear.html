@@ -1,0 +1,15 @@
+{% extends 'core/index.html' %}
+{% load static %}
+
+{% block body %}
+<link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+<div class="container mt-4">
+    
+   
+  <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Crear intervención</button>
+  </form>
+</div>
+{% endblock body %}

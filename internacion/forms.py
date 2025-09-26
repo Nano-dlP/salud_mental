@@ -23,12 +23,13 @@ class InternacionForm(forms.ModelForm):
             'fecha_alta': forms.DateInput(attrs={'type': 'date'}),
             'motivo_internacion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'motivo_alta': forms.Select(attrs={'class': 'form-control form-control-sm   '}),
+            'tipo_internacion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'requisitos': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Requisitos'}),
             'intento_suicidio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'modalidad_suicidio': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'posse_adiccion': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'tipo_adiccion': forms.Select(attrs={'class': 'form-control form-control-sm'}), 
-            'fecha_cumplimiento': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'fecha_cumplimiento': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
             'expediente_institucion': 'Expediente Institución',
@@ -36,6 +37,7 @@ class InternacionForm(forms.ModelForm):
             'fecha_alta': 'Fecha de alta',
             'motivo_internacion': 'Motivo de internación',
             'motivo_alta': 'Motivo de alta',
+            'tipo_internacion': 'Tipo de internación',
             'requisitos': 'Requisitos',
             'intento_suicidio': 'Intento de suicidio',
             'modalidad_suicidio': 'Modalidad de suicidio',

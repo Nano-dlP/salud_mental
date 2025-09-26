@@ -69,6 +69,11 @@
                 <div class="form-group col-md-8">
                   {{ form.institucion|add_class:"d-none" }} <!-- campo oculto select -->
                   <label>Institución</label>
+                  {% if form.institucion.errors %}
+                    <div class="text-danger small">
+                      {{ form.institucion.errors }}
+                    </div>
+                  {% endif %}
                   <div class="input-group">
                     <!-- Campo visible con nombre de la institución -->
                     <input type="text" id="nombre_institucion_display" class="form-control"
@@ -92,6 +97,11 @@
                 <div class="form-group col-md-4">
                   {{ form.fecha_de_juzgado.label_tag }}
                   {{ form.fecha_de_juzgado|add_class:"form-control" }}
+                  {% if form.fecha_de_juzgado.errors %}
+                    <div class="text-danger small">
+                      {{ form.fecha_de_juzgado.errors }}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
@@ -100,18 +110,34 @@
                 <div class="form-group col-md-4">
                   {{ form.fecha_de_recepcion.label_tag }}
                   {{ form.fecha_de_recepcion|add_class:"form-control" }}
+                  {% if form.fecha_de_recepcion.errors %}
+                    <div class="text-danger small">
+                      {{ form.fecha_de_recepcion.errors }}
+                    </div>
+                  {% endif %}
+
                 </div>
 
                 <!-- CUIJ -->
                 <div class="form-group col-md-4">
                   {{ form.cuij.label_tag }}
                   {{ form.cuij|add_class:"form-control" }}
+                  {% if form.cuij.errors %}
+                    <div class="text-danger small">
+                      {{ form.cuij.errors }}
+                    </div>
+                  {% endif %}
                 </div>
 
                 <!-- Clave SISFE -->
                 <div class="form-group col-md-4">
                   {{ form.clave_sisfe.label_tag }}
                   {{ form.clave_sisfe|add_class:"form-control" }}
+                  {% if form.sisfe.errors %}
+                    <div class="text-danger small">
+                      {{ form.sisfe.errors }}
+                    </div>
+                  {% endif %}
                 </div>
 
               </div>
@@ -139,18 +165,38 @@
                 <div class="form-group col-md-4">
                   {{ form.tipo_solicitud.label_tag }}
                   {{ form.tipo_solicitud|add_class:"form-select" }}
+                  {% if form.tipo_solicitud.errors %}
+                    <div class="text-danger small">
+                      {{ form.tipo_solicitud.errors }}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-4">
                   {{ form.estado_expediente.label_tag }}
                   {{ form.estado_expediente|add_class:"form-select" }}
+                  {% if form.estado_expediente.errors %}
+                    <div class="text-danger small">
+                      {{ form.estado_expediente.errors }}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-1">
                   {{ form.edad_persona.label_tag }}
                   {{ form.edad_persona|add_class:"form-control" }}
+                  {% if form.edad_persona.errors %}
+                    <div class="text-danger small">
+                      {{ form.edad_persona.errors }}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-3">
                   {{ form.grupo_etario.label_tag }}
                   {{ form.grupo_etario|add_class:"form-select" }}
+                  {% if form.grupo_etario.errors %}
+                    <div class="text-danger small">
+                      {{ form.grupo_etario.errors }}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
@@ -159,10 +205,20 @@
                 <div class="form-group col-md-6">
                   {{ form.tipo_patrocinio.label_tag }}
                   {{ form.tipo_patrocinio|add_class:"form-select" }}
+                  {% if form.tipo_patrocinio.errors %}
+                    <div class="text-danger small">
+                      {{ form.tipo_patrocinio.errors }}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-6">
                   {{ form.resumen_intervencion.label_tag }}
                   {{ form.resumen_intervencion|add_class:"form-control" }}
+                  {% if form.resumen_intervencion.errors %}
+                    <div class="text-danger small">
+                      {{ form.resumen_intervencion.errors }}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
@@ -171,10 +227,20 @@
                 <div class="form-group col-md-6">
                   {{ form.situacion_habitacional_hist.label_tag }}
                   {{ form.situacion_habitacional_hist|add_class:"form-control" }}
+                  {% if form.situacion_habitacional_hist.errors %}
+                    <div class="text-danger small">
+                      {{ form.situacion_habitacional_hist.errors }}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-6">
                   {{ form.observaciones.label_tag }}
                   {{ form.observaciones|add_class:"form-control" }}
+                  {% if form.observaciones.errors %}
+                    <div class="text-danger small">
+                      {{ form.observaciones.errors }}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </div>

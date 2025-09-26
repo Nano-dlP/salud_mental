@@ -218,6 +218,9 @@
               </div>
             </div>
           </div>
+            {% if form.estado %}
+              {{ form.estado.as_hidden }}
+            {% endif %}
 
           <!-- Botones -->
           <div class="text-end mt-4">
