@@ -924,3 +924,13 @@ def expediente_documentos_view(request, expediente_id):
         "formset": formset,
         "expediente": expediente,
     })
+    
+    
+def expediente_list(request):
+    expedientes = Expediente.objects.all()
+    next_url = request.GET.get("next")       # para redirigir después
+
+    return render(request, "expediente/expediente_buscar.html", {
+        "expedientes": expedientes,
+        "next_url": next_url,   # lo mandamos al template
+    })

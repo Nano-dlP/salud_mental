@@ -1,0 +1,22 @@
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Número</th>
+      <th>Seleccionar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for expediente in expedientes %}
+    <tr>
+      <td>{{ expediente.id }}</td>
+      <td>{{ expediente.numero }}</td>
+      <td>
+        <a href="{% url 'intervencion:intervencion_create' %}?expediente_id={{ expediente.id }}" class="btn btn-primary btn-sm">
+          Seleccionar
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

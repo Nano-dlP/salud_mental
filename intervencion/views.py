@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 # Create your views here.
 
 from django.views.generic import CreateView, ListView, UpdateView, TemplateView
@@ -23,3 +24,14 @@ class IntervencionCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
     # Opcional: manejar 403 de forma personalizada
     def handle_no_permission(self):
         return render(self.request, 'core/403.html', status=403)
+    
+
+
+def listar_intervenciones(request):
+    intervenciones = Intervencion.objects.all()
+    next_url = request.GET.get("next")       # para redirigir después
+
+    return render(request, "intervencion/intervecion_agregar.html",{ 
+        "intervenciones": intervenciones,
+        "next_url": next_url,   # lo mandamos al template
+    })

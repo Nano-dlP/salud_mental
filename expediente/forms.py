@@ -62,7 +62,9 @@ class DemandaEspontanea(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     edad_persona = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        label="Edad de la persona:",
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control '})
     )
     situacion_habitacional_hist = forms.CharField(
         required=False,
@@ -176,6 +178,7 @@ class OficioForm(forms.Form):
     )
     edad_persona = forms.IntegerField(
         label="Edad de la persona:",
+        min_value=0,
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     situacion_habitacional_hist = forms.CharField(
@@ -294,6 +297,7 @@ class SecretariaForm(forms.Form):
     )
     edad_persona = forms.IntegerField(
         label="Edad de la persona:",
+        min_value=0,
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     situacion_habitacional_hist = forms.CharField(
