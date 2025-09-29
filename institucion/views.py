@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 # Create your views here.
 from django.views.generic import ListView, CreateView, UpdateView, TemplateView
 from .models import Institucion
@@ -17,7 +18,7 @@ from .forms import InstitucionForm
 
 
 
-class InstitucionCreateView(LoginRequiredMixin, CreateView):
+class InstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Institucion
     template_name = 'institucion/institucion_form.html'
     form_class = InstitucionForm
@@ -36,7 +37,7 @@ class InstitucionCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class InstitucionListView(LoginRequiredMixin, ListView):
+class InstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Institucion
     template_name = 'institucion/institucion_list.html'
     context_object_name = 'instituciones'
@@ -50,7 +51,7 @@ class InstitucionListView(LoginRequiredMixin, ListView):
         return Institucion.objects.filter(estado=True)
     
 
-class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
+class InstitucionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Institucion
     template_name = 'institucion/institucion_form.html'
     form_class = InstitucionForm
@@ -65,7 +66,7 @@ class InstitucionUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class InstitucionDetailView(LoginRequiredMixin, TemplateView):
+class InstitucionDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'institucion/institucion_detail.html'  # Tu template
     login_url = 'core:login'
 
@@ -76,7 +77,8 @@ class InstitucionDetailView(LoginRequiredMixin, TemplateView):
         context['institucion'] = institucion
         return context
     
-
+@login_required(login_url='core:login')
+@permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
 def desactivar_institucion(request, pk):
     institucion = get_object_or_404(Institucion, pk=pk)
     institucion.estado = False
@@ -84,7 +86,8 @@ def desactivar_institucion(request, pk):
     messages.success(request, "Institución desactivada correctamente.")
     return redirect('institucion:institucion_list')
 
-
+@login_required(login_url='core:login')
+@permission_required('institucion.add_institucion', login_url='core:login', raise_exception=True)
 def listar_institucion(request):
     instituciones = Institucion.objects.all()
     medio_id = 2

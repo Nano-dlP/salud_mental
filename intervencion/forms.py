@@ -31,7 +31,7 @@ class IntervencionModelForm(forms.ModelForm):
             'expediente': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'profesional': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'tipo_intervencion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'fecha_intervencion': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control form-control-sm'}),
+            'fecha_intervencion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
             'observacion': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
         labels = {

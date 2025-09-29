@@ -9,27 +9,41 @@ class InternacionForm(forms.ModelForm):
                   'fecha_internacion', 
                   'fecha_alta', 
                   'motivo_internacion', 
-                  'motivo_alta', 
+                  'motivo_alta',
+                  'tipo_internacion',
                   'requisitos', 
                   'intento_suicidio', 
                   'modalidad_suicidio', 
-                  'posse_adiccion', 
+                  'posee_adiccion', 
                   'tipo_adiccion', 
-                  'fecha_cumplimiento']
+                  'fecha_cumplimiento',
+                  'observaciones']
         
         widgets = {
             'expediente_institucion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'fecha_internacion': forms.DateInput(attrs={'type': 'date'}),
             'fecha_alta': forms.DateInput(attrs={'type': 'date'}),
             'motivo_internacion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'motivo_alta': forms.Select(attrs={'class': 'form-control form-control-sm   '}),
+            'motivo_alta': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'tipo_internacion': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'requisitos': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Requisitos'}),
-            'intento_suicidio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'intento_suicidio': forms.CheckboxInput(attrs={
+                                                                'class': 'form-check-input',
+                                                                'style': """transform: scale(1.5); 
+                                                                            cursor: pointer; 
+                                                                            box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                                            border: 1px solid rgba(128, 128, 128, 1);"""}),
             'modalidad_suicidio': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'posse_adiccion': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'posee_adiccion': forms.CheckboxInput(attrs={
+                                                                'class': 'form-check-input',
+                                                                'style': """transform: scale(1.5); 
+                                                                            cursor: pointer; 
+                                                                            box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.5); 
+                                                                            border: 1px solid rgba(128, 128, 128, 1);"""}),
+            
             'tipo_adiccion': forms.Select(attrs={'class': 'form-control form-control-sm'}), 
             'fecha_cumplimiento': forms.DateInput(attrs={'type': 'date'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
         labels = {
             'expediente_institucion': 'Expediente Institución',
@@ -44,6 +58,7 @@ class InternacionForm(forms.ModelForm):
             'posse_adiccion': 'Posee adicción',
             'tipo_adiccion': 'Tipo de adicción',
             'fecha_cumplimiento': 'Fecha de cumplimiento',
+            'observaciones': 'Observaciones',
         }
         
     def clean_fecha_alta(self):

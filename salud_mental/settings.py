@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets_defe.json') as f:
+with open(BASE_DIR / 'secrets_casa.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""
@@ -56,9 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-     'dal',
-     'dal_select2',
-        
+    'widget_tweaks',  # For form rendering tweaks
+    
     'core',  # Your core app
     'persona',  # Your persona app
     'usuario',  # Bootstrap 4 support
@@ -66,7 +65,6 @@ INSTALLED_APPS = [
     'expediente',  # Your expediente app
     'internacion',  # Your internacion app
     'intervencion',  # Your intervencion app
-    'widget_tweaks',
     'profesional',
 ]
 
@@ -158,6 +156,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+LOGIN_URL = 'core:login'  # O el nombre correcto de tu login
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
@@ -169,8 +168,37 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 #
 AUTH_USER_MODEL = 'usuario.CustomUser'
+
+# Configuración del correo electrónico
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Para desarrollo, imprime en la consola
+# Para producción, usa SMTP u otro backend adecuado
+
+if DEBUG:
+    # Desarrollo → imprime mails en consola
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    # Producción → usa SMTP real
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "ssd-1883055-l.dattaweb.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = "nano@defensoriasantafe.gob.ar"
+    EMAIL_HOST_PASSWORD = 'Alvarez1516'
+    EMAIL_FILE_PATH = '/tmp/django-emails'# Configuración de mensajes
+
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',  # Bootstrap usa 'danger' en lugar de 'error'
+}
+
+
+
 
 

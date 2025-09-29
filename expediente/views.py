@@ -4,8 +4,8 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, UpdateView
 from django.shortcuts import redirect
 from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
@@ -20,11 +20,12 @@ from django.views import View
 
 
 
-class ExpedienteListView(LoginRequiredMixin, ListView):
+class ExpedienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Expediente
     template_name = 'expediente/expediente_list.html'
     context_object_name = 'expedientes'
     login_url = 'core:login'
+    permission_required = 'expediente.view_expediente' #Tu app es expediente, modelo Expediente, así que: 'expediente.view_expediente'
 
     def get_queryset(self):
         return Expediente.objects.all().order_by('identificador')
@@ -32,10 +33,11 @@ class ExpedienteListView(LoginRequiredMixin, ListView):
 
 
 # Paso 1: Selección del Medio de Ingreso
-class MedioIngresoSelectView(LoginRequiredMixin, FormView):
+class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/medio_ingreso.html'
     form_class = MedioIngresoForm
     login_url = 'core:login'
+    permission_required = 'expediente.view_medioingreso'
 
     def get_initial(self):
         initial = super().get_initial()
@@ -62,7 +64,7 @@ class MedioIngresoSelectView(LoginRequiredMixin, FormView):
 
 
 
-class ExpedienteUpdateDispatcherView(LoginRequiredMixin, View):
+class ExpedienteUpdateDispatcherView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = 'core:login'
 
     def get(self, request, pk):
@@ -83,7 +85,7 @@ class ExpedienteUpdateDispatcherView(LoginRequiredMixin, View):
 
 
 # Paso 2: Formulario de Expediente con MedioIngreso preseleccionado
-class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
+class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/demanda_espontanea_form.html'
     form_class = DemandaEspontanea
     success_url = reverse_lazy('expediente:expediente_list')
@@ -198,7 +200,7 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, FormView):
         
 
 
-class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
+class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/demanda_espontanea_form.html'
     form_class = DemandaEspontanea
     success_url = reverse_lazy('expediente:expediente_list')
@@ -256,7 +258,7 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
             if expediente.expedientepersona_expediente.exists()
             else None
         )
-         # Indicar que es edición
+        # Indicar que es edición
         context['editar'] = True
 
         # Número de expediente
@@ -303,7 +305,7 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, FormView):
 
 
 
-class OficioCreateView(LoginRequiredMixin, FormView):
+class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/oficio_form.html'
     form_class = OficioForm
     success_url = reverse_lazy('expediente:expediente_list')
@@ -405,7 +407,7 @@ class OficioCreateView(LoginRequiredMixin, FormView):
 
 
 
-class OficioUpdateView(LoginRequiredMixin, FormView):
+class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/oficio_form.html'
     form_class = OficioForm
     success_url = reverse_lazy('expediente:expediente_list')
@@ -529,7 +531,7 @@ class OficioUpdateView(LoginRequiredMixin, FormView):
     
 
 
-class OficioUpdateView_(LoginRequiredMixin, UpdateView):
+class OficioUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'expediente/oficio_form.html'
     form_class = OficioForm
     model = Expediente
@@ -593,7 +595,7 @@ class OficioUpdateView_(LoginRequiredMixin, UpdateView):
 
 
 
-class SecretariaCreateView(LoginRequiredMixin, FormView):
+class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/secretaria_form.html'
     form_class = SecretariaForm
     success_url = reverse_lazy('expediente:expediente_list')
@@ -662,6 +664,7 @@ class SecretariaCreateView(LoginRequiredMixin, FormView):
 
 
 @login_required(login_url = 'core:login')
+@permission_required('expediente.add_expedientedocumento', login_url='core:login', raise_exception=True)
 def expediente_documentos_view(request, expediente_id):
     expediente = get_object_or_404(Expediente, id=expediente_id)
 

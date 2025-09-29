@@ -6,9 +6,13 @@
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 <div class="container w-75 mt-5">
   <div class="card shadow border-0 rounded-4">
-    <div class="card-header bg-primary text-white fw-semibold d-flex align-items-center gap-2">
-      <i class="fas fa-user-edit"></i>
-      <span>Editar perfil de {{ user.first_name }} {{ user.last_name }}</span>
+    <div class="card-header bg-primary text-white fw-semibold d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-user-edit"></i>
+        <span>Editar perfil de {{ user.first_name }} {{ user.last_name }}</span>
+      </div>
+      <!-- Botón de cierre -->
+      <a href="{% url 'core:index' %}" class="btn-close btn-close-white" aria-label="Cerrar"></a>
     </div>
 
     <div class="card-body">
@@ -17,11 +21,11 @@
         <div class="col-md-4 text-center mb-4 mb-md-0">
           {% if user.foto_perfil %}
             <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil"
-                 class="img-thumbnail rounded-circle shadow-sm"
-                 style="width: 150px; height: 150px; object-fit: cover;">
+                class="img-thumbnail rounded-circle shadow-sm"
+                style="width: 150px; height: 150px; object-fit: cover;">
           {% else %}
             <div class="d-flex justify-content-center align-items-center bg-light border rounded-circle shadow-sm"
-                 style="width: 150px; height: 150px; color: #6c757d; font-weight: 500;">
+                style="width: 150px; height: 150px; color: #6c757d; font-weight: 500;">
               Sin foto
             </div>
           {% endif %}

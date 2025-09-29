@@ -1,16 +1,13 @@
-from django.shortcuts import render, redirect
-from django.utils import timezone
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 from django.views.generic import ListView, TemplateView, CreateView
 from .models import Provincia, Localidad
-from persona.models import Persona
+
 from django.urls import reverse_lazy
 from .forms import ProvinciaForm
 from django.http import JsonResponse
 
-from django.contrib.auth.decorators import login_required
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -19,7 +16,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Welcome to the Index Page'
+        context['title'] = 'Bienvenido al Sistema de Gestión de Salud Mental'
         return context
     
 

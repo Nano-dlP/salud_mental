@@ -12,13 +12,6 @@ from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
 
 
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-
-from dal import autocomplete
-
-
-
 class PersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Persona
     template_name = "persona/persona_form.html"

@@ -5,152 +5,197 @@
 {% block page_content %}
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 
-<div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-12">
-      <div class="card shadow-sm border-0 rounded">
-        {% if form.instance.pk %}
-          <div class="card-header bg-warning text-white py-3 text-center rounded-top">
-            <h4 class="mb-0">
-              Editar internación <span class="fw-bold">{{ form.instance.expediente_institucion }}</span>
-            </h4>
-          </div>
-        {% else %}
-          <div class="card-header bg-success text-white py-3 text-center rounded-top">
-            <h4 class="mb-0">
-              Nueva internación
-            </h4>
-          </div>
-        {% endif %}
-        <div class="card-body bg-light">
-          <form method="post" novalidate autocomplete="off">
-            {% csrf_token %}
-
-            {% if form.non_field_errors %}
-              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-            {% endif %}
-
-            <!-- Datos internación -->
-            <div class="card mb-4 border-0">
-              <div class="card-body bg-white rounded shadow-sm">
-                <h5 class="border-bottom pb-2 mb-3 text-secondary">
-                  Datos de la internación
-                </h5>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label for="{{ form.expediente_institucion.id_for_label }}" class="form-label fw-bold text-primary">
-                      {{ form.expediente_institucion.label }}
-                    </label>
-                    {{ form.expediente_institucion|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-4">
-                    <label for="{{ form.fecha_internacion.id_for_label }}" class="form-label">
-                      {{ form.fecha_internacion.label }}
-                    </label>
-                    {{ form.fecha_internacion|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-4">
-                    <label for="{{ form.fecha_alta.id_for_label }}" class="form-label">
-                      {{ form.fecha_alta.label }}
-                    </label>
-                    {{ form.fecha_alta|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row g-3 mt-3">
-                  <div class="col-md-6">
-                    <label for="{{ form.motivo_internacion.id_for_label }}" class="form-label">
-                      {{ form.motivo_internacion.label }}
-                    </label>
-                    {{ form.motivo_internacion|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-6">
-                    <label for="{{ form.tipo_internacion.id_for_label }}" class="form-label">
-                      {{ form.tipo_internacion.label }}
-                    </label>
-                    {{ form.tipo_internacion|add_class:"form-control" }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Información adicional -->
-            <div class="card mb-4 border-0">
-              <div class="card-body bg-white rounded shadow-sm">
-                <h5 class="border-bottom pb-2 mb-3 text-secondary">
-                  Información adicional
-                </h5>
-                <div class="row g-3">
-                  <div class="col-md-3">
-                    <label for="{{ form.requisitos.id_for_label }}" class="form-label">
-                      {{ form.requisitos.label }}
-                    </label>
-                    {{ form.requisitos|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-3">
-                    <label for="{{ form.intento_suicidio.id_for_label }}" class="form-label">
-                      {{ form.intento_suicidio.label }}
-                    </label>
-                    {{ form.intento_suicidio|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-6">
-                    <label for="{{ form.modalidad_suicidio.id_for_label }}" class="form-label">
-                      {{ form.modalidad_suicidio.label }}
-                    </label>
-                    {{ form.modalidad_suicidio|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row g-3 mt-3">
-                  <div class="col-md-5">
-                    <label for="{{ form.posse_adiccion.id_for_label }}" class="form-label">
-                      {{ form.posse_adiccion.label }}
-                    </label>
-                    {{ form.posse_adiccion|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-3">
-                    <label for="{{ form.tipo_adiccion.id_for_label }}" class="form-label">
-                      {{ form.tipo_adiccion.label }}
-                    </label>
-                    {{ form.tipo_adiccion|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-2">
-                    <label for="{{ form.fecha_cumplimiento.id_for_label }}" class="form-label">
-                      {{ form.fecha_cumplimiento.label }}
-                    </label>
-                    {{ form.fecha_cumplimiento|add_class:"form-control" }}
-                  </div>
-                  <div class="col-md-2">
-                    <label for="{{ form.observaciones.id_for_label }}" class="form-label">
-                      {{ form.observaciones.label }}
-                    </label>
-                    {{ form.observaciones|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row g-3 mt-3">
-                  <div class="col-md-6">
-                    <label for="{{ form.estado.id_for_label }}" class="form-label">
-                      {{ form.estado.label }}
-                    </label>
-                    {{ form.estado|add_class:"form-select" }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="d-flex justify-content-end gap-2 mt-4">
-              <button type="submit" class="btn btn-primary btn-lg px-4">
-                Guardar
-              </button>
-              <a href="{% url 'internacion:internacion_list' %}" class="btn btn-outline-secondary btn-lg px-4">
-                Cancelar
-              </a>
-            </div>
-          </form>
+<div class="container-fluid">
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+      
+      {% if form.instance.pk %}
+        <div class="card-header bg-warning text-white py-2 px-3 text-center">
+          <h5 class="mb-3">Editar internación {{ form.instance.expediente_institucion }}</h5>
         </div>
+      {% else %}
+        <div class="card-header bg-success text-white py-2 px-3 text-center">
+          <h5 class="mb-0 w-100">Nueva Internación</h5>
+        </div>
+      {% endif %}
+
+      <div class="card-body">
+        <form method="post" novalidate class="small-form">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <!-- Datos internación -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="border-bottom pb-2 mb-3">Datos de la internación</h6>
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="{{ form.expediente_institucion.id_for_label }}" class="form-label">
+                    {{ form.expediente_institucion.label }}
+                  </label>
+                  {{ form.expediente_institucion|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                  <label for="{{ form.fecha_internacion.id_for_label }}" class="form-label">
+                    {{ form.fecha_internacion.label }}
+                  </label>
+                  {{ form.fecha_internacion|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                  <label for="{{ form.fecha_alta.id_for_label }}" class="form-label">
+                    {{ form.fecha_alta.label }}
+                  </label>
+                  {{ form.fecha_alta|add_class:"form-control" }}
+                </div>
+              </div>
+
+              <div class="row g-3 mt-3">
+                <div class="col-md-6">
+                  <label for="{{ form.motivo_internacion.id_for_label }}" class="form-label">
+                    {{ form.motivo_internacion.label }}
+                  </label>
+                  {{ form.motivo_internacion|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.tipo_internacion.id_for_label }}" class="form-label">
+                    {{ form.tipo_internacion.label }}
+                  </label>
+                  {{ form.tipo_internacion|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información adicional -->
+<div class="card">
+  <div class="card-body">
+    <h6 class="border-bottom pb-2 mb-3">Información adicional</h6>
+
+    <!-- requisitos + intento suicidio + modalidad -->
+    <div class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label for="{{ form.requisitos.id_for_label }}" class="form-label">
+          {{ form.requisitos.label }}
+        </label>
+        {{ form.requisitos|add_class:"form-control" }}
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-check">
+          {{ form.intento_suicidio|add_class:"form-check-input" }}
+          <label for="{{ form.intento_suicidio.id_for_label }}" class="form-check-label ms-2">
+            {{ form.intento_suicidio.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="col-md-4" id="modalidad_suicidio_container">
+        <label for="{{ form.modalidad_suicidio.id_for_label }}" class="form-label">
+          {{ form.modalidad_suicidio.label }}
+        </label>
+        {{ form.modalidad_suicidio|add_class:"form-control" }}
+      </div>
+    </div>
+
+    <!-- posee adiccion + tipo adiccion + fecha cumplimiento -->
+    <div class="row g-3 mt-3 align-items-center">
+      <div class="col-md-2">
+        <div class="form-check">
+          {{ form.posee_adiccion|add_class:"form-check-input" }}
+          <label for="{{ form.posee_adiccion.id_for_label }}" class="form-check-label ms-2">
+            {{ form.posee_adiccion.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="col-md-4" id="tipo_adiccion_container">
+        <label for="{{ form.tipo_adiccion.id_for_label }}" class="form-label">
+          {{ form.tipo_adiccion.label }}
+        </label>
+        {{ form.tipo_adiccion|add_class:"form-control" }}
+      </div>
+
+      <div class="col-md-4">
+        <label for="{{ form.fecha_cumplimiento.id_for_label }}" class="form-label">
+          {{ form.fecha_cumplimiento.label }}
+        </label>
+        {{ form.fecha_cumplimiento|add_class:"form-control" }}
+      </div>
+    </div>
+
+    <!-- observaciones -->
+    <div class="row g-3 mt-3">
+      <div class="col-md-12">
+        <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+          {{ form.observaciones.label }}
+        </label>
+        {{ form.observaciones|add_class:"form-control" }}
+      </div>
+    </div>
+
+    <!-- estado -->
+    <div class="row g-3 mt-3 align-items-center">
+      <div class="col-md-6">
+        <label for="{{ form.estado.id_for_label }}" class="form-label">
+          {{ form.estado.label }}
+        </label>
+        {{ form.estado|add_class:"form-select" }}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-4">
+              Guardar
+            </button>
+            <a href="{% url 'internacion:internacion_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+              Cancelar
+            </a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
 
 <script src="{% static 'js/bootstrap5/bootstrap.bundle.min.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // intento suicidio → modalidad suicidio
+    const checkboxIntento = document.getElementById('id_intento_suicidio');
+    const modalidadContainer = document.getElementById('modalidad_suicidio_container');
+    const selectModalidad = document.getElementById('id_modalidad_suicidio');
+
+    // posee adiccion → tipo adiccion
+    const checkboxAdiccion = document.getElementById('id_posee_adiccion');
+    const tipoAdiccionContainer = document.getElementById('tipo_adiccion_container');
+    const selectTipoAdiccion = document.getElementById('id_tipo_adiccion');
+
+    function toggleField(checkbox, container, select) {
+      if (checkbox.checked) {
+        container.style.display = 'block';
+        select.disabled = false;
+      } else {
+        container.style.display = 'none';
+        select.disabled = true;
+      }
+    }
+
+    // eventos
+    checkboxIntento.addEventListener('change', () => toggleField(checkboxIntento, modalidadContainer, selectModalidad));
+    checkboxAdiccion.addEventListener('change', () => toggleField(checkboxAdiccion, tipoAdiccionContainer, selectTipoAdiccion));
+
+    // estado inicial
+    toggleField(checkboxIntento, modalidadContainer, selectModalidad);
+    toggleField(checkboxAdiccion, tipoAdiccionContainer, selectTipoAdiccion);
+  });
+</script>
 {% endblock page_content %}

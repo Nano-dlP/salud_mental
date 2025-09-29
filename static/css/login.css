@@ -1,0 +1,39 @@
+
+body {
+    background: linear-gradient(135deg, #a6adc2ff 0%, #687cb9ff 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+.login-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    }
+
+.login-image {
+    background: #f8f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    }
+
+.login-image img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    }
+
+.form-control-user {
+    border-radius: 10rem;
+    padding: 1rem;
+    font-size: 0.9rem;
+    }
+
+.btn-user {
+    border-radius: 10rem;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    }

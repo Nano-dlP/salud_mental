@@ -1,15 +1,42 @@
 {% extends 'core/index.html' %}
+{% load widget_tweaks %}
 {% load static %}
 
-{% block body %}
+{% block page_content %}
+
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
-<div class="container mt-4">
-    
-   
-  <form method="post" novalidate>
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Crear intervención</button>
-  </form>
+
+<div class="container-fluid">
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded col-md-12 mx-auto">
+      
+      {% if form.instance.pk %}
+        <div class="card-header bg-warning text-white py-2 px-3 text-center">
+          <h5 class="mb-3">Editar intervención </h5>
+        </div>
+      {% else %}
+        <div class="card-header bg-success text-white py-2 px-3 text-center">
+          <h5 class="mb-0 w-100">Nueva intervención</h5>
+        </div>
+      {% endif %}
+
+      <div class="card-body">
+        <form method="post" novalidate class="small-form">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          {{ form.as_p }}
+
+          <button type="submit" class="btn btn-primary">Crear intervención</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock body %}
+
+{% endblock page_content %}
