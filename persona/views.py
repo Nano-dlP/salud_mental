@@ -38,12 +38,14 @@ class PersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
 
 
 
-class PersonaListView(LoginRequiredMixin, ListView):
+class PersonaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Persona
     template_name = "persona/persona_list.html"
     context_object_name = 'personas'
     login_url = 'core:login'
-    
+    permission_required = 'persona.puede_ver_persona'  # reemplaza 'persona' por tu app_label
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+
     
     def get_queryset(self):
         # Solo personas activas
@@ -51,13 +53,15 @@ class PersonaListView(LoginRequiredMixin, ListView):
     
 
 
-class PersonaUpdateView(LoginRequiredMixin, UpdateView):
+class PersonaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Persona
     template_name = 'persona/persona_form.html'
     form_class = PersonaForm
     success_url = reverse_lazy('persona:persona_list')
     context_object_name = 'personas'
     login_url = 'core:login'
+    permission_required = 'persona.puede_editar_persona'  # reemplaza 'persona' por tu app_label
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         messages.success(self.request, "Perfil actualizado correctamente.")
@@ -65,8 +69,11 @@ class PersonaUpdateView(LoginRequiredMixin, UpdateView):
 
 
 
-class PersonaDetailView(TemplateView):
+class PersonaDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'persona/persona_detail.html'  # Tu template
+    login_url = 'core:login'
+    permission_required = 'persona.puede_ver_persona'  # reemplaza 'persona' por tu app_label
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -245,7 +245,20 @@
               </div>
             </div>
           </div>
-
+       <!-- Documentos Adjuntos -->
+          <div class="card p-3 mb-3 border-0 shadow-sm">
+            <h6 class="mb-3">Documentos</h6>
+              {{ documento_formset.management_form }}
+              <div class="row">
+              {% for doc_form in documento_formset %}
+              <div class="col-md-6 mb-3">
+                <div class="  border p-3 h-100">
+                    {{ doc_form.as_p }}
+                  </div>
+              </div>
+              {% endfor %}
+              </div>
+          </div>
           <!-- Botones -->
           <div class="text-end mt-4">
             <button type="submit" class="btn btn-primary">Guardar</button>

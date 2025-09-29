@@ -1,35 +1,44 @@
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from .models import Profesional
 from .forms import ProfesionalForm
 
 
-class ProfesionalCreateView(CreateView):
+class ProfesionalCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Profesional
     form_class = ProfesionalForm
     template_name = "profesional/profesional_create.html"
     success_url = reverse_lazy("profesional:profesional_list")  # redirige al listado después de guardar
+    login_url = 'core:login'
+    permission_required = 'profesional.add_profesional'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
 
-class ProfesionalListView(ListView):
+class ProfesionalListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Profesional
     template_name = "profesional/profesional_list.html"
     context_object_name = "profesionales"
     queryset = Profesional.objects.all().order_by('user__first_name', 'user__last_name')
-    
-    
-class ProfesionalUpdateView(UpdateView):
+    login_url = 'core:login'
+    permission_required = 'profesional.view_profesional'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+
+
+class ProfesionalUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Profesional
     form_class = ProfesionalForm
     template_name = "profesional/profesional_create.html"
     success_url = reverse_lazy("profesional:profesional_list")
+    login_url = 'core:login'
+    permission_required = 'profesional.change_profesional'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
-class ProfesionalDeleteView(DeleteView):
+
+class ProfesionalDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Profesional
     template_name = "profesional_confirm_delete.html"
-    # The line `success_url = reverse_lazy("profesionalprofesional_list")` in the
-    # `ProfesionalDeleteView` class is setting the URL to redirect to after successfully deleting a
-    # `Profesional` object. However, there seems to be a typo in the URL name. It should be
-    # `success_url = reverse_lazy("profesional:profesional_list")` instead of `success_url =
-    # reverse_lazy("profesionalprofesional_list")`.
-    success_url = reverse_lazy("profesional:profesional_list")    
+    success_url = reverse_lazy("profesional:profesional_list")
+    login_url = 'core:login'
+    permission_required = 'profesional.delete_profesional'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso

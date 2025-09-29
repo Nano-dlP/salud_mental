@@ -470,30 +470,39 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     def form_invalid(self, form):
         messages.error(self.request, "Hubo errores al guardar el expediente. Verifique los campos.")
-        return super().form_invalid(form)
+        return super().form_invalid(form)     
+
+
 
 
 
 class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-    template_name = 'expediente/oficio_form.html'
-    form_class = OficioForm
-    success_url = reverse_lazy('expediente:expediente_list')
-    login_url = 'core:login'
-    permission_required = 'expediente.change_expediente'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    # Esta vista permite editar un expediente tipo "oficio"
+    # Requiere que el usuario esté logueado y tenga permisos para modificar expedientes
+
+    template_name = 'expediente/oficio_form.html'  # HTML que usará la vista
+    form_class = OficioForm  # Formulario que se usará
+    success_url = reverse_lazy('expediente:expediente_list')  # A dónde redirige al finalizar
+    login_url = 'core:login'  # A dónde redirige si no está logueado
+    permission_required = 'expediente.change_expediente'  # Permiso necesario
+    raise_exception = True  # Si no tiene permiso, muestra error 403
 
     def get_object(self):
-        # Obtiene el expediente por la pk de la URL
+        # Busca el expediente por su pk (clave primaria) en la URL
+        pk = self.kwargs.get("pk")
         return get_object_or_404(Expediente, pk=self.kwargs['pk'])
 
     def get_initial(self):
-        # Carga los datos existentes del expediente en el formulario
-        expediente = self.get_object()
+        # Prepara los datos iniciales para el formulario (lo que aparece ya cargado)
         initial = super().get_initial()
-        institucion_rel = expediente.expedienteinstitucion_expediente.first()
+        expediente = self.get_object()
 
+        # Obtiene la institución vinculada al expediente
+        institucion_rel = expediente.expedienteinstitucion_expediente.first()
+        
+        # Carga todos los campos del expediente en el formulario
         initial.update({
-            'institucion': institucion_rel.institucion if institucion_rel else None,
+            'institucion': institucion_rel,
             'fecha_creacion': expediente.fecha_creacion,
             'sede': expediente.sede,
             'medio_ingreso': expediente.medio_ingreso,
@@ -514,6 +523,7 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         return initial
 
     def get_form(self, form_class=None):
+        # Crea el formulario y desactiva el campo medio_ingreso para que no se modifique
         if form_class is None:
             form_class = self.get_form_class()
         form = form_class(user=self.request.user, **self.get_form_kwargs())
@@ -521,35 +531,46 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         return form
 
     def get_context_data(self, **kwargs):
+        # Prepara información extra para el template
         context = super().get_context_data(**kwargs)
         expediente = self.get_object()
+
+        # Si el usuario envía datos (POST), incluye los archivos que subió
         if self.request.POST:
             context['documento_formset'] = ExpedienteDocumentoFormSet(
-                self.request.POST, self.request.FILES, queryset=expediente.documentos.all()
+                self.request.POST,
+                self.request.FILES,
+                queryset=expediente.documentos.all()
             )
         else:
-            context['documento_formset'] = ExpedienteDocumentoFormSet(queryset=expediente.documentos.all())
+            # Si es solo para mostrar (GET), muestra los documentos existentes
+            context['documento_formset'] = ExpedienteDocumentoFormSet(
+                queryset=expediente.documentos.all()
+            )
 
-        institucion_rel = expediente.expedienteinstitucion_expediente.first()
-        context['institucion_seleccionada'] = institucion_rel.institucion if institucion_rel else None
+        # Busca la institución asociada para mostrar en el formulario
+        context['institucion_seleccionada'] = (
+            expediente.expedienteinstitucion_expediente.first().institucion
+            if expediente.expedienteinstitucion_expediente.exists()
+            else None
+        )
+        
+        context['editar'] = True  # Indica que la vista es de edición
+        context['numero_expediente'] = expediente.identificador  # Número identificador del expediente
         return context
+    
 
     def form_valid(self, form):
+        # Esta función se ejecuta cuando el formulario es válido y va a guardar los cambios
         expediente = self.get_object()
         context = self.get_context_data()
-        documento_formset = context['documento_formset']
+        documento_formset = context.get('documento_formset')
 
+        # Verifica que los documentos sean válidos
         if not documento_formset.is_valid():
-            messages.error(self.request, "Hay errores en los documentos. Corrígelos antes de continuar.")
             return self.form_invalid(form)
 
-        institucion = form.cleaned_data.get('institucion')
-        if not institucion:
-            form.add_error('institucion', 'Debe seleccionar una institución')
-            messages.error(self.request, "Debe seleccionar una institución para actualizar el expediente.")
-            return self.form_invalid(form)
-
-        # Actualiza los datos del expediente
+        # Actualiza los datos del expediente con la información del formulario
         expediente.sede = form.cleaned_data.get('sede')
         expediente.fecha_creacion = form.cleaned_data.get('fecha_creacion')
         expediente.medio_ingreso = form.cleaned_data.get('medio_ingreso')
@@ -566,34 +587,27 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         expediente.tipo_patrocinio = form.cleaned_data.get('tipo_patrocinio')
         expediente.resumen_intervencion = form.cleaned_data.get('resumen_intervencion')
         expediente.observaciones = form.cleaned_data.get('observaciones')
-        expediente.save()
+        expediente.save()  # Guarda los cambios en la base de datos
 
-        # Actualiza o crea relación con institución
-        try:
-            rol = Rol.objects.get(pk=2)
-        except Rol.DoesNotExist:
-            form.add_error(None, 'El rol predeterminado no existe.')
-            return self.form_invalid(form)
-
+        # Actualiza la institución asociada al expediente
+        institucion = form.cleaned_data['institucion']
+        rol = Rol.objects.get(pk=1)
         ExpedienteInstitucion.objects.update_or_create(
             expediente=expediente,
             rol=rol,
             defaults={'institucion': institucion}
-        )
+        ) 
 
-        # Actualiza documentos vinculados al expediente
+        # Guarda los documentos relacionados al expediente
         for documento_form in documento_formset:
-            if documento_form.cleaned_data.get('archivo'):
+            if documento_form.cleaned_data:
                 documento = documento_form.save(commit=False)
                 documento.expediente = expediente
                 documento.save()
 
-        messages.success(self.request, "El expediente fue actualizado correctamente.")
-        return super().form_valid(form)   
+        return super().form_valid(form)
+    
 
-    def form_invalid(self, form):
-        messages.error(self.request, "Hubo errores al actualizar el expediente. Verifique los campos.")
-        return super().form_invalid(form)
 
 # class OficioUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 #     # Establece el HTML que se usará para mostrar el formulario de edición

@@ -1,5 +1,5 @@
 # cuentas/views.py
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import UpdateView
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -11,11 +11,13 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 User = get_user_model()
 
-class PerfilUsuarioUpdateView(LoginRequiredMixin, UpdateView):
+class PerfilUsuarioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = User
     form_class = PerfilUsuarioForm
     template_name = 'usuario/usuario_edit.html'
     success_url = reverse_lazy('usuario:editar_perfil')  # redirige a sí misma
+    permission_required = 'auth.change_user'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def get_object(self, queryset=None):
         return self.request.user  # el usuario logueado
@@ -26,10 +28,12 @@ class PerfilUsuarioUpdateView(LoginRequiredMixin, UpdateView):
 
 
 
-class CambiarContrasenaView(LoginRequiredMixin, PasswordChangeView):
+class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, PasswordChangeView):
     form_class = PasswordChangeForm
     template_name = 'usuario/usuario_contrasenia.html'
     success_url = reverse_lazy('usuario:editar_perfil')
+    permission_required = 'auth.change_user'
+    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         messages.success(self.request, "Contraseña actualizada correctamente.")
