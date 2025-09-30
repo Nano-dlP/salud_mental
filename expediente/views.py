@@ -374,7 +374,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             form_class = self.get_form_class()
         form = form_class(user=self.request.user, **self.get_form_kwargs())
         # Campo de medio_ingreso: solo lectura visual, pero editable internamente.
-        form.fields['medio_ingreso'].widget.attrs['readonly'] = True
+        form.fields['medio_ingreso'].disabled = True
         form.fields['medio_ingreso'].widget.attrs['style'] = 'pointer-events: none; background-color: #f8f9fa;'  # Estilo visual
         return form
 
