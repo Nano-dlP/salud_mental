@@ -40,7 +40,7 @@ class ExpedienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         # Retorna todos los expedientes ordenados por identificador
-        return Expediente.objects.all().order_by('identificador')
+        return Expediente.objects.all().order_by('-identificador')
 
 # Vista para seleccionar el medio de ingreso, primer paso para crear un expediente
 class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -50,11 +50,7 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
     permission_required = 'expediente.view_medioingreso'
     raise_exception = True
 
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['medio_ingreso'] = 1  # Valor por defecto (ID 1)
-        return initial
-
+ 
     def form_valid(self, form):
         # Esta función decide a qué formulario redirigir según el medio de ingreso elegido
         medio_ingreso_id = form.cleaned_data['medio_ingreso'].id
@@ -62,7 +58,13 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
         if medio_ingreso_id in [1,] :
             # Si el medio es 1, redirige a crear expediente con ese medio
             return redirect('expediente:expediente_create_with_medio', medio_id=medio_ingreso_id)
-        elif  medio_ingreso_id in [2, 3, 4, 5, 6] :
+        elif  medio_ingreso_id in [2, ] :
+            # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
+            return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
+        elif  medio_ingreso_id in [3, ] :
+            # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
+            return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
+        elif  medio_ingreso_id in [4, ] :
             # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
             return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
         elif  medio_ingreso_id in [7,] :
@@ -85,9 +87,18 @@ class ExpedienteUpdateDispatcherView(LoginRequiredMixin, PermissionRequiredMixin
         # Según el medio de ingreso, redirige al formulario correcto
         # Para editar cada tipo de expediente usamos las vistas ya definidas y registradas en urls.py
         # Cada tipo de expediente tiene su propia vista de edición
+
+        medios_oficio = [
+            "OFICIO POR MAIL",
+            "OFICIO PAPEL",
+            "DERIVACION",
+            "MAIL EFECTOR",
+            "COMUNICACION TELEFONICA EQUIPO TRATANTE",
+        ]
+
         if medio == "DEMANDA ESPONTANEA":
             return redirect('expediente:demanda_espontanea_update', pk=pk)
-        elif medio == "OFICIO POR MAIL":
+        elif medio in medios_oficio:
             return redirect('expediente:oficio_update', pk=pk)
         elif medio == "SOLICITUD SECRETARIA EJECUTIVA (DE OFICIO)":
             return redirect('expediente:secretaria_update', pk=pk)
@@ -337,20 +348,19 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expediente'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = True
 
     def get_initial(self):
         initial = super().get_initial()
         medio_id = self.kwargs.get('medio_id')
         institucion_id = self.request.GET.get('institucion_id')
 
-        # Medio de ingreso
+        # Set medio_ingreso from URL only once (not in POST)
         if medio_id:
             medio = get_object_or_404(MedioIngreso, pk=medio_id)
             initial['medio_ingreso'] = medio
             initial['fecha_creacion'] = datetime.date.today()
 
-        # Institución opcional (solo si viene por GET)
         if institucion_id:
             try:
                 initial['institucion'] = Institucion.objects.get(pk=institucion_id)
@@ -363,12 +373,12 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         if form_class is None:
             form_class = self.get_form_class()
         form = form_class(user=self.request.user, **self.get_form_kwargs())
-        # Deshabilitar campo de medio_ingreso para que no se modifique
-        form.fields['medio_ingreso'].disabled = True
+        # Campo de medio_ingreso: solo lectura visual, pero editable internamente.
+        form.fields['medio_ingreso'].widget.attrs['readonly'] = True
+        form.fields['medio_ingreso'].widget.attrs['style'] = 'pointer-events: none; background-color: #f8f9fa;'  # Estilo visual
         return form
-    
+
     def get_context_data(self, **kwargs):
-        # Prepara datos adicionales para la plantilla, como el formset de documentos
         context = super().get_context_data(**kwargs)
         if self.request.POST:
             context['documento_formset'] = ExpedienteDocumentoFormSet(
@@ -383,9 +393,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return context
 
-
     def form_valid(self, form):
-        # Si el formulario es válido, crea el expediente y las relaciones necesarias
         context = self.get_context_data()
         documento_formset = context['documento_formset']
 
@@ -393,18 +401,19 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             messages.error(self.request, "Hay errores en los documentos. Corrígelos antes de continuar.")
             return self.form_invalid(form)
 
-        # Validar que si se seleccionó institución, exista
         institucion = form.cleaned_data.get('institucion')
         if not institucion:
             form.add_error('institucion', 'Debe seleccionar una institución')
             messages.error(self.request, "Debe seleccionar una institución para crear el expediente.")
             return self.form_invalid(form)
 
-        # Obtener datos del formulario
-        
+        # Obtiene el medio_ingreso SIEMPRE desde la URL, no del form.cleaned_data 
+        medio_id = self.kwargs.get('medio_id')
+        medio_ingreso = get_object_or_404(MedioIngreso, pk=medio_id)
+
+        # Obtiene el resto normalmente
         sede = form.cleaned_data.get('sede')
         fecha_creacion = form.cleaned_data.get('fecha_creacion')
-        medio_ingreso = form.cleaned_data.get('medio_ingreso')
         fecha_de_juzgado = form.cleaned_data.get('fecha_de_juzgado')
         fecha_de_recepcion = form.cleaned_data.get('fecha_de_recepcion')
         expediente_fisico = form.cleaned_data.get('expediente_fisico')
@@ -419,18 +428,17 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         resumen_intervencion = form.cleaned_data.get('resumen_intervencion')
         observaciones = form.cleaned_data.get('observaciones')
 
-        # Obtener rol predeterminado
         try:
             rol = Rol.objects.get(pk=2)
         except Rol.DoesNotExist:
             form.add_error(None, 'El rol predeterminado no existe.')
             return self.form_invalid(form)
 
-        # Crear expediente sin pasar institucion (se guarda en relación aparte)
+        # Crea el expediente con el medio_ingreso correcto
         expediente = Expediente.objects.create(
             sede=sede,
             fecha_creacion=fecha_creacion,
-            medio_ingreso=medio_ingreso,
+            medio_ingreso=medio_ingreso,  # <-- SIEMPRE desde URL
             fecha_de_juzgado=fecha_de_juzgado,
             fecha_de_recepcion=fecha_de_recepcion,
             expediente_fisico=expediente_fisico,
@@ -446,7 +454,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             observaciones=observaciones
         )
 
-        # Guardar relación con institución (si existe)
+        # Relación con institución
         if institucion:
             try:
                 ExpedienteInstitucion.objects.create(
@@ -458,7 +466,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 messages.error(self.request, f"No se pudo registrar la institución: {e}")
                 return self.form_invalid(form)
 
-        # Guarda los documentos vinculados al expediente
+        # Vincula documentos
         for documento_form in documento_formset:
             if documento_form.cleaned_data.get('archivo'):
                 documento = documento_form.save(commit=False)
@@ -466,13 +474,11 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 documento.save()
 
         messages.success(self.request, "El expediente fue creado correctamente.")
-        return super().form_valid(form)   
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Hubo errores al guardar el expediente. Verifique los campos.")
         return super().form_invalid(form)
-
-
 
 class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/oficio_form.html'
