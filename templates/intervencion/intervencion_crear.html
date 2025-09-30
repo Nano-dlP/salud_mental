@@ -6,102 +6,121 @@
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 
 <div class="container-fluid">
-  <div class="container mt-4">
-    <div class="card shadow-sm border-0 rounded col-md-10 mx-auto">
+  <div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4 col-lg-8 mx-auto animate__animated animate__fadeIn">
 
-      <div class="card-header bg-success text-white py-2 px-3 text-center">
-        <h5 class="mb-0 w-100">{% if editar %}Editar intervención{% else %}Nueva intervención{% endif %}</h5>
+      <div class="card-header bg-gradient bg-success text-white py-3 px-4 text-center rounded-top-4">
+        <h4 class="mb-0">
+          <i class="fas fa-file-medical"></i>
+          {% if editar %}Editar intervención{% else %}Nueva intervención{% endif %}
+        </h4>
       </div>
 
-      <div class="card-body">
-        <form method="post" novalidate>
+      <div class="card-body bg-light rounded-bottom-4">
+        <form method="post" novalidate autocomplete="off">
           {% csrf_token %}
           {% if form.non_field_errors %}
-            <div class="alert alert-danger">
+            <div class="alert alert-danger mb-4">
+              <i class="fas fa-exclamation-triangle"></i>
               {{ form.non_field_errors }}
             </div>
           {% endif %}
 
-          <!-- Bloque de búsqueda de expediente -->
-          <div class="form-row align-items-end mt-3">
-            <div class="form-group col-md-6">
+          <!-- Bloque de búsqueda de expediente y fecha -->
+          <div class="row align-items-end mb-4">
+            <div class="col-md-8 mb-3 mb-md-0">
+              <label class="fw-bold mb-2">
+                <i class="fas fa-folder-open me-2"></i>Expediente
+              </label>
               {{ form.expediente|add_class:"d-none" }} <!-- campo select oculto -->
-              <label>Expediente</label>
               <div class="input-group">
-                <!-- Campo visible con número/nombre del expediente -->
-                <input type="text" id="numero_expediente_display" class="form-control"
-                       value="{% if expediente_seleccionado %}{{ expediente_seleccionado.numero }}{% endif %}"
+                <input type="text"
+                       id="numero_expediente_display"
+                       class="form-control form-control-lg bg-white border rounded-start"
+                       value="{% if expediente_seleccionado %}{{ expediente_seleccionado.identificador }}{% endif %}"
                        placeholder="Seleccione expediente"
                        {% if editar %}readonly{% endif %}>
-                <!-- Botón agregar nuevo expediente -->
-                <a href="#" 
-                   class="btn btn-outline-secondary ms-2"
-                   title="Agregar expediente"
-                   {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                  <i class="fas fa-plus"></i>
-                </a>
-                <!-- Botón buscar expediente -->
-                <a href="{% url 'expediente:expediente_buscar' %}?next={{ request.path }}" 
-                   class="btn btn-outline-secondary ms-2"
+                <a href="{% url 'expediente:expediente_buscar' %}?next={{ request.path }}"
+                   class="btn btn-outline-success"
                    title="Buscar expediente"
                    {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
                   <i class="fas fa-search"></i>
                 </a>
-                {% if form.expediente.errors %}
-                  <div class="text-danger small">
-                    {{ form.expediente.errors }}
-                  </div>
-                {% endif %} 
               </div>
-            </div>
-          </div>
-
-          <!-- Otros campos del formulario -->
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              {{ form.profesional.label_tag }}
-              {{ form.profesional|add_class:"form-select" }}
-              {% if form.profesional.errors %}
-                <div class="text-danger small">{{ form.profesional.errors }}</div>
+              {% if form.expediente.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.expediente.errors }}
+                </div>
               {% endif %}
             </div>
-            <div class="form-group col-md-6">
-              {{ form.tipo_intervencion.label_tag }}
-              {{ form.tipo_intervencion|add_class:"form-select" }}
-              {% if form.tipo_intervencion.errors %}
-                <div class="text-danger small">{{ form.tipo_intervencion.errors }}</div>
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              {{ form.fecha_intervencion.label_tag }}
-              {{ form.fecha_intervencion|add_class:"form-control" }}
+            <div class="col-md-4">
+              <label class="fw-bold mb-2">
+                <i class="fas fa-calendar-day me-2"></i>Fecha de intervención
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <i class="fas fa-calendar-alt text-success"></i>
+                </span>
+                {{ form.fecha_intervencion|add_class:"form-control form-control-lg border rounded-end"|attr:"style:height:52px;" }}
+              </div>
               {% if form.fecha_intervencion.errors %}
-                <div class="text-danger small">{{ form.fecha_intervencion.errors }}</div>
+                <div class="text-danger small mt-1">{{ form.fecha_intervencion.errors }}</div>
               {% endif %}
             </div>
-            <div class="form-group col-md-6">
-              {{ form.observacion.label_tag }}
-              {{ form.observacion|add_class:"form-control"|attr:"rows:3" }}
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="fw-bold mb-2">
+                <i class="fas fa-user-md me-2"></i>Profesional
+              </label>
+              {{ form.profesional|add_class:"form-select form-select-lg border" }}
+              {% if form.profesional.errors %}
+                <div class="text-danger small mt-1">{{ form.profesional.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold mb-2">
+                <i class="fas fa-stethoscope me-2"></i>Tipo de intervención
+              </label>
+              {{ form.tipo_intervencion|add_class:"form-select form-select-lg border" }}
+              {% if form.tipo_intervencion.errors %}
+                <div class="text-danger small mt-1">{{ form.tipo_intervencion.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col">
+              <label class="fw-bold mb-2">
+                <i class="fas fa-comment-medical me-2"></i>Observaciones
+              </label>
+              {{ form.observacion|add_class:"form-control form-control-lg border"|attr:"rows:3" }}
               {% if form.observacion.errors %}
-                <div class="text-danger small">{{ form.observacion.errors }}</div>
+                <div class="text-danger small mt-1">{{ form.observacion.errors }}</div>
               {% endif %}
             </div>
           </div>
 
-          <!-- Botón guardar -->
-          <div class="form-row">
-            <div class="col text-right">
-              <button type="submit" class="btn btn-primary">Crear intervención</button>
-              <a href="#" class="btn btn-outline-secondary">Cancelar</a>
+          <div class="row mt-4">
+            <div class="col text-end">
+              <button type="submit" class="btn btn-success px-4 me-2 shadow-sm">
+                <i class="fas fa-save me-2"></i>{% if editar %}Guardar cambios{% else %}Crear intervención{% endif %}
+              </button>
+              <a href="{% url 'intervencion:intervencion_list' %}" class="btn btn-outline-secondary px-4 shadow-sm">
+                <i class="fas fa-times me-2"></i>Cancelar
+              </a>
             </div>
           </div>
-
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Animación para la card (opcional) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- FontAwesome para iconos (si no lo tienes ya en tu base) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
 {% endblock page_content %}
