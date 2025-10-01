@@ -1,0 +1,38 @@
+{% extends "core/index.html" %}
+{% load static %}
+{% block page_content %}
+<div class="container py-5 animate__animated animate__fadeIn">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient bg-danger text-white rounded-top-4 py-4">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Confirmar desactivación</h5>
+              <span class="small">Esta acción NO puede deshacerse</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body bg-light rounded-bottom-4">
+          <p class="mb-4 fs-5 text-center">
+            ¿Está seguro que desea desactivar la institución<span class="fw-bold text-dark">{{ institucion }}</span>?
+          </p>
+          <form method="post" class="d-flex flex-column align-items-center gap-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-lg btn-danger px-4 shadow-sm">
+              <i class="fas fa-trash-alt me-2"></i> Sí, desactivar
+            </button>
+            <a href="{% url 'institucion:institucion_list' %}" class="btn btn-lg btn-outline-secondary px-4 shadow-sm">
+              <i class="fas fa-times me-2"></i> Cancelar
+            </a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Animaciones y FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+{% endblock %}

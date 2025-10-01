@@ -1,0 +1,81 @@
+/* ------------------------------
+   Estilos personalizados
+   ------------------------------ */
+
+/* Tarjetas */
+.card {
+  border-radius: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado principal */
+.card-header {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Listado de documentos */
+.list-group-item {
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.3s ease;
+}
+.list-group-item:hover {
+  background: rgba(0, 123, 255, 0.05);
+}
+
+/* Enlaces de documentos */
+.list-group-item a {
+  transition: color 0.3s ease;
+}
+.list-group-item a:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
+
+/* Botones */
+.btn {
+  border-radius: 0.6rem;
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Botón eliminar */
+.btn-outline-danger:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* Campos de formulario */
+.form-control {
+  border-radius: 0.6rem;
+  border: 1px solid #dee2e6;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+}
+
+/* Badge del encabezado */
+.badge {
+  border-radius: 0.6rem;
+  font-weight: 600;
+}
+
+/* Texto */
+dt {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+dd {
+  font-size: 1rem;
+  color: #212529;
+}

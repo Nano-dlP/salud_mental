@@ -1,0 +1,18 @@
+{% extends 'core/index.html' %}
+{% block page_content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5>Agregar documento a expediente: {{ expediente }}</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Agregar documento</button>
+        <a href="{% url 'expediente:expediente_detail' expediente.pk %}" class="btn btn-secondary">Volver</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

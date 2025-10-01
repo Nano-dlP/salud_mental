@@ -61,13 +61,13 @@ class InstitucionForm(forms.ModelForm):
             raise forms.ValidationError('El teléfono debe contener solo números.')
         return telefono
 
-    def clean_cuit(self):
-        cuit = self.cleaned_data.get('cuit')
-        if not cuit:
-            raise forms.ValidationError("Este campo es obligatorio.")
-        if not re.match(r'^\d{2}-\d{8}-\d$', cuit):
-            raise forms.ValidationError("CUIT inválido. Debe tener el formato XX-XXXXXXXX-X")
-        return cuit
+    # def clean_cuit(self):
+    #     cuit = self.cleaned_data.get('cuit')
+    #     if not cuit:
+    #         raise forms.ValidationError("Este campo es obligatorio.")
+    #     if not re.match(r'^\d{2}-\d{8}-\d$', cuit):
+    #         raise forms.ValidationError("CUIT inválido. Debe tener el formato XX-XXXXXXXX-X")
+    #     return cuit
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

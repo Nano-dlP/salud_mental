@@ -86,14 +86,14 @@ class InstitucionDetailView(LoginRequiredMixin, PermissionRequiredMixin, Templat
         return context
 
     
-@login_required(login_url='core:login')
-@permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
-def desactivar_institucion(request, pk):
-    institucion = get_object_or_404(Institucion, pk=pk)
-    institucion.estado = False
-    institucion.save()
-    messages.success(request, "Institución desactivada correctamente.")
-    return redirect('institucion:institucion_list')
+# @login_required(login_url='core:login')
+# @permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
+# def desactivar_institucion(request, pk):
+#     institucion = get_object_or_404(Institucion, pk=pk)
+#     institucion.estado = False
+#     institucion.save()
+#     messages.success(request, "Institución desactivada correctamente.")
+#     return redirect('institucion:institucion_list')
 
 
 @login_required(login_url='core:login')
@@ -109,3 +109,15 @@ def listar_institucion(request):
         "medio_id": medio_id,
         "next_url": next_url,   # lo mandamos al template
     })
+
+@login_required(login_url='core:login')
+@permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
+def desactivar_institucion(request, pk):
+    institucion = get_object_or_404(Institucion, pk=pk)
+    if request.method == "POST":
+        institucion.estado = False
+        institucion.save()
+        messages.success(request, "Institución desactivada correctamente.")
+        return redirect('institucion:institucion_list')
+    # Si es GET, muestra confirmación
+    return render(request, "institucion/confirmar_desactivacion.html", {"institucion": institucion})

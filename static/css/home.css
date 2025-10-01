@@ -1,0 +1,74 @@
+.welcome-bg {
+    min-height: 100vh;
+    background: linear-gradient(120deg, #F4F6F8 0%, #DEE4EA 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .welcome-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 32px rgba(44,62,80,0.08);
+    padding: 2.5rem 2rem;
+    max-width: 720px;
+    width: 100%;
+  }
+  .welcome-icon {
+    color: #4a6572;
+    background: #f0f4f8;
+    border-radius: 50%;
+    padding: 1.2rem;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.05);
+  }
+  .welcome-title {
+    color: #2b6777;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    letter-spacing: 1px;
+  }
+  .welcome-subtitle {
+    color: #64748b;
+    font-size: 1.08rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .welcome-list li {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+    color: #444;
+  }
+  .welcome-list i {
+    color: #22c55e;
+    margin-right: 0.4rem;
+  }
+  .welcome-actions .btn {
+    min-width: 160px;
+    font-size: 1rem;
+    margin: 0 0.25rem;
+    border-radius: 0.6rem;
+  }
+  .welcome-actions .btn-primary {
+    background-color: #4a6572;
+    border-color: #4a6572;
+  }
+  .welcome-actions .btn-primary:hover {
+    background-color: #2b6777;
+    border-color: #2b6777;
+  }
+  .welcome-actions .btn-outline-secondary {
+    color: #4a6572;
+    border-color: #b0bec5;
+    background: #f5f7fa;
+  }
+  .welcome-actions .btn-outline-secondary:hover {
+    background-color: #b0bec5;
+    color: #fff;
+  }
+  .welcome-footer {
+    margin-top: 2rem;
+    color: #868e96;
+    font-size: 0.93rem;
+  }

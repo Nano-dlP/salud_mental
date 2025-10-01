@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required, permission_required
 
 # Vistas genéricas para mostrar listas y editar objetos
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
 # Funciones para redirigir usuarios y obtener objetos de la base de datos
 from django.shortcuts import redirect
@@ -25,7 +25,7 @@ from institucion.models import Institucion
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-from .forms import ExpedienteDocumentoFormSet
+from .forms import ExpedienteDocumentoFormSet, ExpedienteDocumentoForm
 from django.views import View
 
 
@@ -342,6 +342,21 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
 
         return super().form_valid(form)
 
+
+
+class DemandaEspontaneaDetailView(DetailView):
+    model = Expediente
+    template_name = "expediente/demanda_espontanea_detalle.html"
+    context_object_name = "expediente"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Documentos asociados al expediente
+        context["documentos"] = ExpedienteDocumento.objects.filter(expediente=self.object)
+        # Persona principal (rol=1) asociada al expediente
+        persona_rel = ExpedientePersona.objects.filter(expediente=self.object, rol__pk=1).first()
+        context["persona"] = persona_rel.persona if persona_rel else None
+        return context
 
 
 class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -913,6 +928,37 @@ class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
 
 
 
+class ExpedienteDocumentoCreateView(FormView):
+    template_name = 'expediente/documento_form.html'
+    form_class = ExpedienteDocumentoForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.expediente = get_object_or_404(Expediente, pk=kwargs['expediente_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        documento = form.save(commit=False)
+        documento.expediente = self.expediente
+        documento.save()
+        messages.success(self.request, "Documento agregado correctamente.")
+        return redirect('expediente:expediente_detail', pk=self.expediente.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['expediente'] = self.expediente
+        return context
+    
+
+# class ExpedienteDocumentoDeleteView(DeleteView):
+#     model = ExpedienteDocumento
+#     #template_name = "expediente/documento_confirm_delete.html"  # opcional si querés confirmación
+#     context_object_name = "documento"
+
+#     def get_success_url(self):
+#         messages.success(self.request, "Documento eliminado correctamente.")
+#         return reverse_lazy("expediente:expediente_detail", kwargs={"pk": self.object.expediente.pk})
+
+
 
 
 # Vista basada en función para subir documentos de un expediente
@@ -953,3 +999,11 @@ def expediente_list(request):
         "expedientes": expedientes,
         "next_url": next_url,   # lo mandamos al template
     })
+
+class ExpedienteDocumentoDeleteView(View):
+    def post(self, request, pk, *args, **kwargs):
+        documento = get_object_or_404(ExpedienteDocumento, pk=pk)
+        expediente_id = documento.expediente.pk
+        documento.delete()
+        messages.success(request, "Documento eliminado correctamente.")
+        return redirect("expediente:expediente_detail", pk=expediente_id)

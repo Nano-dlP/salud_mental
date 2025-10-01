@@ -65,7 +65,7 @@
                         class="btn btn-sm btn-outline-warning me-1" title="Editar">
                         <i class="far fa-edit"></i>
                       </a>
-                      <a href="#" class="btn btn-sm btn-outline-info me-1" title="Detalles"><i class="fas fa-eye"></i></a>
+                      <a href="{% url 'expediente:expediente_detail' expediente.id %}" class="btn btn-sm btn-outline-info me-1" title="Detalles"><i class="fas fa-eye"></i></a>
                       <a href="#" class="btn btn-sm btn-outline-danger me-1" title="Desactivar"><i class="far fa-trash-alt"></i></a>
                     </td>
                   </tr>

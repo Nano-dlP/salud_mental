@@ -2,7 +2,20 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from .views import DemandaEspontaneaCreateView, ExpedienteListView, MedioIngresoSelectView, OficioCreateView, SecretariaCreateView, DemandaEspontaneaUpdateView, ExpedienteUpdateDispatcherView, OficioUpdateView, SecretariaUpdateView, expediente_list
+from .views import (DemandaEspontaneaCreateView, 
+                    ExpedienteListView, 
+                    MedioIngresoSelectView, 
+                    OficioCreateView, 
+                    SecretariaCreateView, 
+                    DemandaEspontaneaUpdateView, 
+                    ExpedienteUpdateDispatcherView, 
+                    OficioUpdateView, 
+                    SecretariaUpdateView, 
+                    expediente_list, 
+                    ExpedienteDocumentoCreateView,
+                    DemandaEspontaneaDetailView,
+                    ExpedienteDocumentoDeleteView
+        )
 from . import views
 
 app_name = 'expediente'
@@ -20,7 +33,11 @@ urlpatterns = [
     path('expediente/secretaria_editar/<int:pk>/', SecretariaUpdateView.as_view(), name='secretaria_update'),
     path('expediente/editar/<int:pk>/', ExpedienteUpdateDispatcherView.as_view(), name='expediente_update'),
 
-    path('expediente/buscar/', expediente_list, name='expediente_buscar')
+    path('expediente/buscar/', expediente_list, name='expediente_buscar'),
+    path('expediente/<int:expediente_id>/agregar-documento/', ExpedienteDocumentoCreateView.as_view(), name='expediente_agregar_documento'),
+    path('expediente/<int:pk>/', DemandaEspontaneaDetailView.as_view(), name='expediente_detail'),
+
+    path('documento/<int:pk>/eliminar/', ExpedienteDocumentoDeleteView.as_view(), name='expediente_documento_delete'),
 
 
     
