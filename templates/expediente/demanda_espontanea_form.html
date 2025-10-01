@@ -190,17 +190,24 @@
             </div>
           </div>
           <div class="card p-3 mb-3 shadow-sm">
-              <h6 class="mb-3">Documentos</h6>
-                {{ documento_formset.management_form }}
-              <div class="row">
-                {% for doc_form in documento_formset %}
-                <div class="col-md-6 mb-3">
-                    <div class="border rounded p-2 shadow-sm">
+            <h6 class="mb-3">Documentos</h6>
+              {{ documento_formset.management_form }}
+                <div class="row">
+                  {% for doc_form in documento_formset %}
+                    <div class="col-md-6 mb-3">
+                      <div class="border rounded p-2 shadow-sm">
                         {{ doc_form.as_p }}
+                        {# mostrar el checkbox de borrado si existe #}
+                        {% if doc_form.can_delete %}
+                          <div class="form-check mt-2">
+                            {{ doc_form.DELETE }}
+                            <label class="form-check-label">Borrar</label>
+                          </div>
+                        {% endif %}
+                      </div>
                     </div>
-                </div>
-                {% endfor %}
-              </div>
+                  {% endfor %}
+            </div>
           </div>
   
           <!-- Botones -->

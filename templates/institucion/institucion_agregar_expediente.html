@@ -48,7 +48,7 @@
                     <td>
                       {% if medio_id %}
                         <!-- Enlace directo al formulario de expediente, pasando medio_id e institucion_id -->
-                        <a href="{% url 'expediente:expediente_create_oficio' medio_id %}?institucion_id={{ institucion.id }}"
+                        <a href="{% url 'expediente:expediente_create_oficio' medio_id=medio_id %}?institucion_id={{ institucion.id }}"
                           class="btn btn-success">
                           <i class="fas fa-hand-pointer"></i> Seleccionar
                         </a>

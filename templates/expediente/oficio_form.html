@@ -3,6 +3,7 @@
 {% load static %}
 {% block page_content %}
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 <div class="container-fluid">
   <div class="container mt-4">
@@ -28,34 +29,28 @@
           {% endif %}
 
           <!-- Encabezado -->
-          <div class="card mb-3 border-0 shadow-sm">
-            <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3 text-muted">
-                <div class="d-flex justify-content-between">
-                  <span>Encabezado</span>
-                    {% if editar and numero_expediente %}
-                  <span class="fw-bold">{{ numero_expediente }}</span>
-                    {% endif %}
-                </div>
-              </h6>
-            </div>
+          <div class="d-flex justify-content-between">
+            {% if editar and numero_expediente %}
+            <h6 class="border-bottom pb-2 mb-3 text-muted">
+              <span class="fw-bold"><span><i class="fas fa-id-card"></i> Encabezado</span> {{ numero_expediente }}</span>
+            </h6>
+            {% endif %}
           </div>
-
           <!-- Inicio -->
           <div class="card mb-3">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3">Inicio</h6>
+              <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-play"></i> Inicio</h6>
               <div class="row">
                 <div class="col-md-4 mb-3">
-                  {{ form.medio_ingreso.label_tag }}
+                  <label><i class="fas fa-mail-bulk me-2"></i> Medio de ingreso</label>
                   {{ form.medio_ingreso|add_class:"form-select"|attr:"style:pointer-events:none;background-color:#e9ecef;" }}
                 </div>
                 <div class="col-md-4 mb-3">
-                  {{ form.sede.label_tag }}
+                  <label><i class="fas fa-university me-2"></i> Sede</label>
                   {{ form.sede|add_class:"form-select" }}
                 </div>
                 <div class="col-md-4 mb-3">
-                  {{ form.fecha_creacion.label_tag }}
+                  <label><i class="fas fa-calendar-plus me-2"></i> Fecha de creación</label>
                   {{ form.fecha_creacion|add_class:"form-control" }}
                 </div>
               </div>
@@ -65,13 +60,13 @@
           <!-- Datos del oficio -->
           <div class="card mb-3">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3">Datos del oficio</h6>
+              <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-file-alt"></i> Datos del oficio</h6>
 
               <div class="row">
                 <!-- Institución (col-8) + botones agregar/buscar (col-4) -->
                 <div class="col-md-8 mb-3">
                   {{ form.institucion|add_class:"d-none" }} <!-- campo oculto select -->
-                  <label>Institución</label>
+                  <label><i class="fas fa-building me-2"></i> Institución</label>
                   {% if form.institucion.errors %}
                     <div class="text-danger small">
                       {{ form.institucion.errors }}
@@ -80,25 +75,27 @@
                   <div class="input-group">
                     <!-- Campo visible con nombre de la institución -->
                     <input type="text" id="nombre_institucion_display" class="form-control"
-                           value="{% if institucion_seleccionada %}{{ institucion_seleccionada.institucion }}{% endif %}"
-                           placeholder="Seleccione institución"
-                           readonly>
+                        value="{% if institucion_seleccionada %}{{ institucion_seleccionada.institucion }}{% endif %}"
+                        placeholder="Seleccione institución"
+                        readonly>
 
                     <!-- Botón agregar nueva institución -->
                     <a href="{% url 'institucion:institucion_create' %}?next={{ request.path }}&medio_id={{ medio_id }}" 
-                       class="btn btn-outline-secondary ms-2" title="Agregar institución">
+                      class="btn btn-outline-secondary ms-2" title="Agregar institución">
                       <i class="fas fa-plus"></i>
                     </a>
 
                     <!-- Botón buscar institución -->
-                    <a href="{% url 'institucion:agregar_expediente'%}?next={{ request.get_full_path }}&medio_id={{ medio_id }}"
-                    class="btn btn-outline-secondary ms-2" title="Buscar institución"><i class="fas fa-search"></i></a>
+                    <a href="{% url 'institucion:agregar_expediente' %}?next={{ request.path }}&medio_id={{ medio_id }}"
+                      class="btn btn-outline-secondary ms-2" title="Buscar institución">
+                      <i class="fas fa-search"></i>
+                    </a>
                   </div>
                 </div>
 
                 <!-- Fecha de Juzgado -->
                 <div class="col-md-4 mb-3">
-                  {{ form.fecha_de_juzgado.label_tag }}
+                  <label><i class="fas fa-calendar-day me-2"></i> Fecha de Juzgado</label>
                   {{ form.fecha_de_juzgado|add_class:"form-control" }}
                   {% if form.fecha_de_juzgado.errors %}
                     <div class="text-danger small">
@@ -111,19 +108,18 @@
               <div class="row mt-3">
                 <!-- Fecha de Recepción -->
                 <div class="col-md-4 mb-3">
-                  {{ form.fecha_de_recepcion.label_tag }}
+                  <label><i class="fas fa-calendar-check me-2"></i> Fecha de Recepción</label>
                   {{ form.fecha_de_recepcion|add_class:"form-control" }}
                   {% if form.fecha_de_recepcion.errors %}
                     <div class="text-danger small">
                       {{ form.fecha_de_recepcion.errors }}
                     </div>
                   {% endif %}
-
                 </div>
 
                 <!-- CUIJ -->
                 <div class="col-md-4 mb-3">
-                  {{ form.cuij.label_tag }}
+                  <label><i class="fas fa-id-card me-2"></i> CUIJ</label>
                   {{ form.cuij|add_class:"form-control" }}
                   {% if form.cuij.errors %}
                     <div class="text-danger small">
@@ -134,7 +130,7 @@
 
                 <!-- Clave SISFE -->
                 <div class="col-md-4 mb-3">
-                  {{ form.clave_sisfe.label_tag }}
+                  <label><i class="fas fa-key me-2"></i> Clave SISFE</label>
                   {{ form.clave_sisfe|add_class:"form-control" }}
                   {% if form.clave_sisfe.errors %}
                     <div class="text-danger small">
@@ -142,7 +138,6 @@
                     </div>
                   {% endif %}
                 </div>
-
               </div>
 
               <div class="row mt-2">
@@ -151,22 +146,21 @@
                   <div class="form-check d-flex align-items-center">
                     {{ form.expediente_fisico|add_class:"form-check-input" }}
                     <label for="{{ form.expediente_fisico.id_for_label }}" class="form-check-label mt-0 mb-0 ms-2">
-                      {{ form.expediente_fisico.label }}
+                      <i class="fas fa-archive me-2"></i> {{ form.expediente_fisico.label }}
                     </label>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
           <!-- Información complementaria -->
           <div class="card mb-3">
             <div class="card-body">
-              <h6 class="border-bottom pb-2 mb-3">Información complementaria</h6>
+              <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-info-circle"></i> Información complementaria</h6>
               <div class="row align-items-end">
                 <div class="col-md-4 mb-3">
-                  {{ form.tipo_solicitud.label_tag }}
+                  <label><i class="fas fa-file-alt me-2"></i> Tipo de solicitud</label>
                   {{ form.tipo_solicitud|add_class:"form-select" }}
                   {% if form.tipo_solicitud.errors %}
                     <div class="text-danger small">
@@ -175,7 +169,7 @@
                   {% endif %}
                 </div>
                 <div class="col-md-4 mb-3">
-                  {{ form.estado_expediente.label_tag }}
+                  <label><i class="fas fa-folder-open me-2"></i> Estado expediente</label>
                   {{ form.estado_expediente|add_class:"form-select" }}
                   {% if form.estado_expediente.errors %}
                     <div class="text-danger small">
@@ -184,7 +178,7 @@
                   {% endif %}
                 </div>
                 <div class="col-md-1 mb-3">
-                  {{ form.edad_persona.label_tag }}
+                  <label><i class="fas fa-user-clock me-2"></i> Edad persona</label>
                   {{ form.edad_persona|add_class:"form-control"|attr:"style:max-width:80px;" }}
                   {% if form.edad_persona.errors %}
                     <div class="text-danger small">
@@ -193,7 +187,7 @@
                   {% endif %}
                 </div>
                 <div class="col-md-3 mb-3">
-                  {{ form.grupo_etario.label_tag }}
+                  <label><i class="fas fa-users me-2"></i> Grupo Etario</label>
                   {{ form.grupo_etario|add_class:"form-select" }}
                   {% if form.grupo_etario.errors %}
                     <div class="text-danger small">
@@ -206,7 +200,7 @@
               <!-- Row 2 -->
               <div class="row align-items-end mt-2">
                 <div class="col-md-6 mb-3">
-                  {{ form.tipo_patrocinio.label_tag }}
+                  <label><i class="fas fa-gavel me-2"></i> Tipo de patrocinio</label>
                   {{ form.tipo_patrocinio|add_class:"form-select" }}
                   {% if form.tipo_patrocinio.errors %}
                     <div class="text-danger small">
@@ -215,7 +209,7 @@
                   {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
-                  {{ form.resumen_intervencion.label_tag }}
+                  <label><i class="fas fa-comment-dots me-2"></i> Resumen intervención</label>
                   {{ form.resumen_intervencion|add_class:"form-control" }}
                   {% if form.resumen_intervencion.errors %}
                     <div class="text-danger small">
@@ -228,7 +222,7 @@
               <!-- Row 3 -->
               <div class="row align-items-end mt-2">
                 <div class="col-md-6 mb-3">
-                  {{ form.situacion_habitacional_hist.label_tag }}
+                  <label><i class="fas fa-home me-2"></i> Situación habitacional histórica</label>
                   {{ form.situacion_habitacional_hist|add_class:"form-control" }}
                   {% if form.situacion_habitacional_hist.errors %}
                     <div class="text-danger small">
@@ -237,7 +231,7 @@
                   {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
-                  {{ form.observaciones.label_tag }}
+                  <label><i class="fas fa-comment-medical me-2"></i> Observaciones</label>
                   {{ form.observaciones|add_class:"form-control" }}
                   {% if form.observaciones.errors %}
                     <div class="text-danger small">
@@ -250,7 +244,7 @@
           </div>
        <!-- Documentos Adjuntos -->
           <div class="card p-3 mb-3 border-0 shadow-sm">
-            <h6 class="mb-3">Documentos</h6>
+            <h6 class="mb-3"><i class="fas fa-file-upload"></i> Documentos</h6>
               {{ documento_formset.management_form }}
               <div class="row">
               {% for doc_form in documento_formset %}
@@ -272,41 +266,4 @@
     </div>
   </div>
 </div>
-
-{{ form.media }}
-
-<!-- Script Medio Ingreso -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const medioIngresoSelect = document.getElementById("id_medio_ingreso");
-  const textoMedioIngreso = document.getElementById("medioIngresoTexto");
-
-  if (medioIngresoSelect && textoMedioIngreso) {
-    const actualizarTexto = () => {
-      const texto = medioIngresoSelect.options[medioIngresoSelect.selectedIndex]?.text || "";
-      textoMedioIngreso.textContent = texto;
-    };
-    medioIngresoSelect.addEventListener("change", actualizarTexto);
-    actualizarTexto();
-  }
-});
-</script>
-
-<!-- Script Institución Display -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const institucionSelect = document.getElementById("id_institucion");
-  const nombreInstitucionDisplay = document.getElementById("nombre_institucion_display");
-
-  if (institucionSelect && nombreInstitucionDisplay) {
-    const actualizarTexto = () => {
-      const texto = institucionSelect.options[institucionSelect.selectedIndex]?.text || "";
-      nombreInstitucionDisplay.value = texto;
-    };
-    institucionSelect.addEventListener("change", actualizarTexto);
-    actualizarTexto();
-  }
-});
-</script>
-
 {% endblock page_content %}

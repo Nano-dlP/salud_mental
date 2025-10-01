@@ -49,6 +49,14 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
     login_url = 'core:login'
     permission_required = 'expediente.view_medioingreso'
     raise_exception = True
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        # Busca el medio "Demanda Espontánea"
+        medio = MedioIngreso.objects.filter().first()
+        if medio:
+            initial['medio_ingreso'] = medio
+        return initial
 
  
     def form_valid(self, form):
@@ -58,13 +66,7 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
         if medio_ingreso_id in [1,] :
             # Si el medio es 1, redirige a crear expediente con ese medio
             return redirect('expediente:expediente_create_with_medio', medio_id=medio_ingreso_id)
-        elif  medio_ingreso_id in [2, ] :
-            # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
-            return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
-        elif  medio_ingreso_id in [3, ] :
-            # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
-            return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
-        elif  medio_ingreso_id in [4, ] :
+        elif  medio_ingreso_id in [2, 3, 4, 5, 6] :
             # Si el medio es entre 2 y 6, redirige a crear expediente tipo oficio
             return redirect('expediente:expediente_create_oficio', medio_id=medio_ingreso_id)
         elif  medio_ingreso_id in [7,] :
@@ -350,12 +352,16 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'expediente.add_expediente'
     raise_exception = True
 
+    def get_medio_id(self):
+        """Obtiene medio_id desde kwargs o GET, priorizando kwargs."""
+        return self.kwargs.get('medio_id') or self.request.GET.get('medio_id')
+
     def get_initial(self):
         initial = super().get_initial()
-        medio_id = self.kwargs.get('medio_id')
+        medio_id = self.get_medio_id()
         institucion_id = self.request.GET.get('institucion_id')
 
-        # Set medio_ingreso from URL only once (not in POST)
+        # Set medio_ingreso from URL/GET only once (not in POST)
         if medio_id:
             medio = get_object_or_404(MedioIngreso, pk=medio_id)
             initial['medio_ingreso'] = medio
@@ -391,6 +397,9 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         if institucion_id:
             context['institucion_seleccionada'] = Institucion.objects.filter(pk=institucion_id).first()
 
+        # --- FIX: añade medio_id al contexto ---
+        context['medio_id'] = self.get_medio_id()
+        # ---------------------------------------
         return context
 
     def form_valid(self, form):
@@ -407,8 +416,8 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             messages.error(self.request, "Debe seleccionar una institución para crear el expediente.")
             return self.form_invalid(form)
 
-        # Obtiene el medio_ingreso SIEMPRE desde la URL, no del form.cleaned_data 
-        medio_id = self.kwargs.get('medio_id')
+        # Obtiene el medio_ingreso SIEMPRE desde la URL o GET, no del form.cleaned_data 
+        medio_id = self.get_medio_id()
         medio_ingreso = get_object_or_404(MedioIngreso, pk=medio_id)
 
         # Obtiene el resto normalmente
@@ -438,7 +447,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         expediente = Expediente.objects.create(
             sede=sede,
             fecha_creacion=fecha_creacion,
-            medio_ingreso=medio_ingreso,  # <-- SIEMPRE desde URL
+            medio_ingreso=medio_ingreso,  # <-- SIEMPRE desde URL o GET
             fecha_de_juzgado=fecha_de_juzgado,
             fecha_de_recepcion=fecha_de_recepcion,
             expediente_fisico=expediente_fisico,
@@ -479,6 +488,8 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     def form_invalid(self, form):
         messages.error(self.request, "Hubo errores al guardar el expediente. Verifique los campos.")
         return super().form_invalid(form)
+    
+    
 
 class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/oficio_form.html'
@@ -899,6 +910,8 @@ class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
                 messages.error(self.request, f"Error en {field.label}: {error}")
         messages.error(self.request, "Hubo errores al actualizar el expediente. Verifique los campos.")
         return super().form_invalid(form)        
+
+
 
 
 

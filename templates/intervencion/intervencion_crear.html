@@ -6,7 +6,7 @@
 <link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
 
 <div class="container-fluid">
-  <div class="container py-5">
+  <div class="container">
     <div class="card shadow-lg border-0 rounded-4 col-lg-8 mx-auto animate__animated animate__fadeIn">
 
       <div class="card-header bg-gradient bg-success text-white py-3 px-4 text-center rounded-top-4">
@@ -29,39 +29,38 @@
           <!-- Bloque de búsqueda de expediente y fecha -->
           <div class="row align-items-end mb-4">
             <div class="col-md-8 mb-3 mb-md-0">
-              <label class="fw-bold mb-2">
+              <label class="mb-2">
                 <i class="fas fa-folder-open me-2"></i>Expediente
               </label>
               {{ form.expediente|add_class:"d-none" }} <!-- campo select oculto -->
               <div class="input-group">
-                <input type="text"
-                       id="numero_expediente_display"
-                       class="form-control form-control-lg bg-white border rounded-start"
-                       value="{% if expediente_seleccionado %}{{ expediente_seleccionado.identificador }}{% endif %}"
-                       placeholder="Seleccione expediente"
-                       {% if editar %}readonly{% endif %}>
-                <a href="{% url 'expediente:expediente_buscar' %}?next={{ request.path }}"
-                   class="btn btn-outline-success"
-                   title="Buscar expediente"
-                   {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                  <i class="fas fa-search"></i>
-                </a>
+                <input type="text" id="numero_expediente_display" class="form-control input-altura"
+                      value="{% if expediente_seleccionado %}{{ expediente_seleccionado.identificador }}{% endif %}"
+                      placeholder="Seleccione expediente"
+                      {% if editar %}readonly{% endif %}>
+                        <a href="{% url 'expediente:expediente_buscar' %}?next={{ request.path }}"
+                          class="btn btn-outline-secondary rounded-end"
+                            title="Buscar expediente"
+                              {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                            <i class="fas fa-search"></i>
+                        </a>
               </div>
-              {% if form.expediente.errors %}
-                <div class="text-danger small mt-1">
-                  {{ form.expediente.errors }}
-                </div>
-              {% endif %}
+                  {% if form.expediente.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.expediente.errors }}
+                    </div>
+                  {% endif %}
             </div>
+            
             <div class="col-md-4">
-              <label class="fw-bold mb-2">
+              <label class="mb-2">
                 <i class="fas fa-calendar-day me-2"></i>Fecha de intervención
               </label>
               <div class="input-group">
                 <span class="input-group-text bg-white border-end-0">
-                  <i class="fas fa-calendar-alt text-success"></i>
+                  <i class="fas fa-calendar-alt "></i>
                 </span>
-                {{ form.fecha_intervencion|add_class:"form-control form-control-lg border rounded-end"|attr:"style:height:52px;" }}
+                {{ form.fecha_intervencion|add_class:"form-control input-altura" }}
               </div>
               {% if form.fecha_intervencion.errors %}
                 <div class="text-danger small mt-1">{{ form.fecha_intervencion.errors }}</div>
@@ -71,19 +70,19 @@
 
           <div class="row mb-4">
             <div class="col-md-6 mb-3 mb-md-0">
-              <label class="fw-bold mb-2">
+              <label class="mb-2">
                 <i class="fas fa-user-md me-2"></i>Profesional
               </label>
-              {{ form.profesional|add_class:"form-select form-select-lg border" }}
+              {{ form.profesional|add_class:"form-control" }}
               {% if form.profesional.errors %}
                 <div class="text-danger small mt-1">{{ form.profesional.errors }}</div>
               {% endif %}
             </div>
             <div class="col-md-6">
-              <label class="fw-bold mb-2">
+              <label class="mb-2">
                 <i class="fas fa-stethoscope me-2"></i>Tipo de intervención
               </label>
-              {{ form.tipo_intervencion|add_class:"form-select form-select-lg border" }}
+              {{ form.tipo_intervencion|add_class:"form-control" }}
               {% if form.tipo_intervencion.errors %}
                 <div class="text-danger small mt-1">{{ form.tipo_intervencion.errors }}</div>
               {% endif %}
@@ -92,10 +91,10 @@
 
           <div class="row mb-4">
             <div class="col">
-              <label class="fw-bold mb-2">
+              <label class="mb-2">
                 <i class="fas fa-comment-medical me-2"></i>Observaciones
               </label>
-              {{ form.observacion|add_class:"form-control form-control-lg border"|attr:"rows:3" }}
+              {{ form.observacion|add_class:"form-control"|attr:"rows:3" }}
               {% if form.observacion.errors %}
                 <div class="text-danger small mt-1">{{ form.observacion.errors }}</div>
               {% endif %}
@@ -120,7 +119,6 @@
 
 <!-- Animación para la card (opcional) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-<!-- FontAwesome para iconos (si no lo tienes ya en tu base) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 {% endblock page_content %}

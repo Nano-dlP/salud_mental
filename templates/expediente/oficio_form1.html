@@ -1,0 +1,230 @@
+{% extends 'core/index.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block page_content %}
+<link href="{% static 'css/expedientes.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<div class="container-fluid">
+  <div class="card shadow-lg border-0 rounded-4 col-lg-12 mx-auto animate__animated animate__fadeIn">
+
+    <div class="card-header bg-gradient bg-success text-white py-3 px-4 text-center rounded-top-4">
+      <h4 class="mb-0">
+        <i class="fas fa-file-signature"></i>
+        Nuevo Expediente - Oficio
+      </h4>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4">
+      <form method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-4">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="row mb-4">
+          <div class="col-md-4 mb-3">
+            <label class="mb-2"><i class="fas fa-calendar-plus me-2"></i>Fecha de creación</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <i class="fas fa-calendar-alt text-success"></i>
+                </span>
+                  {{ form.fecha_creacion|add_class:"form-control" }}
+              </div>
+                  {% if form.fecha_creacion.errors %}
+                    <div class="text-danger small mt-1">{{ form.fecha_creacion.errors }}</div>
+                  {% endif %}
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="mb-2"><i class="fas fa-university me-2"></i>Sede</label>
+                {{ form.sede|add_class:"form-select" }}
+                  {% if form.sede.errors %}
+                    <div class="text-danger small mt-1">{{ form.sede.errors }}</div>
+                  {% endif %}
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="mb-2"><i class="fas fa-mail-bulk me-2"></i>Medio de ingreso</label>
+              {{ form.medio_ingreso|add_class:"form-select" }}
+                {% if form.medio_ingreso.errors %}
+                  <div class="text-danger small mt-1">{{ form.medio_ingreso.errors }}</div>
+                {% endif %}
+          </div>
+        </div>
+
+        
+
+
+
+
+
+
+        <div class="row mb-4">
+          <div class="col-md-4 mb-3">
+            <label class="mb-2"><i class="fas fa-building me-2"></i>Institución</label>
+              {{ form.institucion|add_class:"form-select" }}
+                {% if form.institucion.errors %}
+                  <div class="text-danger small mt-1">{{ form.institucion.errors }}</div>
+                {% endif %}
+          </div>
+  
+
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-calendar-day me-2"></i>Fecha de ingreso al juzgado</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="fas fa-calendar-alt text-primary"></i>
+              </span>
+              {{ form.fecha_de_juzgado|add_class:"form-control" }}
+            </div>
+            {% if form.fecha_de_juzgado.errors %}
+              <div class="text-danger small mt-1">{{ form.fecha_de_juzgado.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-calendar-check me-2"></i>Fecha de recepción del oficio</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="fas fa-calendar-alt text-warning"></i>
+              </span>
+              {{ form.fecha_de_recepcion|add_class:"form-control" }}
+            </div>
+            {% if form.fecha_de_recepcion.errors %}
+              <div class="text-danger small mt-1">{{ form.fecha_de_recepcion.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3 d-flex align-items-center">
+            <div class="form-check form-switch" style="transform: scale(1.1);">
+              {{ form.expediente_fisico }}
+              <label class="form-check-label ms-2" for="id_expediente_fisico">
+                <i class="fas fa-archive me-2"></i>¿Hay expediente físico?
+              </label>
+            </div>
+            {% if form.expediente_fisico.errors %}
+              <div class="text-danger small mt-1">{{ form.expediente_fisico.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-id-card me-2"></i>CUIJ</label>
+            {{ form.cuij|add_class:"form-control" }}
+            {% if form.cuij.errors %}
+              <div class="text-danger small mt-1">{{ form.cuij.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-key me-2"></i>SISFE</label>
+            {{ form.clave_sisfe|add_class:"form-control" }}
+            {% if form.clave_sisfe.errors %}
+              <div class="text-danger small mt-1">{{ form.clave_sisfe.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-file-alt me-2"></i>Tipo de solicitud</label>
+            {{ form.tipo_solicitud|add_class:"form-select form-select-lg border" }}
+            {% if form.tipo_solicitud.errors %}
+              <div class="text-danger small mt-1">{{ form.tipo_solicitud.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-folder-open me-2"></i>Estado del expediente</label>
+            {{ form.estado_expediente|add_class:"form-select form-select-lg border" }}
+            {% if form.estado_expediente.errors %}
+              <div class="text-danger small mt-1">{{ form.estado_expediente.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-users me-2"></i>Grupo Etario</label>
+            {{ form.grupo_etario|add_class:"form-select form-select-lg border" }}
+            {% if form.grupo_etario.errors %}
+              <div class="text-danger small mt-1">{{ form.grupo_etario.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-user-clock me-2"></i>Edad de la persona</label>
+            {{ form.edad_persona|add_class:"form-control" }}
+            {% if form.edad_persona.errors %}
+              <div class="text-danger small mt-1">{{ form.edad_persona.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-home me-2"></i>Situación habitacional histórica</label>
+            {{ form.situacion_habitacional_hist|add_class:"form-control"|attr:"rows:2" }}
+            {% if form.situacion_habitacional_hist.errors %}
+              <div class="text-danger small mt-1">{{ form.situacion_habitacional_hist.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-gavel me-2"></i>Tipo de patrocinio</label>
+            {{ form.tipo_patrocinio|add_class:"form-select form-select-lg border" }}
+            {% if form.tipo_patrocinio.errors %}
+              <div class="text-danger small mt-1">{{ form.tipo_patrocinio.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-comment-dots me-2"></i>Resumén de intervención</label>
+            {{ form.resumen_intervencion|add_class:"form-select form-select-lg border" }}
+            {% if form.resumen_intervencion.errors %}
+              <div class="text-danger small mt-1">{{ form.resumen_intervencion.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="mb-2"><i class="fas fa-comment-medical me-2"></i>Observaciones</label>
+            {{ form.observaciones|add_class:"form-control"|attr:"rows:2" }}
+            {% if form.observaciones.errors %}
+              <div class="text-danger small mt-1">{{ form.observaciones.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Documentos formset en una sola fila -->
+        {% if documento_formset %}
+        <div class="row mb-4 align-items-center">
+          <label class="mb-2"><i class="fas fa-file-upload me-2"></i>Documentos</label>
+          {{ documento_formset.management_form }}
+          {% for form_doc in documento_formset %}
+            <div class="col">
+              {{ form_doc.as_p }}
+            </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="row mt-4">
+          <div class="col text-end">
+            <button type="submit" class="btn btn-success px-4 me-2 shadow-sm">
+              <i class="fas fa-save me-2"></i>Crear expediente
+            </button>
+            <a href="{% url 'expediente:expediente_list' %}" class="btn btn-outline-secondary px-4 shadow-sm">
+              <i class="fas fa-times me-2"></i>Cancelar
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+{% endblock page_content %}

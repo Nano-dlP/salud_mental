@@ -84,6 +84,7 @@ class InstitucionDetailView(LoginRequiredMixin, PermissionRequiredMixin, Templat
         institucion = get_object_or_404(Institucion, pk=pk)
         context['institucion'] = institucion
         return context
+
     
 @login_required(login_url='core:login')
 @permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
@@ -94,11 +95,12 @@ def desactivar_institucion(request, pk):
     messages.success(request, "Institución desactivada correctamente.")
     return redirect('institucion:institucion_list')
 
+
 @login_required(login_url='core:login')
 @permission_required('institucion.add_institucion', login_url='core:login', raise_exception=True)
 def listar_institucion(request):
     instituciones = Institucion.objects.all()
-    medio_id = 2
+    medio_id = request.GET.get("medio_id")   # <-- aquí el fix
     next_url = request.GET.get("next")       # para redirigir después
     print(medio_id)
     

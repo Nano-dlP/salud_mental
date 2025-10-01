@@ -349,6 +349,7 @@ class ExpedienteDocumentoForm(forms.ModelForm):
 ExpedienteDocumentoFormSet = modelformset_factory(
     ExpedienteDocumento,
     form=ExpedienteDocumentoForm,
-    extra=2,         # cantidad de formularios vacíos a mostrar
+    extra=2, # sin formularios extra por defecto
+    max_num=2,  # máximo 2 documentos
     can_delete=True   # permite borrar documentos existentes
 )

@@ -90,8 +90,8 @@ class Expediente(models.Model):
     fecha_creacion = models.DateField("Fecha de creación", auto_now_add=False)
     identificador = models.CharField("Identificador del expediente", max_length=100, unique=True, editable=False)
     
-    fecha_de_juzgado = models.DateTimeField(blank=True, null=True, verbose_name='Fecha del Juzgado')
-    fecha_de_recepcion = models.DateTimeField(blank=True, null=True, verbose_name='Fecha de Recepción')
+    fecha_de_juzgado = models.DateField(blank=True, null=True, verbose_name='Fecha del Juzgado')
+    fecha_de_recepcion = models.DateField(blank=True, null=True, verbose_name='Fecha de Recepción')
     cuij = models.CharField(blank=True, max_length=50, null=True, verbose_name='CUIJ')
     clave_sisfe = models.CharField(blank=True, max_length=50, null=True, verbose_name='Clave SISFE')
     
@@ -145,7 +145,7 @@ class ExpedienteDocumento(models.Model):
     )
     nombre = models.CharField("Nombre del documento", max_length=255, blank=True, null=True)
     archivo = models.FileField("Archivo", upload_to="documentos/expedientes/")
-    fecha_subida = models.DateTimeField(auto_now_add=True)
+    fecha_subida = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nombre or 'Documento'}"
