@@ -2,15 +2,28 @@
 {% load static %}
 
 {% block page_content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="{% static 'css/detalle_demanda.css' %}">
-
+<style>
+  .etiqueta {
+    font-weight: bold;
+    background-color: #f0f4fa;
+    padding: 3px 8px;
+    border-radius: 5px;
+    color: #3463a3;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .contenido {
+    color: #222;
+    display: block;
+    margin-bottom: 12px;
+    margin-left: 2px;
+  }
+</style>
 
 <div class="container mt-4">
-
   <!-- Encabezado principal -->
-  <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInDown">
+  <div class="card shadow-lg border-0 rounded-4">
     <div class="card-header bg-gradient bg-primary text-white rounded-top-4 py-3 position-relative">
       <h5 class="mb-0">
         <i class="fas fa-file-alt me-2"></i> Detalle de Expediente - Demanda Espontánea
@@ -19,48 +32,69 @@
         {{ expediente.identificador }}
       </span>
     </div>
-
     <div class="card-body bg-light rounded-bottom-4">
-      <dl class="row mb-0">
-        <dt class="col-md-4 text-secondary fw-semibold">Fecha de creación</dt>
-        <dd class="col-md-8">{{ expediente.fecha_creacion|date:"d/m/Y" }}</dd>
+      <!-- Datos principales -->
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-calendar-plus me-2"></i> Fecha de creación</div>
+          <div class="contenido">{{ expediente.fecha_creacion|date:"d/m/Y" }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-user-circle me-2"></i> Persona</div>
+          <div class="contenido">
+            {% if persona %}
+              {{ persona }}
+            {% else %}
+              <span class="text-muted">No asignada</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-university me-2"></i> Sede</div>
+          <div class="contenido">{{ expediente.sede }}</div>
+        </div>
+      </div>
 
-        <dt class="col-md-4 text-secondary fw-semibold">Persona</dt>
-        <dd class="col-md-8">
-          {% if persona %}
-            <i class="fas fa-user-circle text-primary"></i> {{ persona }}
-          {% else %}
-            <span class="text-muted">No asignada</span>
-          {% endif %}
-        </dd>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-mail-bulk me-2"></i> Medio de ingreso</div>
+          <div class="contenido">{{ expediente.medio_ingreso }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-file-alt me-2"></i> Tipo de solicitud</div>
+          <div class="contenido">{{ expediente.tipo_solicitud }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-folder-open me-2"></i> Estado expediente</div>
+          <div class="contenido">{{ expediente.estado_expediente }}</div>
+        </div>
+      </div>
 
-        <dt class="col-md-4 text-secondary fw-semibold">Sede</dt>
-        <dd class="col-md-8">{{ expediente.sede }}</dd>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-users me-2"></i> Grupo etario</div>
+          <div class="contenido">{{ expediente.grupo_etario }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-user-clock me-2"></i> Edad persona</div>
+          <div class="contenido">{{ expediente.edad_persona }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="etiqueta"><i class="fas fa-home me-2"></i> Situación habitacional</div>
+          <div class="contenido">{{ expediente.situacion_habitacional_hist|default:"-" }}</div>
+        </div>
+      </div>
 
-        <dt class="col-md-4 text-secondary fw-semibold">Medio de ingreso</dt>
-        <dd class="col-md-8">{{ expediente.medio_ingreso }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Tipo de solicitud</dt>
-        <dd class="col-md-8">{{ expediente.tipo_solicitud }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Estado expediente</dt>
-        <dd class="col-md-8">{{ expediente.estado_expediente }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Grupo etario</dt>
-        <dd class="col-md-8">{{ expediente.grupo_etario }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Edad persona</dt>
-        <dd class="col-md-8">{{ expediente.edad_persona }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Situación habitacional</dt>
-        <dd class="col-md-8">{{ expediente.situacion_habitacional_hist|default:"-" }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Resumen intervención</dt>
-        <dd class="col-md-8">{{ expediente.resumen_intervencion }}</dd>
-
-        <dt class="col-md-4 text-secondary fw-semibold">Observaciones</dt>
-        <dd class="col-md-8">{{ expediente.observaciones|default:"-" }}</dd>
-      </dl>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <div class="etiqueta"><i class="fas fa-comment-dots me-2"></i> Resumen intervención</div>
+          <div class="contenido">{{ expediente.resumen_intervencion }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="etiqueta"><i class="fas fa-comment-medical me-2"></i> Observaciones</div>
+          <div class="contenido">{{ expediente.observaciones|default:"-" }}</div>
+        </div>
+      </div>
 
       <hr class="my-4">
 
@@ -71,7 +105,7 @@
         </h6>
         <ul class="list-group list-group-flush mb-3">
           {% for doc in documentos %}
-            <li class="list-group-item d-flex justify-content-between align-items-center animate__animated animate__fadeInUp">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
               <div>
                 <a href="{{ doc.archivo.url }}" class="text-decoration-none text-primary fw-semibold" target="_blank">
                   <i class="fas fa-file-alt me-2"></i>{{ doc.nombre }}
@@ -91,11 +125,10 @@
             <li class="list-group-item text-muted">No hay documentos adjuntos.</li>
           {% endfor %}
         </ul>
-
         <!-- Formulario para agregar documento -->
         <form method="post" action="{% url 'expediente:expediente_agregar_documento' expediente.id %}" 
               enctype="multipart/form-data" 
-              class="row g-2 align-items-end animate__animated animate__fadeInLeft">
+              class="row g-2 align-items-end">
           {% csrf_token %}
           <div class="col-md-5">
             <input type="text" name="nombre" class="form-control shadow-sm" placeholder="Nombre del documento" required>
@@ -112,7 +145,7 @@
       </div>
 
       <!-- Botón volver -->
-      <div class="text-end mt-4 animate__animated animate__fadeInUp">
+      <div class="text-end mt-4">
         <a href="{% url 'expediente:expediente_list' %}" 
            class="btn btn-outline-primary px-4 shadow-sm">
           <i class="fas fa-arrow-left me-2"></i>Volver al listado

@@ -110,6 +110,41 @@ class ExpedienteUpdateDispatcherView(LoginRequiredMixin, PermissionRequiredMixin
             return redirect('expediente:expediente_list')
 
 
+class ExpedienteDetailDispatcherView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = 'core:login'
+    permission_required = 'expediente.view_expediente'
+    raise_exception = True
+    
+    def get(self, request, pk):
+        expediente = get_object_or_404(Expediente, pk=pk)
+        medio = expediente.medio_ingreso.medio_ingreso if expediente.medio_ingreso else ""
+        print(medio)
+        # Según el medio de ingreso, redirige al formulario correcto
+        # Para editar cada tipo de expediente usamos las vistas ya definidas y registradas en urls.py
+        # Cada tipo de expediente tiene su propia vista de edición
+
+        medios_oficio = [
+            "OFICIO MAIL",
+            "OFICIO PAPEL",
+            "DERIVACION",
+            "MAIL EFECTOR",
+            "COMUNICACION TELEFONICA EQUIPO TRATANTE",
+        ]
+
+        if medio == "DEMANDA ESPONTANEA":
+            return redirect('expediente:demanda_espontanea_detail', pk=pk)
+        elif medio in medios_oficio:
+            return redirect('expediente:oficio_detail', pk=pk)
+        elif medio == "SOLICITUD SECRETARIA EJECUTIVA (DE OFICIO)":
+            return redirect('expediente:secretaria_detail', pk=pk)
+        else:
+            # Si no reconoce el medio, muestra error
+            messages.error(request, "No se pudo determinar el tipo de expediente.")
+            return redirect('expediente:expediente_list')
+
+
+
+
 # Vista para crear expedientes del tipo "Demanda Espontanea"
 # Es el expediente más común y tiene a la persona como actor principal
 class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -627,87 +662,20 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         messages.error(self.request, "Hubo errores al actualizar el expediente. Verifique los campos.")
         return super().form_invalid(form)
 
-# class OficioUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-#     # Establece el HTML que se usará para mostrar el formulario de edición
-#     template_name = 'expediente/oficio_form.html'
-#     # Indica qué formulario se usará para editar los datos
-#     form_class = OficioForm
-#     # Modelo que se va a modificar (la tabla Expediente)
-#     model = Expediente
-#     # URL a la que se redirige cuando todo sale bien
-#     success_url = reverse_lazy('expediente:expediente_list')
-#     # Si el usuario no está logueado, lo envía al login
-#     login_url = 'core:login'
-#     # Permiso necesario para poder editar un expediente
-#     permission_required = 'expediente.change_expediente'
-#     # Si el usuario no tiene permiso, muestra un error 403 (prohibido)
-#     raise_exception = True
 
-#     def get_form(self, form_class=None):
-#         # Esta función se encarga de crear el formulario que verá el usuario
-#         form = super().get_form(form_class)  # Llama al método original para crear el form
-#         form.fields['medio_ingreso'].disabled = True  # Desactiva el campo medio_ingreso para que no se pueda modificar
-#         return form
+class OficioDetailView(DetailView):
+    model = Expediente
+    template_name = "expediente/oficio_detalle.html"
+    context_object_name = "expediente"
 
-#     def get_context_data(self, **kwargs):
-#         # Agrega información extra para el template HTML
-#         context = super().get_context_data(**kwargs)
-#         expediente = self.object  # El expediente que se está editando
-
-#         # Si el usuario envió datos por POST (está guardando el formulario)
-#         if self.request.POST:
-#             # Crea el formset (grupo de formularios) para los documentos enviados
-#             context['documento_formset'] = ExpedienteDocumentoFormSet(
-#                 self.request.POST, self.request.FILES,
-#                 queryset=expediente.documentos.all()
-#             )
-#         else:
-#             # Si está entrando por GET (solo viendo el formulario), muestra los documentos ya guardados
-#             context['documento_formset'] = ExpedienteDocumentoFormSet(
-#                 queryset=expediente.documentos.all()
-#             )
-
-#         # Busca la institución vinculada al expediente (si existe)
-#         context['institucion_seleccionada'] = (
-#             expediente.expedienteinstitucion_expediente.first().institucion
-#             if expediente.expedienteinstitucion_expediente.exists()
-#             else None
-#         )
-#         # Le dice al template que está en modo edición
-#         context['editar'] = True
-#         # Pasa el número de expediente para mostrarlo en el formulario
-#         context['numero_expediente'] = expediente.identificador
-#         return context
-
-#     def form_valid(self, form):
-#         # Esta función se ejecuta si el formulario principal es válido
-#         expediente = form.save(commit=False)  # Guarda los datos pero aún no en la base de datos
-
-#         context = self.get_context_data()
-#         documento_formset = context['documento_formset']
-
-#         # Verifica que el formset de documentos también sea válido
-#         if not documento_formset.is_valid():
-#             return self.form_invalid(form)
-
-#         expediente.save()  # Guarda los cambios del expediente en la base de datos
-
-#         # Guarda la institución que se relaciona con el expediente
-#         institucion = form.cleaned_data['institucion']
-#         rol = Rol.objects.get(pk=1)  # Obtiene el rol por defecto (puedes cambiar el ID según tu sistema)
-#         ExpedienteInstitucion.objects.update_or_create(
-#             expediente=expediente,
-#             rol=rol,
-#             defaults={'institucion': institucion}
-#         )
-
-#         # Guarda cada documento subido por el usuario, relacionándolos con el expediente
-#         documentos = documento_formset.save(commit=False)
-#         for doc in documentos:
-#             doc.expediente = expediente  # Relaciona el documento con el expediente
-#             doc.save()  # Guarda el documento en la base de datos
-
-#         return super().form_valid(form)  # Redirige al success_url
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Documentos asociados al expediente
+        context["documentos"] = ExpedienteDocumento.objects.filter(expediente=self.object)
+        # Institución principal (rol=2) asociada al expediente
+        institucion_rel = ExpedienteInstitucion.objects.filter(expediente=self.object, rol__pk=2).first()
+        context["institucion"] = institucion_rel.institucion if institucion_rel else None
+        return context
 
 
 
@@ -927,7 +895,21 @@ class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
         return super().form_invalid(form)        
 
 
+class SecretariaDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Expediente
+    template_name = "expediente/secretaria_detalle.html"
+    context_object_name = "expediente"
+    login_url = 'core:login'
+    permission_required = 'expediente.view_expediente'
+    raise_exception = True
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Documentos asociados al expediente
+        context["documentos"] = ExpedienteDocumento.objects.filter(expediente=self.object)
+        return context
+    
+    
 class ExpedienteDocumentoCreateView(FormView):
     template_name = 'expediente/documento_form.html'
     form_class = ExpedienteDocumentoForm
@@ -949,17 +931,14 @@ class ExpedienteDocumentoCreateView(FormView):
         return context
     
 
-# class ExpedienteDocumentoDeleteView(DeleteView):
-#     model = ExpedienteDocumento
-#     #template_name = "expediente/documento_confirm_delete.html"  # opcional si querés confirmación
-#     context_object_name = "documento"
-
-#     def get_success_url(self):
-#         messages.success(self.request, "Documento eliminado correctamente.")
-#         return reverse_lazy("expediente:expediente_detail", kwargs={"pk": self.object.expediente.pk})
-
-
-
+class ExpedienteDocumentoDeleteView(View):
+    def post(self, request, pk, *args, **kwargs):
+        documento = get_object_or_404(ExpedienteDocumento, pk=pk)
+        expediente_id = documento.expediente.pk
+        documento.delete()
+        messages.success(request, "Documento eliminado correctamente.")
+        return redirect("expediente:expediente_detail", pk=expediente_id)
+    
 
 # Vista basada en función para subir documentos de un expediente
 @login_required(login_url = 'core:login')
