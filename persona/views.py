@@ -49,7 +49,7 @@ class PersonaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     
     def get_queryset(self):
         # Solo personas activas
-        return Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
+        return Persona.objects.filter().order_by('apellido', 'nombre')
     
 
 
@@ -84,7 +84,7 @@ class PersonaDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVie
     
 
 def persona_list(request):
-    personas = Persona.objects.all()
+    personas = Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
     medio_id = 1   # viene del querystring
     next_url = request.GET.get("next")       # para redirigir después
     
@@ -97,7 +97,13 @@ def persona_list(request):
 
 def desactivar_persona(request, pk):
     persona = get_object_or_404(Persona, pk=pk)
-    persona.estado = False
-    persona.save()
-    messages.success(request, "Persona desactivada correctamente.")
-    return redirect('persona:persona_list')
+    if persona.estado:
+        persona.estado = False
+        persona.save()
+        messages.success(request, "Persona desactivada correctamente.")
+        return redirect('persona:persona_list')
+    else:
+        persona.estado = True
+        persona.save()
+        messages.success(request, "Persona activada correctamente.")
+        return redirect('persona:persona_list')

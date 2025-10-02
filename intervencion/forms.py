@@ -29,7 +29,6 @@ class IntervencionForm(forms.Form):
         attrs={
             'class': 'form-control form-control-sm',
             'type': 'date',
-            'readonly': 'readonly',
         }
     ),
     input_formats=['%Y-%m-%d']
@@ -53,26 +52,3 @@ class IntervencionForm(forms.Form):
         intervencion.save()
         return intervencion
 
-
-# class IntervencionForm(forms.ModelForm):
-#     class Meta:
-#         model = Intervencion
-#         fields = ['expediente', 'profesional', 'tipo_intervencion', 'fecha_intervencion', 'observacion']
-#         widgets = {
-#             'expediente': forms.Select(attrs={'class': "form-select d-none"}),  # oculto en UI
-#             'profesional': forms.Select(attrs={'class': 'form-control'}),
-#             'tipo_intervencion': forms.Select(attrs={'class': 'form-control'}),
-#             'fecha_intervencion': forms.DateInput(
-#                 format='%Y-%m-%d',
-#                 attrs={
-#                     'class': 'form-control form-control-sm',
-#                     'type': 'date',
-#                     'readonly': 'readonly',
-#                 }
-#             ),
-#             'observacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-#         }
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['fecha_intervencion'].initial = datetime.date.today

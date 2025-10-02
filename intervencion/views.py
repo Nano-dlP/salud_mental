@@ -52,6 +52,20 @@ class IntervencionFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView
 
 
 
+class IntevencionListView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+    template_name = 'intervencion/intervencion_listar.html'
+    form_class = IntervencionForm
+    login_url = 'core:login'
+    permission_required = 'intervencion.view_intervencion'
+    raise_exception = True
+    success_url = reverse_lazy('intervencion:intervencion_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['intervenciones'] = Intervencion.objects.all()
+        return context
+
+
 def listar_intervenciones(request):
     intervenciones = Intervencion.objects.all()
     next_url = request.GET.get("next")       # para redirigir después

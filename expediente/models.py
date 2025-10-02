@@ -168,5 +168,4 @@ class ExpedienteInstitucion(models.Model):
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='expedienteinstitucion_rol')
 
     def __str__(self):
-        return f"{self.expediente} - {self.institucion}"
-
+        return str(self.expediente) 

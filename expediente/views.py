@@ -8,13 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required, permission_required
 
 # Vistas genéricas para mostrar listas y editar objetos
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 # Funciones para redirigir usuarios y obtener objetos de la base de datos
 from django.shortcuts import redirect
 
 # Importamos los formularios que se usarán en las vistas
-from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm
+from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm, ExpedienteInstitucionForm
 
 # Importamos los modelos (tablas) que usaremos para guardar y consultar información
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento, MedioIngreso
@@ -124,7 +124,7 @@ class ExpedienteDetailDispatcherView(LoginRequiredMixin, PermissionRequiredMixin
         # Cada tipo de expediente tiene su propia vista de edición
 
         medios_oficio = [
-            "OFICIO MAIL",
+            "OFICIO POR MAIL",
             "OFICIO PAPEL",
             "DERIVACION",
             "MAIL EFECTOR",
@@ -141,9 +141,6 @@ class ExpedienteDetailDispatcherView(LoginRequiredMixin, PermissionRequiredMixin
             # Si no reconoce el medio, muestra error
             messages.error(request, "No se pudo determinar el tipo de expediente.")
             return redirect('expediente:expediente_list')
-
-
-
 
 # Vista para crear expedientes del tipo "Demanda Espontanea"
 # Es el expediente más común y tiene a la persona como actor principal
@@ -376,7 +373,6 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
                 documento.save()
 
         return super().form_valid(form)
-
 
 
 class DemandaEspontaneaDetailView(DetailView):
@@ -678,7 +674,6 @@ class OficioDetailView(DetailView):
         return context
 
 
-
 class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/secretaria_form.html'
     form_class = SecretariaForm
@@ -791,7 +786,6 @@ class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
                 messages.error(self.request, f"Error en {field.label}: {error}")
         messages.error(self.request, "Hubo errores al guardar el expediente. Verifique los campos.")
         return super().form_invalid(form)
-
 
 
 class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -979,10 +973,47 @@ def expediente_list(request):
         "next_url": next_url,   # lo mandamos al template
     })
 
+
 class ExpedienteDocumentoDeleteView(View):
+
     def post(self, request, pk, *args, **kwargs):
         documento = get_object_or_404(ExpedienteDocumento, pk=pk)
         expediente_id = documento.expediente.pk
         documento.delete()
         messages.success(request, "Documento eliminado correctamente.")
         return redirect("expediente:expediente_detail", pk=expediente_id)
+    
+
+class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = ExpedienteInstitucion
+    form_class = ExpedienteInstitucionForm
+    success_url = reverse_lazy('expediente:expediente_institucion_list')
+    login_url = 'core:login'
+    permission_required = 'expediente.add_expedienteinstitucion'
+    raise_exception = True
+    template_name = 'expediente/expediente_institucion_form.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, "La institución fue vinculada correctamente al expediente.")
+        return super().form_valid(form)
+    
+
+
+class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = ExpedienteInstitucion
+    template_name = 'expediente/expediente_institucion_list.html'
+    context_object_name = 'expedientes'
+    permission_required = 'expediente.view_expedienteinstitucion'
+    raise_exception = True  # Lanza 403 si no tiene permiso
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and hasattr(user, 'sede'):
+            return ExpedienteInstitucion.objects.filter(expediente__sede=user.sede).select_related('expediente', 'institucion', 'rol')
+        else:
+            return ExpedienteInstitucion.objects.none()  # Si no hay usuario o sede, no mostrar nada
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context

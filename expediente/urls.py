@@ -17,7 +17,9 @@ from .views import (DemandaEspontaneaCreateView,
                     ExpedienteDocumentoDeleteView,
                     ExpedienteDetailDispatcherView, 
                     OficioDetailView,
-                    SecretariaDetailView
+                    SecretariaDetailView,
+                    ExpedienteInstitucionCreateView,
+                    ExpedienteInstitucionListView
         )
 from . import views
 
@@ -62,6 +64,8 @@ urlpatterns = [
     # Detalle específico para expedientes por secretaria
     path('secretaria/<int:pk>/detalle/', SecretariaDetailView.as_view(), name='secretaria_detail'),
 
+    path ('expediente/crear_institucion/', ExpedienteInstitucionCreateView.as_view(), name='expediente_institucion_create'),
+    path ('expediente/institucion/', ExpedienteInstitucionListView.as_view(), name='expediente_institucion_list'),
 
     
     

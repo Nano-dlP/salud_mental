@@ -1,17 +1,17 @@
 import datetime
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic import ListView
 from django import forms
 from django.forms import modelformset_factory
 from core.models import Rol
 from persona.models import Persona
 from institucion.models import Institucion
-from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, ResumenIntervencion, TipoPatrocinio, EstadoExpediente, ExpedienteDocumento
+from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, ResumenIntervencion, TipoPatrocinio, EstadoExpediente, ExpedienteDocumento, ExpedienteInstitucion
 from core.models import Sede
 from django.conf import settings
 
 
-
-#usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
 
 class MedioIngresoForm(forms.Form):
     medio_ingreso = forms.ModelChoiceField(
@@ -19,6 +19,7 @@ class MedioIngresoForm(forms.Form):
         label="Medio de Ingreso",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+
 
 
 class DemandaEspontanea(forms.Form):
@@ -354,3 +355,50 @@ ExpedienteDocumentoFormSet = modelformset_factory(
     max_num=2,  # máximo 2 documentos
     can_delete=True   # permite borrar documentos existentes
 )
+
+
+# class ExpedienteInstitucionForm(forms.Form):
+#     expediente = forms.ModelChoiceField(
+#         label="Expediente",
+#         queryset=Expediente.objects.all(),
+#         widget=forms.Select(attrs={'class': 'form-select'})  # oculto en
+#     )
+#     institucion = forms.ModelChoiceField(
+#         label="Institución",
+#         queryset=Institucion.objects.all(),
+#         widget=forms.Select(attrs={'class': 'form-control'})
+#     )
+#     rol = forms.ModelChoiceField(
+#         label="Rol",
+#         queryset=Rol.objects.all(),
+#         widget=forms.Select(attrs={'class': 'form-control'})
+#     )
+#     # Con esta función podemos filtrar las instituciones según la sede del usuario
+#     def __init__(self, *args, **kwargs):
+#         user = kwargs.pop('user', None)  # Obtenemos el usuario desde la vista
+#         super().__init__(*args, **kwargs)
+
+#         if user and user.is_authenticated and hasattr(user, 'sede'):
+#             self.fields['institucion'].queryset = Institucion.objects.filter(sede=user.sede)
+#         else:
+#             self.fields['institucion'].queryset = Institucion.objects.none()  # Si no hay usuario o sede, no mostrar nada
+
+
+
+class ExpedienteInstitucionForm(forms.ModelForm):
+    class Meta:
+        model = ExpedienteInstitucion
+        fields = ['expediente', 'institucion', 'rol']
+        widgets = {
+            'expediente': forms.Select(attrs={'class': 'form-select d-none'}),  # oculto en UI
+            'institucion': forms.Select(attrs={'class': 'form-control d-none'}),  # oculto en UI
+            'rol': forms.Select(attrs={'class': 'form-control'}),
+        }
+    # Con esta función podemos filtrar las instituciones según la sede del usuario
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Obtenemos el usuario desde la vista
+        super().__init__(*args, **kwargs)
+
+    def get_context(self):
+        return super().get_context()    
+
