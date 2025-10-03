@@ -37,7 +37,7 @@
               {% endif %}
           {% endcomment %}
 
-          {% if not expedientes %}
+          {% if not expediente_instituciones %}
             <div class="alert alert-warning" role="alert">
               No hay expedientes registrados.
             </div>
@@ -53,11 +53,11 @@
                 </tr>
               </thead>
               <tbody>
-                {% for expediente in expedientes %}
+                {% for exp in expediente_instituciones %}
                   <tr>
-                    <td>{{ expediente }}</td>
-                    <td>{{ institucion }}</td>
-                    <td>{{ rol }}</td>
+                    <td>{{ exp.expediente }}</td>
+                    <td>{{ exp.institucion }}</td>
+                    <td>{{ exp.rol }}</td>
                     <td>
                       <a href="#" 
                         class="btn btn-sm btn-outline-warning me-1" title="Editar">

@@ -586,6 +586,8 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         expediente = self.get_object()
+        # Indicar que es edición
+        context['editar'] = True
         if self.request.POST:
             context['documento_formset'] = ExpedienteDocumentoFormSet(
                 self.request.POST, self.request.FILES, queryset=expediente.documentos.all()
@@ -1002,7 +1004,7 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
 class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = ExpedienteInstitucion
     template_name = 'expediente/expediente_institucion_list.html'
-    context_object_name = 'expedientes'
+    context_object_name = 'expediente_instituciones'
     permission_required = 'expediente.view_expedienteinstitucion'
     raise_exception = True  # Lanza 403 si no tiene permiso
 
@@ -1017,3 +1019,17 @@ class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin,
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
+    
+
+
+def expediente_institucion_add_view(request):
+    if request.method == "POST":
+        # Procesar y guardar los datos aquí
+        print(request.POST)
+        pass
+    context = {
+        "expedientes": Expediente.objects.all(),
+        "instituciones": Institucion.objects.filter(estado=True),
+        "roles": Rol.objects.all(),
+    }
+    return render(request, "expediente/expediente_institucion_form.html", context)

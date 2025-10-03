@@ -95,6 +95,17 @@ def persona_list(request):
     })
 
 
+def agregar_persona_expediente(request):
+    personas = Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
+    next_url = request.GET.get("next")       # para redirigir después
+
+    return render(request, "expediente/expediente_persona_form.html", {
+        "personas": personas,
+        "next_url": next_url,
+    
+    })
+
+
 def desactivar_persona(request, pk):
     persona = get_object_or_404(Persona, pk=pk)
     if persona.estado:

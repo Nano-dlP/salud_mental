@@ -70,10 +70,17 @@
         </a>
         <div id="collapseExpediente" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="{% url 'expediente:medio_ingreso_select' %}"><i class="fas fa-hashtag text-success me-2" ></i>Medio de Ingreso</a>
+            <h6 class="collapse-header" style="color: #4a6572">Gestión de Expedientes:</h6>
+            <a class="collapse-item" href="{% url 'expediente:medio_ingreso_select' %}"><i class="fas fa-hashtag text-success me-2" ></i>Nuevo</a>
             <a class="collapse-item" href="{% url 'expediente:expediente_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Listado</a>
             <a class="collapse-item" href="#"><i class="fas fa-search text-warning me-2"></i>Busqueda</a>
+            <h6 class="collapse-header" style="color: #4a6572">Expedientes por Persona:</h6>
+            <a class="collapse-item" href="#"><i class="fas fa-plus text-info me-2"></i>Agragar Persona</a>
+            <a class="collapse-item" href="#"><i class="fas fa-list-ul text-info me-2"></i>Listado</a>
+            <h6 class="collapse-header" style="color: #4a6572">Expedientes por Institución</h6>
+            <a class="collapse-item" href="{% url 'expediente:expediente_institucion_create' %}"><i class="fas fa-plus text-info me-2"></i>Agregar Institución</a>
+            <a class="collapse-item" href="{% url 'expediente:expediente_institucion_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Listado</a>
+            
           </div>
         </div>
       </li>

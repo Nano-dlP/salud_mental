@@ -242,8 +242,19 @@
               </div>
             </div>
           </div>
+          
+          <!-- Agregar Institución y rol al expediente -->
+          {% if editar %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h1>Agregar campo Institucion</h1>
+            </div>
+          </div>
+          {% endif %}
+
+
        <!-- Documentos Adjuntos -->
-          <div class="card p-3 mb-3 border-0 shadow-sm">
+          <!--<div class="card p-3 mb-3 border-0 shadow-sm">
             <h6 class="mb-3"><i class="fas fa-file-upload"></i> Documentos</h6>
               {{ documento_formset.management_form }}
               <div class="row">
@@ -255,7 +266,7 @@
               </div>
               {% endfor %}
               </div>
-          </div>
+          </div>-->
           <!-- Botones -->
           <div class="text-end mt-4">
             <button type="submit" class="btn btn-primary">Guardar</button>

@@ -102,7 +102,6 @@ def listar_institucion(request):
     instituciones = Institucion.objects.all()
     medio_id = request.GET.get("medio_id")   # <-- aquí el fix
     next_url = request.GET.get("next")       # para redirigir después
-    print(medio_id)
     
     return render(request, "institucion/institucion_agregar_expediente.html",{ 
         "instituciones": instituciones,
