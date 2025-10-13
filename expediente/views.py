@@ -995,9 +995,12 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
     raise_exception = True
     template_name = 'expediente/expediente_institucion_form.html'
 
-    def form_valid(self, form):
-        messages.success(self.request, "La institución fue vinculada correctamente al expediente.")
-        return super().form_valid(form)
+    def get_initial(self):
+        initial = super().get_initial()
+        expediente_id = self.request.GET.get('expediente')
+        if expediente_id:
+            initial['expediente'] = expediente_id
+        return initial
     
 
 
@@ -1025,8 +1028,12 @@ class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin,
 def expediente_institucion_add_view(request):
     if request.method == "POST":
         # Procesar y guardar los datos aquí
-        print(request.POST)
-        pass
+        form = ExpedienteInstitucionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "La institución fue vinculada correctamente al expediente.")
+            return redirect('expediente:expediente_institucion_list')
+        
     context = {
         "expedientes": Expediente.objects.all(),
         "instituciones": Institucion.objects.filter(estado=True),
