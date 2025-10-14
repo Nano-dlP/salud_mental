@@ -297,3 +297,22 @@ class ClienteLogAdmin(admin.ModelAdmin):
     Seleccionar registros y usar la acción "Exportar seleccionados a Excel".
 
 ¿Querés también permitir exportación por rango de fechas o agregar un botón general para todo el log (sin seleccionar)?
+
+
+stilos
+<style>
+  .custom-color { color: #4a6572 !important; }
+  .custom-bg { background-color: #4a6572 !important; color: #fff !important; }
+  .custom-btn {
+    background-color: #4a6572 !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 2px 8px rgba(74, 101, 114, 0.2);
+  }
+  .custom-btn:hover, .custom-btn:focus {
+    background-color: #35505c !important;
+    color: #fff !important;
+  }
+  .input-group-text.custom-bg { border: none; }
+  .icon-btn { color: #fff !important; }
+</style>

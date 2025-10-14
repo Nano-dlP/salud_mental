@@ -3,6 +3,8 @@ import datetime
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 
+from django.http import JsonResponse
+
 # Mezclas para controlar permisos y autenticación de usuarios
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -14,7 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.shortcuts import redirect
 
 # Importamos los formularios que se usarán en las vistas
-from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm, ExpedienteInstitucionForm
+from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm, ExpedienteInstitucionForm, ExpedientePersonaForm
 
 # Importamos los modelos (tablas) que usaremos para guardar y consultar información
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento, MedioIngreso
@@ -986,6 +988,8 @@ class ExpedienteDocumentoDeleteView(View):
         return redirect("expediente:expediente_detail", pk=expediente_id)
     
 
+# This class defines a view for creating instances of ExpedienteInstitucion with additional context
+# data related to an Expediente object.
 class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = ExpedienteInstitucion
     form_class = ExpedienteInstitucionForm
@@ -1002,7 +1006,52 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
             initial['expediente'] = expediente_id
         return initial
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expediente_id = self.request.GET.get('expediente')
+        numero_expediente = None
+        if expediente_id:
+            try:
+                expediente = Expediente.objects.get(id=expediente_id)
+                numero_expediente = expediente.identificador
+            except Expediente.DoesNotExist:
+                numero_expediente = None
+        context['numero_expediente'] = numero_expediente
+        context['instituciones'] = Institucion.objects.all()
+        context['roles'] = Rol.objects.all()
+        return context
+        
 
+class ExpedientePersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = ExpedientePersona
+    form_class = ExpedientePersonaForm
+    success_url = reverse_lazy('expediente:expediente_persona_list')
+    login_url = 'core:login'
+    permission_required = 'expediente.add_expedientepersona'
+    raise_exception = True
+    template_name = 'expediente/expediente_persona_form.html'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        expediente_id = self.request.GET.get('expediente')
+        if expediente_id:
+            initial['expediente'] = expediente_id
+        return initial
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expediente_id = self.request.GET.get('expediente')
+        numero_expediente = None
+        if expediente_id:
+            try:
+                expediente = Expediente.objects.get(id=expediente_id)
+                numero_expediente = expediente.identificador
+            except Expediente.DoesNotExist:
+                numero_expediente = None
+        context['numero_expediente'] = numero_expediente
+        context['personas'] = Persona.objects.all()
+        context['roles'] = Rol.objects.all()
+        return context
 
 class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = ExpedienteInstitucion
@@ -1040,3 +1089,13 @@ def expediente_institucion_add_view(request):
         "roles": Rol.objects.all(),
     }
     return render(request, "expediente/expediente_institucion_form.html", context)
+
+
+# views.py
+
+
+def buscar_instituciones(request):
+    q = request.GET.get('q', '')
+    instituciones = Institucion.objects.filter(institucion__icontains=q)[:20]
+    results = [{'id': i.id, 'text': i.institucion} for i in instituciones]
+    return JsonResponse({'results': results})

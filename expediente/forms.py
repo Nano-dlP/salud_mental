@@ -7,7 +7,16 @@ from django.forms import modelformset_factory
 from core.models import Rol
 from persona.models import Persona
 from institucion.models import Institucion
-from .models import Expediente, MedioIngreso, TipoSolicitud, GrupoEtario, ResumenIntervencion, TipoPatrocinio, EstadoExpediente, ExpedienteDocumento, ExpedienteInstitucion
+from .models import (Expediente, 
+                     MedioIngreso, 
+                     TipoSolicitud, 
+                     GrupoEtario, 
+                     ResumenIntervencion, 
+                     TipoPatrocinio, 
+                     EstadoExpediente, 
+                     ExpedienteDocumento, 
+                     ExpedienteInstitucion, 
+                     ExpedientePersona)
 from core.models import Sede
 from django.conf import settings
 
@@ -390,15 +399,32 @@ class ExpedienteInstitucionForm(forms.ModelForm):
         model = ExpedienteInstitucion
         fields = ['expediente', 'institucion', 'rol']
         widgets = {
-            'expediente': forms.Select(attrs={'class': 'form-select d-none'}),  # oculto en UI
-            'institucion': forms.Select(attrs={'class': 'form-control d-none'}),  # oculto en UI
-            'rol': forms.Select(attrs={'class': 'form-control'}),
+            'expediente': forms.HiddenInput(),  # oculto en UI, pero envía el valor
+            'institucion': forms.Select(attrs={'id': 'id_institucion'}),
+            'rol': forms.Select(attrs={'class': 'form-select'}),
         }
-    # Con esta función podemos filtrar las instituciones según la sede del usuario
+
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Obtenemos el usuario desde la vista
+        user = kwargs.pop('user', None)  # para filtrar instituciones según usuario si lo necesitas
         super().__init__(*args, **kwargs)
+        # Si quieres filtrar instituciones puedes hacerlo aquí, por ejemplo:
+        # if user:
+        #     self.fields['institucion'].queryset = Institucion.objects.filter(sede=user.sede)
 
-    def get_context(self):
-        return super().get_context()    
 
+class ExpedientePersonaForm(forms.ModelForm):
+    class Meta:
+        model = ExpedientePersona
+        fields = ['expediente', 'persona', 'rol']
+        widgets = {
+            'expediente': forms.HiddenInput(),  # oculto en UI, pero envía el valor
+            'persona': forms.Select(attrs={'class': 'form-select'}),   # select visible y estilizado
+            'rol': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # para filtrar Ies según usuario si lo necesitas
+        super().__init__(*args, **kwargs)
+        # Si quieres filtrar instituciones puedes hacerlo aquí, por ejemplo:
+        # if user:
+        #     self.fields['institucion'].queryset = Institucion.objects.filter(sede=user.sede)

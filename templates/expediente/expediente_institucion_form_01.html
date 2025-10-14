@@ -1,0 +1,15 @@
+{% if numero_expediente %}
+    <p><strong>Identificador del expediente:</strong> {{ numero_expediente }}</p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.expediente }} {# campo oculto #}
+    <label for="id_institucion">Institución:</label>
+    {{ form.institucion }}
+
+    <label for="id_rol">Rol:</label>
+    {{ form.rol }}
+
+    <button type="submit">Guardar</button>
+</form>

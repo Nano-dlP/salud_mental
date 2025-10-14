@@ -1,0 +1,69 @@
+{% extends 'core/index.html' %} 
+{% load widget_tweaks %}
+{% load static %}
+
+{% block page_content %}
+<style>
+  .custom-color { color: #4a6572 !important; }
+  .custom-bg { background-color: #4a6572 !important; color: #fff !important; }
+  .custom-btn {
+    background-color: #4a6572 !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 2px 8px rgba(74, 101, 114, 0.2);
+  }
+  .custom-btn:hover, .custom-btn:focus {
+    background-color: #35505c !important;
+    color: #fff !important;
+  }
+  .input-group-text.custom-bg { border: none; }
+  .icon-btn { color: #fff !important; }      /* íconos blancos en el botón */
+</style>
+<div class="container">
+  <div class="card shadow-lg border-0 my-4 rounded-4">
+    <div class="card-header custom-bg rounded-top-4 py-3">
+      <h5 class="mb-0 fw-bold">
+        <i class="fas fa-file-medical me-2 custom-color"></i> 
+        Agregar Persona y Rol al Expediente 
+        <span class="badge bg-light custom-color ms-2">{{ numero_expediente }}</span>
+      </h5>
+    </div>
+    <div class="card-body bg-light rounded-bottom-4">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.expediente }}  {# campo hidden #}
+
+        <div class="row mb-4 align-items-end">
+          <div class="col-md-6">
+            <label for="id_persona" class="form-label fw-bold">
+              <i class="fas fa-user me-2 custom-color"></i> Persona
+            </label>
+            <div class="input-group">
+              <span class="input-group-text custom-bg">
+                <i class="fas fa-user"></i>
+              </span>
+              {% render_field form.persona class="form-select border-0" %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="id_rol" class="form-label fw-bold">
+              <i class="fas fa-user-tag me-2 custom-color"></i> Rol
+            </label>
+            <div class="input-group">
+              <span class="input-group-text custom-bg">
+                <i class="fas fa-user-shield"></i>
+              </span>
+              {% render_field form.rol class="form-select border-0" %}
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <button type="submit" class="btn custom-btn btn-lg px-4 py-2" title="Agregar">
+            <i class="fas fa-plus-circle me-2 icon-btn"></i> Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock page_content %}
