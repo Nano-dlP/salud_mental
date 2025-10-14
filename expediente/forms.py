@@ -418,7 +418,7 @@ class ExpedientePersonaForm(forms.ModelForm):
         fields = ['expediente', 'persona', 'rol']
         widgets = {
             'expediente': forms.HiddenInput(),  # oculto en UI, pero envía el valor
-            'persona': forms.Select(attrs={'class': 'form-select'}),   # select visible y estilizado
+            'persona': forms.Select(attrs={'id': 'id_persona'}),   # select visible y estilizado
             'rol': forms.Select(attrs={'class': 'form-select'}),
         }
 

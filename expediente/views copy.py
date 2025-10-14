@@ -3,10 +3,6 @@ import datetime
 from django.views.generic import FormView
 from django.urls import reverse_lazy
 
-from django.http import JsonResponse
-from django.db.models import Q
-
-
 # Mezclas para controlar permisos y autenticación de usuarios
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -18,7 +14,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.shortcuts import redirect
 
 # Importamos los formularios que se usarán en las vistas
-from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm, ExpedienteInstitucionForm, ExpedientePersonaForm
+from .forms import DemandaEspontanea, MedioIngresoForm, OficioForm, SecretariaForm, ExpedienteInstitucionForm
 
 # Importamos los modelos (tablas) que usaremos para guardar y consultar información
 from .models import Expediente, ExpedientePersona, Rol, ExpedienteInstitucion, ExpedienteDocumento, MedioIngreso
@@ -990,8 +986,6 @@ class ExpedienteDocumentoDeleteView(View):
         return redirect("expediente:expediente_detail", pk=expediente_id)
     
 
-# This class defines a view for creating instances of ExpedienteInstitucion with additional context
-# data related to an Expediente object.
 class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = ExpedienteInstitucion
     form_class = ExpedienteInstitucionForm
@@ -1001,59 +995,11 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
     raise_exception = True
     template_name = 'expediente/expediente_institucion_form.html'
 
-    def get_initial(self):
-        initial = super().get_initial()
-        expediente_id = self.request.GET.get('expediente')
-        if expediente_id:
-            initial['expediente'] = expediente_id
-        return initial
+    def form_valid(self, form):
+        messages.success(self.request, "La institución fue vinculada correctamente al expediente.")
+        return super().form_valid(form)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        expediente_id = self.request.GET.get('expediente')
-        numero_expediente = None
-        if expediente_id:
-            try:
-                expediente = Expediente.objects.get(id=expediente_id)
-                numero_expediente = expediente.identificador
-            except Expediente.DoesNotExist:
-                numero_expediente = None
-        context['numero_expediente'] = numero_expediente
-        context['instituciones'] = Institucion.objects.all()
-        context['roles'] = Rol.objects.all()
-        return context
-        
 
-class ExpedientePersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    model = ExpedientePersona
-    form_class = ExpedientePersonaForm
-    success_url = reverse_lazy('expediente:expediente_persona_list')
-    login_url = 'core:login'
-    permission_required = 'expediente.add_expedientepersona'
-    raise_exception = True
-    template_name = 'expediente/expediente_persona_form.html'
-
-    def get_initial(self):
-        initial = super().get_initial()
-        expediente_id = self.request.GET.get('expediente')
-        if expediente_id:
-            initial['expediente'] = expediente_id
-        return initial
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        expediente_id = self.request.GET.get('expediente')
-        numero_expediente = None
-        if expediente_id:
-            try:
-                expediente = Expediente.objects.get(id=expediente_id)
-                numero_expediente = expediente.identificador
-            except Expediente.DoesNotExist:
-                numero_expediente = None
-        context['numero_expediente'] = numero_expediente
-        context['personas'] = Persona.objects.all()
-        context['roles'] = Rol.objects.all()
-        return context
 
 class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = ExpedienteInstitucion
@@ -1075,58 +1021,31 @@ class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin,
         return context
     
 
-class ExpedientePersonaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    model = ExpedientePersona
-    template_name = 'expediente/expediente_persona_list.html'
-    context_object_name = 'expediente_personas'
-    permission_required = 'expediente.view_expedientepersona'
-    raise_exception = True  # Lanza 403 si no tiene permiso
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated and hasattr(user, 'sede'):
-            return ExpedientePersona.objects.filter(expediente__sede=user.sede).select_related('expediente', 'persona', 'rol')
-        else:
-            return ExpedientePersona.objects.none()  # Si no hay usuario o sede, no mostrar nada
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
-
-
 
 def expediente_institucion_add_view(request):
     if request.method == "POST":
         # Procesar y guardar los datos aquí
-        form = ExpedienteInstitucionForm(request.POST)
-        if form.is_valid():
-            form.save()
+        expediente_id = request.POST.get("expediente")
+        institucion_id = request.POST.get("institucion")
+        rol_id = request.POST.get("rol")
+        try:
+            expediente = Expediente.objects.get(id=expediente_id)
+            institucion = Institucion.objects.get(id=institucion_id)
+            rol = Rol.objects.get(id=rol_id)
+            ExpedienteInstitucion.objects.create(
+                expediente=expediente,
+                institucion=institucion,
+                rol=rol
+            )
             messages.success(request, "La institución fue vinculada correctamente al expediente.")
-            return redirect('expediente:expediente_institucion_list')
-        
+            return redirect("expediente:expediente_institucion_list")
+        except (Expediente.DoesNotExist, Institucion.DoesNotExist, Rol.DoesNotExist):
+            messages.error(request, "Error al vincular la institución. Verifique los datos ingresados.")
+            # Si hay error, simplemente recarga el formulario abajo
+        pass
     context = {
         "expedientes": Expediente.objects.all(),
         "instituciones": Institucion.objects.filter(estado=True),
         "roles": Rol.objects.all(),
     }
     return render(request, "expediente/expediente_institucion_form.html", context)
-
-
-# views.py
-
-
-def buscar_instituciones(request):
-    q = request.GET.get('q', '')
-    instituciones = Institucion.objects.filter(institucion__icontains=q)[:20]
-    results = [{'id': i.id, 'text': i.institucion} for i in instituciones]
-    return JsonResponse({'results': results})
-
-
-def buscar_personas(request):
-    q = request.GET.get('q', '')
-    personas = Persona.objects.filter(
-        Q(nombre__icontains=q) | Q(apellido__icontains=q)
-    )[:20]
-    results = [{'id': i.id, 'text': f"{i.nombre} {i.apellido}"} for i in personas]
-    return JsonResponse({'results': results})

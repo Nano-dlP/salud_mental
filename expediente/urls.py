@@ -20,10 +20,13 @@ from .views import (DemandaEspontaneaCreateView,
                     SecretariaDetailView,
                     ExpedienteInstitucionCreateView,
                     ExpedienteInstitucionListView,
+                    ExpedientePersonaListView,
                     expediente_institucion_add_view,
                     ExpedientePersonaCreateView,
-                    buscar_instituciones
+                    buscar_instituciones,
+                    buscar_personas
         )
+
 from . import views
 
 app_name = 'expediente'
@@ -70,10 +73,10 @@ urlpatterns = [
     path ('expediente/crear_institucion/', ExpedienteInstitucionCreateView.as_view(), name='expediente_institucion_create'),
     path ('expediente/institucion/', ExpedienteInstitucionListView.as_view(), name='expediente_institucion_list'),
 
-    path('expediente/persona/agregar/', ExpedientePersonaCreateView.as_view(), name='expediente_persona_add'),
+    path('expediente/persona/agregar/', ExpedientePersonaCreateView.as_view(), name='expediente_persona_create'),
+    path('expediente/persona/', ExpedientePersonaListView.as_view(), name='expediente_persona_list'),
     
     path('api/instituciones/', buscar_instituciones, name='buscar_instituciones'),
+    path('api/personas/', buscar_personas, name='buscar_personas'),
 
-    
-    
 ]
