@@ -48,11 +48,9 @@ class InstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def get_queryset(self):
-        return Institucion.objects.all().order_by('institucion')
+        return Institucion.objects.all().order_by('-estado', 'institucion')
     
-    #Con esta función restrinjo la visualizasión solo a los que tienen estado true
-    def get_queryset(self):
-        return Institucion.objects.filter(estado=True)
+    
     
 
 class InstitucionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -99,7 +97,7 @@ class InstitucionDetailView(LoginRequiredMixin, PermissionRequiredMixin, Templat
 @login_required(login_url='core:login')
 @permission_required('institucion.add_institucion', login_url='core:login', raise_exception=True)
 def listar_institucion(request):
-    instituciones = Institucion.objects.all()
+    instituciones = Institucion.objects.filter(estado=True).order_by('institucion')
     medio_id = request.GET.get("medio_id")   # <-- aquí el fix
     next_url = request.GET.get("next")       # para redirigir después
     
@@ -109,14 +107,22 @@ def listar_institucion(request):
         "next_url": next_url,   # lo mandamos al template
     })
 
+
+
 @login_required(login_url='core:login')
 @permission_required('institucion.delete_institucion', login_url='core:login', raise_exception=True)
 def desactivar_institucion(request, pk):
     institucion = get_object_or_404(Institucion, pk=pk)
-    if request.method == "POST":
+    if institucion.estado:
         institucion.estado = False
         institucion.save()
         messages.success(request, "Institución desactivada correctamente.")
         return redirect('institucion:institucion_list')
+    else:
+        institucion.estado = True
+        institucion.save()
+        messages.success(request, "Institución activada correctamente.")
+        return redirect('institucion:institucion_list')
     # Si es GET, muestra confirmación
-    return render(request, "institucion/confirmar_desactivacion.html", {"institucion": institucion})
+    #return render(request, "institucion/confirmar_desactivacion.html", {"institucion": institucion})
+

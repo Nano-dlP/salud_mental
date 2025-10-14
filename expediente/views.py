@@ -202,20 +202,22 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
         context = self.get_context_data()
         documento_formset = context['documento_formset']
 
-        if not documento_formset.is_valid():
-            messages.error(self.request, "Hay errores en los documentos. Corrígelos antes de continuar.")
-            return self.form_invalid(form)
+        #if not documento_formset.is_valid():
+        #    messages.error(self.request, "Hay errores en los documentos. Corrígelos antes de continuar.")
+        #    return self.form_invalid(form)
 
         persona = form.cleaned_data.get('persona')
         if not persona:
             form.add_error('persona', 'Debe seleccionar una persona')
             messages.error(self.request, "Debe seleccionar una persona para crear el expediente.")
             return self.form_invalid(form)
-            
+        
+
         # Extrae datos del formulario
         sede = form.cleaned_data['sede']
         fecha_creacion = form.cleaned_data['fecha_creacion']
         medio_ingreso = form.cleaned_data['medio_ingreso']
+        rol = form.cleaned_data['rol']
         tipo_solicitud = form.cleaned_data['tipo_solicitud']
         estado_expediente = form.cleaned_data['estado_expediente']
         grupo_etario = form.cleaned_data['grupo_etario']
@@ -224,11 +226,6 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
         resumen_intervencion = form.cleaned_data['resumen_intervencion']
         observaciones = form.cleaned_data['observaciones']
 
-        try:
-            rol = Rol.objects.get(pk=1)
-        except Rol.DoesNotExist:
-            form.add_error(None, 'El rol con ID 1 no existe.')
-            return self.form_invalid(form)
 
         # Crea el expediente
         expediente = Expediente.objects.create(
@@ -290,11 +287,13 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
 
         # Persona vinculada
         persona_rel = expediente.expedientepersona_expediente.first()
+        # El rol viene de la relación persona_rel
         initial.update({
             'persona': persona_rel.persona if persona_rel else None,
             'sede': expediente.sede,
             'fecha_creacion': expediente.fecha_creacion,
             'medio_ingreso': expediente.medio_ingreso,
+            'rol': persona_rel.rol if persona_rel else None,
             'tipo_solicitud': expediente.tipo_solicitud,
             'estado_expediente': expediente.estado_expediente,
             'grupo_etario': expediente.grupo_etario,
@@ -328,11 +327,10 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
             )
 
         # Persona seleccionada para mostrar en template
-        context['persona_seleccionada'] = (
-            expediente.expedientepersona_expediente.first().persona
-            if expediente.expedientepersona_expediente.exists()
-            else None
-        )
+        persona_rel = expediente.expedientepersona_expediente.first()
+        context['persona_seleccionada'] = persona_rel.persona if persona_rel else None
+        context['rol_seleccionado'] = persona_rel.rol if persona_rel else None
+
         # Indicar que es edición
         context['editar'] = True
 
@@ -343,10 +341,10 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
     def form_valid(self, form):
         expediente = self.get_object()
         context = self.get_context_data()
-        documento_formset = context['documento_formset']
+        #documento_formset = context['documento_formset']
 
-        if not documento_formset.is_valid():
-            return self.form_invalid(form)
+        #if not documento_formset.is_valid():
+            #return self.form_invalid(form)
 
         # Actualizar campos del expediente
         expediente.sede = form.cleaned_data['sede']
@@ -362,21 +360,22 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
 
         # Actualizar o crear relación con persona
         persona = form.cleaned_data['persona']
-        rol = Rol.objects.get(pk=1)
+        rol = form.cleaned_data['rol']
         ExpedientePersona.objects.update_or_create(
             expediente=expediente,
-            rol=rol,
-            defaults={'persona': persona}
+            defaults={'persona': persona, 'rol': rol}
         )
 
         # Guardar documentos
-        for documento_form in documento_formset:
-            if documento_form.cleaned_data:
-                documento = documento_form.save(commit=False)
-                documento.expediente = expediente
-                documento.save()
-
+        #for documento_form in documento_formset:
+        #    if documento_form.cleaned_data:
+        #        documento = documento_form.save(commit=False)
+        #        documento.expediente = expediente
+        #        documento.save()
+        #        print(form.cleaned_data)
+        messages.success(self.request, "El expediente fue actualizado correctamente.")
         return super().form_valid(form)
+
 
 
 class DemandaEspontaneaDetailView(DetailView):
@@ -392,6 +391,7 @@ class DemandaEspontaneaDetailView(DetailView):
         persona_rel = ExpedientePersona.objects.filter(expediente=self.object, rol__pk=1).first()
         context["persona"] = persona_rel.persona if persona_rel else None
         return context
+
 
 
 class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -665,6 +665,7 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         return super().form_invalid(form)
 
 
+
 class OficioDetailView(DetailView):
     model = Expediente
     template_name = "expediente/oficio_detalle.html"
@@ -678,6 +679,7 @@ class OficioDetailView(DetailView):
         institucion_rel = ExpedienteInstitucion.objects.filter(expediente=self.object, rol__pk=2).first()
         context["institucion"] = institucion_rel.institucion if institucion_rel else None
         return context
+
 
 
 class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -794,6 +796,7 @@ class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
         return super().form_invalid(form)
 
 
+
 class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = 'expediente/secretaria_form.html'
     form_class = SecretariaForm
@@ -895,6 +898,7 @@ class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
         return super().form_invalid(form)        
 
 
+
 class SecretariaDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Expediente
     template_name = "expediente/secretaria_detalle.html"
@@ -908,7 +912,8 @@ class SecretariaDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVi
         # Documentos asociados al expediente
         context["documentos"] = ExpedienteDocumento.objects.filter(expediente=self.object)
         return context
-    
+
+
     
 class ExpedienteDocumentoCreateView(FormView):
     template_name = 'expediente/documento_form.html'
@@ -929,7 +934,8 @@ class ExpedienteDocumentoCreateView(FormView):
         context = super().get_context_data(**kwargs)
         context['expediente'] = self.expediente
         return context
-    
+
+
 
 class ExpedienteDocumentoDeleteView(View):
     def post(self, request, pk, *args, **kwargs):
@@ -969,7 +975,8 @@ def expediente_documentos_view(request, expediente_id):
         "expediente": expediente,
     })
     
-    
+
+
 def expediente_list(request):
     expedientes = Expediente.objects.all()
     next_url = request.GET.get("next")       # para redirigir después
@@ -978,6 +985,7 @@ def expediente_list(request):
         "expedientes": expedientes,
         "next_url": next_url,   # lo mandamos al template
     })
+
 
 
 class ExpedienteDocumentoDeleteView(View):
@@ -1022,7 +1030,8 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
         context['instituciones'] = Institucion.objects.all()
         context['roles'] = Rol.objects.all()
         return context
-        
+
+
 
 class ExpedientePersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = ExpedientePersona
@@ -1055,6 +1064,8 @@ class ExpedientePersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, C
         context['roles'] = Rol.objects.all()
         return context
 
+
+
 class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = ExpedienteInstitucion
     template_name = 'expediente/expediente_institucion_list.html'
@@ -1073,7 +1084,8 @@ class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin,
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
-    
+
+
 
 class ExpedientePersonaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = ExpedientePersona
@@ -1113,14 +1125,13 @@ def expediente_institucion_add_view(request):
     return render(request, "expediente/expediente_institucion_form.html", context)
 
 
-# views.py
-
 
 def buscar_instituciones(request):
     q = request.GET.get('q', '')
     instituciones = Institucion.objects.filter(institucion__icontains=q)[:20]
     results = [{'id': i.id, 'text': i.institucion} for i in instituciones]
     return JsonResponse({'results': results})
+
 
 
 def buscar_personas(request):

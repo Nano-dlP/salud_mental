@@ -83,9 +83,10 @@ class PersonaDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVie
         return context
     
 
+
 def persona_list(request):
     personas = Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
-    medio_id = 1   # viene del querystring
+    medio_id = request.GET.get("medio_id")
     next_url = request.GET.get("next")       # para redirigir después
     
     return render(request, "persona/persona_agregar_expediente.html", {
@@ -93,6 +94,7 @@ def persona_list(request):
         "medio_id": medio_id,
         "next_url": next_url,   # lo mandamos al template
     })
+
 
 
 def agregar_persona_expediente(request):
@@ -104,6 +106,7 @@ def agregar_persona_expediente(request):
         "next_url": next_url,
     
     })
+
 
 
 def desactivar_persona(request, pk):

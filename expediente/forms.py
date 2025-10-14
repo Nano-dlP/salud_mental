@@ -17,6 +17,7 @@ from .models import (Expediente,
                      ExpedienteDocumento, 
                      ExpedienteInstitucion, 
                      ExpedientePersona)
+
 from core.models import Sede
 from django.conf import settings
 
@@ -57,6 +58,10 @@ class DemandaEspontanea(forms.Form):
     )
     medio_ingreso = forms.ModelChoiceField(
         queryset=MedioIngreso.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    rol = forms.ModelChoiceField(
+        queryset=Rol.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     tipo_solicitud = forms.ModelChoiceField(
