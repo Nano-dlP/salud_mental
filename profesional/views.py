@@ -1,6 +1,9 @@
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
 from .models import Profesional
 from .forms import ProfesionalForm
 
@@ -42,3 +45,21 @@ class ProfesionalDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteV
     login_url = 'core:login'
     permission_required = 'profesional.delete_profesional'
     raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+
+
+@login_required(login_url='core:login')
+@permission_required('profesional.delete_profesional', login_url='core:login', raise_exception=True)
+def desactivar_profesional(request, pk):
+    profesional = get_object_or_404(Profesional, pk=pk)
+    if profesional.estado:
+        profesional.estado = False
+        profesional.save()
+        messages.success(request, "Profesional desactivado correctamente.")
+        return redirect('profesional:profesional_list')
+    else:
+        profesional.estado = True
+        profesional.save()
+        messages.success(request, "Profesional activado correctamente.")
+        return redirect('profesional:profesional_list')
+    # Si es GET, muestra confirmación
+    #return render(request, "institucion/confirmar_desactivacion.html", {"institucion": institucion})

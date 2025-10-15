@@ -156,15 +156,21 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
     permission_required = 'expediente.add_expediente'
     raise_exception = True
 
+    def get_medio_id(self):
+        """Obtiene medio_id desde kwargs o GET, priorizando kwargs."""
+        return self.kwargs.get('medio_id') or self.request.GET.get('medio_id')
+
     def get_initial(self):
         # Prepara los datos iniciales del formulario, como el medio de ingreso y la fecha
         initial = super().get_initial()
-        medio_id = self.kwargs.get('medio_id')
+        medio_id = self.get_medio_id()
         persona_id = self.request.GET.get('persona_id')
 
         if medio_id:
-            initial['medio_ingreso'] = medio_id
-            initial['fecha_creacion'] = datetime.date.today
+            medio = get_object_or_404(MedioIngreso, pk=medio_id)
+            initial['medio_ingreso'] = medio
+            initial['fecha_creacion'] = datetime.date.today()
+
         if persona_id:
             try:
                 initial['persona'] = Persona.objects.get(pk=persona_id)
@@ -172,6 +178,7 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
                 pass    
 
         return initial
+    
 
     def get_form(self, form_class=None):
         # Crea el formulario y deshabilita el campo medio_ingreso
@@ -194,7 +201,10 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
         persona_id = self.request.GET.get('persona_id')
         if persona_id:
             context['persona_seleccionada'] = Persona.objects.filter(pk=persona_id).first()    
-            
+
+        # --- FIX: añade medio_id al contexto ---
+        context['medio_id'] = self.get_medio_id()
+        # ---------------------------------------    
         return context
 
     def form_valid(self, form):

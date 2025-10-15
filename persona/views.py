@@ -10,6 +10,7 @@ from .forms import PersonaForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 class PersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -83,12 +84,12 @@ class PersonaDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVie
         return context
     
 
-
+@login_required(login_url='core:login')
+@permission_required('persona.puede_ver_persona', login_url='core:login', raise_exception=True)
 def persona_list(request):
     personas = Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
-    medio_id = request.GET.get("medio_id")
+    medio_id = request.GET.get("medio_id")   # <-- aquí el fix
     next_url = request.GET.get("next")       # para redirigir después
-    
     return render(request, "persona/persona_agregar_expediente.html", {
         "personas": personas,
         "medio_id": medio_id,

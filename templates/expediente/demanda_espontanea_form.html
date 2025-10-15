@@ -27,8 +27,11 @@
       <div class="card-body">
         <form method="post" novalidate class="small-form" enctype="multipart/form-data">
           {% csrf_token %}
-
-          
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
 
           <!-- Encabezado -->
           <div class="card mb-3 border-0 shadow-sm">
@@ -88,7 +91,7 @@
                     
 
               <!-- Botón agregar nueva persona -->
-              <a href="{% url 'persona:persona_create' %}?next={{ request.path }}" 
+              <a href="{% url 'persona:persona_create' %}?next={{ request.path }}&medio_id={{ medio_id }}" 
                 class="btn btn-outline-secondary ms-2"
                 title="Agregar persona"
                 {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
@@ -96,7 +99,7 @@
               </a>
 
               <!-- Botón buscar persona -->
-              <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}" 
+              <a href="{% url 'persona:persona_agregar_expediente' %}?next={{ request.path }}&medio_id={{ medio_id }}" 
                 class="btn btn-outline-secondary ms-2"
                 title="Buscar persona"
                 {% if editar %}onclick="return false;" style="pointer-events: none; opacity: 0.5;"{% endif %}>
