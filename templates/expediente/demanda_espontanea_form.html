@@ -141,62 +141,68 @@
               <h6 class="border-bottom pb-2 mb-3 text-muted">Información Adicional</h6>
 
               <div class="form-row">
-                <div class="form-group col-md-3">
-                  {{ form.rol.label_tag }}
-                  {{ form.rol|add_class:"form-control" }}
+                <!-- Rol -->
+                <div class="col-md-3 mb-3">
+                  <label><i class="fas fa-gavel me-2"></i> Rol</label>
+                  {{ form.rol|add_class:"form-select" }}
                   {% if form.rol.errors %}
                     <div class="text-danger small">
                       {{ form.rol.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-3">
-                  {{ form.tipo_solicitud.label_tag }}
+                <!-- Tipo de solicitud -->
+                <div class="col-md-3 mb-3">
+                  <label><i class="fas fa-file-alt me-2"></i> Tipo de solicitud</label>
                   {{ form.tipo_solicitud|add_class:"form-select" }}
                   {% if form.tipo_solicitud.errors %}
                     <div class="text-danger small">
                       {{ form.tipo_solicitud.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-3">
-                  {{ form.estado_expediente.label_tag }}
+                <!-- Estado del expediente -->
+                <div class="col-md-3 mb-3">
+                  <label><i class="fas fa-folder-open me-2"></i> Estado expediente</label>
                   {{ form.estado_expediente|add_class:"form-select" }}
                   {% if form.estado_expediente.errors %}
                     <div class="text-danger small">
                       {{ form.estado_expediente.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-3">
-                  {{ form.resumen_intervencion.label_tag }}
+                <!-- Resumen intervención -->
+                <div class="col-md-3 mb-3">
+                  <label><i class="fas fa-comment-dots me-2"></i> Resumen intervención</label>
                   {{ form.resumen_intervencion|add_class:"form-control" }}
                   {% if form.resumen_intervencion.errors %}
                     <div class="text-danger small">
                       {{ form.resumen_intervencion.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
               </div>
 
               <div class="form-row mt-3">
-                <div class="form-group col-md-6">
-                  {{ form.situacion_habitacional_hist.label_tag }}
+                <!-- Situación habitacional histórica -->
+                <div class="col-md-6 mb-3">
+                  <label><i class="fas fa-home me-2"></i> Situación habitacional histórica</label>
                   {{ form.situacion_habitacional_hist|add_class:"form-control" }}
                   {% if form.situacion_habitacional_hist.errors %}
                     <div class="text-danger small">
                       {{ form.situacion_habitacional_hist.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-6">
-                  {{ form.observaciones.label_tag }}
+                <!-- Observaciones -->
+                <div class="col-md-6 mb-3">
+                  <label><i class="fas fa-comment-medical me-2"></i> Observaciones</label>
                   {{ form.observaciones|add_class:"form-control" }}
                   {% if form.observaciones.errors %}
                     <div class="text-danger small">
                       {{ form.observaciones.errors }}
                     </div>
-                  {% endif %} 
+                  {% endif %}
                 </div>
               </div>
             </div>

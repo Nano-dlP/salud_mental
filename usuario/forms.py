@@ -19,13 +19,13 @@ class PerfilUsuarioForm(forms.ModelForm):
             'foto_perfil': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
-    def clean_dni(self):
-        dni = self.cleaned_data.get('dni')
-        if not dni:
-            raise ValidationError("El campo DNI no puede estar vacío.")
+    #def clean_dni(self):
+    #    dni = self.cleaned_data.get('dni')
+    #    if not dni:
+    #        raise ValidationError("El campo DNI no puede estar vacío.")
         
         # Si es edición (el usuario ya existe), excluimos su propio ID
-        if CustomUser.objects.filter(dni=dni).exclude(id=self.instance.id).exists():
-            raise ValidationError("Ya existe un usuario con ese DNI.")
+    #    if CustomUser.objects.filter(dni=dni).exclude(id=self.instance.id).exists():
+    #        raise ValidationError("Ya existe un usuario con ese DNI.")
         
-        return dni
+    #    return dni

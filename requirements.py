@@ -1,5 +1,0 @@
-asgiref==3.9.1
-Django==5.2.4
-httpagentparser==1.9.5
-psycopg2-binary==2.9.10
-sqlparse==0.5.3

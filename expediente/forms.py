@@ -201,6 +201,10 @@ class OficioForm(forms.Form):
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
     )
+    rol = forms.ModelChoiceField(
+        queryset=Rol.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     tipo_patrocinio = forms.ModelChoiceField(
         label="Tipo de patrocinio:",
         queryset=TipoPatrocinio.objects.all(),

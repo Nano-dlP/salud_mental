@@ -29,17 +29,17 @@
           {% endif %}
 
           <!-- Encabezado -->
-          <div class="d-flex justify-content-between">
-            {% if editar and numero_expediente %}
-            <h6 class="border-bottom pb-2 mb-3 text-muted">
-              <span class="fw-bold"><span><i class="fas fa-id-card"></i> Encabezado</span> {{ numero_expediente }}</span>
-            </h6>
-            {% endif %}
-          </div>
+          
           <!-- Inicio -->
           <div class="card mb-3">
             <div class="card-body">
+              {% if editar and numero_expediente %}
+              <h6 class="border-bottom pb-2 mb-3 text-muted">
+              <span class="fw-bold"><span><i class="fas fa-id-card"></i> Encabezado</span> {{ numero_expediente }}</span>
+            </h6>
+              {% else %}
               <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-play"></i> Inicio</h6>
+              {% endif %}
               <div class="row">
                 <div class="col-md-4 mb-3">
                   <label><i class="fas fa-mail-bulk me-2"></i> Medio de ingreso</label>
@@ -159,6 +159,7 @@
             <div class="card-body">
               <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-info-circle"></i> Información complementaria</h6>
               <div class="row align-items-end">
+                <!-- Tipo de solicitud -->
                 <div class="col-md-4 mb-3">
                   <label><i class="fas fa-file-alt me-2"></i> Tipo de solicitud</label>
                   {{ form.tipo_solicitud|add_class:"form-select" }}
@@ -168,6 +169,7 @@
                     </div>
                   {% endif %}
                 </div>
+                <!-- Estado del expediente -->
                 <div class="col-md-4 mb-3">
                   <label><i class="fas fa-folder-open me-2"></i> Estado expediente</label>
                   {{ form.estado_expediente|add_class:"form-select" }}
@@ -177,6 +179,7 @@
                     </div>
                   {% endif %}
                 </div>
+                <!-- Edad persona -->
                 <div class="col-md-1 mb-3">
                   <label><i class="fas fa-user-clock me-2"></i> Edad persona</label>
                   {{ form.edad_persona|add_class:"form-control"|attr:"style:max-width:80px;" }}
@@ -186,6 +189,7 @@
                     </div>
                   {% endif %}
                 </div>
+                <!-- Grupo etario -->
                 <div class="col-md-3 mb-3">
                   <label><i class="fas fa-users me-2"></i> Grupo Etario</label>
                   {{ form.grupo_etario|add_class:"form-select" }}
@@ -199,7 +203,18 @@
 
               <!-- Row 2 -->
               <div class="row align-items-end mt-2">
-                <div class="col-md-6 mb-3">
+                <!-- Rol -->
+                <div class="col-md-4 mb-3">
+                  <label><i class="fas fa-gavel me-2"></i> Rol</label>
+                  {{ form.rol|add_class:"form-select" }}
+                  {% if form.rol.errors %}
+                    <div class="text-danger small">
+                      {{ form.rol.errors }}
+                    </div>
+                  {% endif %}
+                </div>
+                <!-- Tipo de patrocinio -->
+                <div class="col-md-4 mb-3">
                   <label><i class="fas fa-gavel me-2"></i> Tipo de patrocinio</label>
                   {{ form.tipo_patrocinio|add_class:"form-select" }}
                   {% if form.tipo_patrocinio.errors %}
@@ -208,7 +223,8 @@
                     </div>
                   {% endif %}
                 </div>
-                <div class="col-md-6 mb-3">
+                <!-- Resumen intervención -->
+                <div class="col-md-4 mb-3">
                   <label><i class="fas fa-comment-dots me-2"></i> Resumen intervención</label>
                   {{ form.resumen_intervencion|add_class:"form-control" }}
                   {% if form.resumen_intervencion.errors %}
@@ -221,6 +237,7 @@
 
               <!-- Row 3 -->
               <div class="row align-items-end mt-2">
+                <!-- Situación habitacional histórica -->
                 <div class="col-md-6 mb-3">
                   <label><i class="fas fa-home me-2"></i> Situación habitacional histórica</label>
                   {{ form.situacion_habitacional_hist|add_class:"form-control" }}
@@ -230,6 +247,7 @@
                     </div>
                   {% endif %}
                 </div>
+                <!-- Observaciones -->
                 <div class="col-md-6 mb-3">
                   <label><i class="fas fa-comment-medical me-2"></i> Observaciones</label>
                   {{ form.observaciones|add_class:"form-control" }}
@@ -243,15 +261,6 @@
             </div>
           </div>
           
-          <!-- Agregar Institución y rol al expediente -->
-          {% if editar %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h1>Agregar campo Institucion</h1>
-            </div>
-          </div>
-          {% endif %}
-
 
        <!-- Documentos Adjuntos -->
           <!--<div class="card p-3 mb-3 border-0 shadow-sm">
@@ -268,7 +277,7 @@
               </div>
           </div>-->
           <!-- Botones -->
-          <div class="text-end mt-4">
+          <div class="text-end mt-2">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <a href="{% url 'expediente:expediente_list' %}" class="btn btn-secondary">Cancelar</a>
           </div>
