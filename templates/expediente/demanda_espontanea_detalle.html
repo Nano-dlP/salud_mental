@@ -71,15 +71,19 @@
       </div>
 
       <div class="row">
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <div class="etiqueta"><i class="fas fa-users me-2"></i> Grupo etario</div>
           <div class="contenido">{{ expediente.grupo_etario }}</div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-2 mb-2">
+          <div class="etiqueta"><i class="fas fa-users me-2"></i> Rol</div>
+          <div class="contenido">{{ rol }}</div>
+        </div>
+        <div class="col-md-3 mb-2">
           <div class="etiqueta"><i class="fas fa-user-clock me-2"></i> Edad persona</div>
           <div class="contenido">{{ expediente.edad_persona }}</div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <div class="etiqueta"><i class="fas fa-home me-2"></i> Situación habitacional</div>
           <div class="contenido">{{ expediente.situacion_habitacional_hist|default:"-" }}</div>
         </div>
