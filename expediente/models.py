@@ -19,6 +19,7 @@ class TipoSolicitud(models.Model):
         verbose_name_plural = 'Tipos de solicitudes'
 
 
+
 class GrupoEtario(models.Model):
     grupo_etario = models.CharField(max_length=50, verbose_name="Grupo Etario")
     estado = models.BooleanField(default=True)
@@ -81,6 +82,7 @@ class EstadoExpediente(models.Model):
     class Meta:
         verbose_name = 'Estado del expediente'
         verbose_name_plural = 'Estado de los expedientes'
+
 
 
 class Expediente(models.Model):

@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets_casa.json') as f:
+with open(BASE_DIR / 'secrets_defe.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""
@@ -180,13 +180,13 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     # Producción → usa SMTP real
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "ssd-1883055-l.dattaweb.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = "nano@defensoriasantafe.gob.ar"
-    EMAIL_HOST_PASSWORD = 'Alvarez1516'
-    EMAIL_FILE_PATH = '/tmp/django-emails'# Configuración de mensajes
+    EMAIL_BACKEND = get_secret('EMAIL_BACKEND'),
+    EMAIL_HOST = get_secret('EMAIL_HOST'),
+    EMAIL_PORT = get_secret('EMAIL_PORT'),
+    EMAIL_USE_TLS = get_secret('EMAIL_USE_TLS'),
+    EMAIL_HOST_USER = get_secret('EMAIL_HOST_USER'),
+    EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD'),
+    EMAIL_FILE_PATH = get_secret('EMAIL_FILE_PATH')  # Configuración de mensajes
 
 
 from django.contrib.messages import constants as messages
