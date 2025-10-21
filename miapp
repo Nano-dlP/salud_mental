@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    server_name miapp.com www.miapp.com;  # Cambiá por tu dominio o IP pública
+
+    # 🔹 Ruta raíz del proyecto (carpeta que contiene manage.py)
+    root /var/www/miapp;
+
+    # 🔹 Archivos estáticos (collectstatic)
+    location /static/ {
+        alias /var/www/miapp/static/;
+    }
+
+    # 🔹 Archivos media (subidos por usuarios)
+    location /media/ {
+        alias /var/www/miapp/media/;
+    }
+
+    # 🔹 Redirección de errores
+    error_page 500 502 503 504 /500.html;
+    location = /500.html {
+        root /var/www/miapp/static/;
+    }
+
+    # 🔹 Proxy hacia Gunicorn
+    location / {
+        proxy_pass http://unix:/run/gunicorn-miapp.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
