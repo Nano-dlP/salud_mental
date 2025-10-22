@@ -1,0 +1,8 @@
+salud_mental/settings.py
+*.json
+*.env
+*.sqlite3
+__pycache__/
+db.sqlite3
+/staticfiles/
+*.bat

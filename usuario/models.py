@@ -1,6 +1,6 @@
 # tu_app/models.py
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
+#from django.core.exceptions import ValidationError
 from django.db import models
 from core.models import Localidad, Sede
 
@@ -12,10 +12,10 @@ class CustomUser(AbstractUser):
     sede = models.ForeignKey(Sede, verbose_name = 'Sede', on_delete=models.SET_NULL, null=True, blank=True)
     foto_perfil = models.ImageField(verbose_name = 'Foto de Perfil', upload_to='perfiles/', blank=True, null=True)
 
-    def clean(self):
-        super().clean()
-        if CustomUser.objects.filter(dni=self.dni).exclude(pk=self.pk).exists():
-            raise ValidationError({'dni': "Ya existe un usuario con este DNI."})
+    #def clean(self):
+    #    super().clean()
+    #    if CustomUser.objects.filter(dni=self.dni).exclude(pk=self.pk).exists():
+    #        raise ValidationError({'dni': "Ya existe un usuario con este DNI."})
 
     def __str__(self):
         return f"{self.username} ({self.dni}) {self.localidad}"

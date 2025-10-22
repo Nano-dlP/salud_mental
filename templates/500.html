@@ -1,0 +1,33 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Error Interno del Servidor{% endblock %}
+
+{% block page_content %}
+<div class="d-flex justify-content-center" style="padding-top: 100px;">
+    <div class="card shadow-lg text-center p-4" 
+         style="max-width: 600px; max-height: 600px; overflow:auto;">
+        <div class="card-body">
+            <!-- Icono de error -->
+            <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-x-circle-fill text-danger" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.646 4.646a.5.5 0 0 0-.708.708L6.293 8 3.938 10.354a.5.5 0 1 0 .707.707L7 8.707l2.354 2.354a.5.5 0 0 0 .707-.707L7.707 8l2.354-2.354a.5.5 0 0 0-.707-.707L7 7.293 4.646 4.646z"/>
+                </svg>
+            </div>
+
+            <h2 class="card-title text-danger mb-3">Error Interno (500)</h2>
+            <p class="card-text mb-3">
+                Lo sentimos — ha ocurrido un error en el servidor y no se pudo completar la solicitud.
+            </p>
+
+            <p class="text-muted small mb-4">
+                Puedes intentar volver a la página principal o, si el problema persiste, contacta con el administrador.
+            </p>
+
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'core:index' %}" class="btn btn-primary btn-lg">Volver al inicio</a>
+                <a href="javascript:location.reload()" class="btn btn-outline-secondary btn-lg">Reintentar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock page_content %}
