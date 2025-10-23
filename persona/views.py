@@ -97,7 +97,8 @@ def persona_list(request):
     })
 
 
-
+@login_required(login_url='core:login')
+@permission_required('persona.puede_ver_persona', login_url='core:login', raise_exception=True)
 def agregar_persona_expediente(request):
     personas = Persona.objects.filter(estado=True).order_by('apellido', 'nombre')
     next_url = request.GET.get("next")       # para redirigir después
@@ -109,7 +110,8 @@ def agregar_persona_expediente(request):
     })
 
 
-
+@login_required(login_url='core:login')
+#@permission_required('persona.puede_desactivar_persona, persona.puede_activar_persona', login_url='core:login', raise_exception=True)
 def desactivar_persona(request, pk):
     persona = get_object_or_404(Persona, pk=pk)
     if persona.estado:

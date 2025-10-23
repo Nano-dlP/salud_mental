@@ -16,7 +16,6 @@ class TipoInstitucion(models.Model):
         verbose_name_plural = 'Tipos de Instituciones'
 
 
-
 class Institucion(models.Model):
     institucion = models.CharField(max_length=100, verbose_name='Institución', blank=True, null=True)
     domicilio_calle = models.CharField(max_length=50, verbose_name='Domicilio Calle', blank=True, null=True)

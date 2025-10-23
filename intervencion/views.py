@@ -8,6 +8,7 @@ from .forms import IntervencionForm
 from .models import Intervencion
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 
@@ -66,11 +67,13 @@ class IntevencionListView(LoginRequiredMixin, PermissionRequiredMixin, FormView)
         return context
 
 
+@login_required(login_url='core:login')
+@permission_required('intervencion.view_intervencion', login_url='core:login', raise_exception=True)
 def listar_intervenciones(request):
     intervenciones = Intervencion.objects.all()
     next_url = request.GET.get("next")       # para redirigir después
 
-    return render(request, "intervencion/intervencion_list.html",{ 
+    return render(request, "intervencion/intervencion_list.html", {
         "intervenciones": intervenciones,
         "next_url": next_url,   # lo mandamos al template
     })

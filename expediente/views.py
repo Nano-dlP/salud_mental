@@ -1076,7 +1076,8 @@ def expediente_documentos_view(request, expediente_id):
     })
     
 
-
+@login_required(login_url='core:login')
+@permission_required('expediente.view_expediente', login_url='core:login', raise_exception=True)
 def expediente_list(request):
     expedientes = Expediente.objects.all()
     next_url = request.GET.get("next")       # para redirigir después
@@ -1088,7 +1089,12 @@ def expediente_list(request):
 
 
 
-class ExpedienteDocumentoDeleteView(View):
+class ExpedienteDocumentoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = ExpedienteDocumento
+    success_url = reverse_lazy('expediente:expediente_detail')
+    login_url = 'core:login'
+    permission_required = 'expediente.delete_expedientedocumento'
+    raise_exception = True
 
     def post(self, request, pk, *args, **kwargs):
         documento = get_object_or_404(ExpedienteDocumento, pk=pk)
@@ -1207,7 +1213,8 @@ class ExpedientePersonaListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         return context
 
 
-
+@login_required(login_url='core:login')
+@permission_required('expediente.add_expedienteinstitucion', login_url='core:login', raise_exception=True)
 def expediente_institucion_add_view(request):
     if request.method == "POST":
         # Procesar y guardar los datos aquí
@@ -1225,7 +1232,8 @@ def expediente_institucion_add_view(request):
     return render(request, "expediente/expediente_institucion_form.html", context)
 
 
-
+@login_required(login_url='core:login')
+@permission_required('expediente.add_expedientepersona', login_url='core:login', raise_exception=True)
 def buscar_instituciones(request):
     q = request.GET.get('q', '')
     instituciones = Institucion.objects.filter(institucion__icontains=q)[:20]
@@ -1233,7 +1241,8 @@ def buscar_instituciones(request):
     return JsonResponse({'results': results})
 
 
-
+@login_required(login_url='core:login')
+@permission_required('expediente.add_expedientepersona', login_url='core:login', raise_exception=True)
 def buscar_personas(request):
     q = request.GET.get('q', '')
     personas = Persona.objects.filter(

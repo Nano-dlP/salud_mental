@@ -26,7 +26,7 @@
 
       <!-- Heading -->
       <div class="sidebar-heading">
-        Interface
+        Gestión
       </div>
 
       <!-- Nav Item - Pages Collapse Menu -->
@@ -39,7 +39,10 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header" style="color: #4a6572">Gestión de Expedientes:</h6>
             <a class="collapse-item" href="{% url 'expediente:medio_ingreso_select' %}"><i class="fas fa-hashtag text-success me-2" ></i>Nuevo</a>
-            <a class="collapse-item" href="{% url 'expediente:expediente_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Listado</a>
+            <h6 class="collapse-header" style="color: #4a6572">Listados:</h6>
+            <a class="collapse-item" href="{% url 'expediente:expediente_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Expedientes</a>
+            <a class="collapse-item" href="{% url 'expediente:expediente_institucion_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Expedientes e Institución</a>
+            <a class="collapse-item" href="{% url 'expediente:expediente_persona_list' %}"><i class="fas fa-list-ul text-info me-2"></i>Expedientes y Persona</a>
             <!--
             <a class="collapse-item" href="#"><i class="fas fa-search text-warning me-2"></i>Busqueda</a>
             <h6 class="collapse-header" style="color: #4a6572">Expedientes por Persona:</h6>
@@ -146,22 +149,25 @@
       <li class="nav-item small-nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-wrench"></i>
-          <span>Utilities</span>
+          <span>Utilidades</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Utilities:</h6>
-            <a class="collapse-item" href="{% url 'admin:index' %}">Ir al admin</a>
-
+            <h6 class="collapse-header">Utilidades Personalizadas:</h6>
+            <a class="collapse-item" href="{% url 'admin:index' %}">Administrar</a>
+{% comment %} 
             <a class="collapse-item" href="utilities-border.html">Borders</a>
             <a class="collapse-item" href="utilities-animation.html">Animations</a>
             <a class="collapse-item" href="utilities-other.html">Other</a>
+{% endcomment %}
           </div>
         </div>
       </li>
 
       <!-- Divider -->
       <hr class="sidebar-divider">
+
+{% comment %} 
 
       <!-- Heading -->
       <div class="sidebar-heading">
@@ -204,7 +210,7 @@
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
-
+{% endcomment %}
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>

@@ -48,9 +48,7 @@ class InstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
 
     def get_queryset(self):
-        return Institucion.objects.all().order_by('-estado', 'institucion')
-    
-    
+        return Institucion.objects.all().order_by('-estado', 'institucion')   
     
 
 class InstitucionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
