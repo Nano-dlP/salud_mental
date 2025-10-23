@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets_defe.json') as f:
+with open(BASE_DIR / 'secrets_casa.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""
@@ -66,6 +66,29 @@ INSTALLED_APPS = [
     'internacion',  # Your internacion app
     'intervencion',  # Your intervencion app
     'profesional',
+]
+
+
+# Usar un backend de cache compartido (Redis/Memcached) es recomendado:
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+    }
+}
+
+# Parámetros para el bloqueo por IP
+IP_BLOCK_ATTEMPT_LIMIT = 3         # bloquear al tercer intento
+IP_BLOCK_ATTEMPT_WINDOW = 5 * 60   # ventana para contar intentos (5 minutos)
+IP_BLOCK_TIME = 60 * 60            # bloqueo temporal (1 hora)
+
+#
+
+# Añadir el middleware al inicio (o al menos antes de que procesen vistas)
+MIDDLEWARE = [
+    "usuario.middleware.bloqueo_ip_middleware.BlockIPMiddleware",
+    # ... otros middlewares (auth, sessions, etc.)
 ]
 
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>IPs bloqueadas</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f4f4f4; }
+    form { display:inline; }
+    .note { color: #666; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <h1>IPs bloqueadas</h1>
+
+  {% if not can_list %}
+    <p class="note">No es posible listar IPs bloqueadas con la configuración actual. Asegúrate de
+    tener django-redis y que tu cache use Redis, o usa el comando management para listar/desbloquear.</p>
+  {% endif %}
+
+  {% if blocked_ips %}
+    <table>
+      <thead>
+        <tr>
+          <th>IP</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for ip in blocked_ips %}
+        <tr>
+          <td>{{ ip }}</td>
+          <td>
+            <form method="post" action="{% url 'tu_app:blocked_ips_unblock' ip=ip %}">
+              {% csrf_token %}
+              <button type="submit">Desbloquear</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay IPs bloqueadas (o no se pudo obtener la lista).</p>
+  {% endif %}
+</body>
+</html>
