@@ -44,7 +44,7 @@ class ExpedienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'expedientes'  # Nombre de la variable que contiene los expedientes en el HTML
     login_url = 'core:login'  # Si el usuario no está logueado, lo enviamos a esta página
     permission_required = 'expediente.view_expediente' # Permiso necesario para ver expedientes
-    raise_exception = True  # Si no tiene permiso, muestra error 403
+    raise_exception = False  # Si no tiene permiso, muestra error 403
 
     def get_queryset(self):
         # Retorna todos los expedientes ordenados por identificador
@@ -56,7 +56,7 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
     form_class = MedioIngresoForm
     login_url = 'core:login'
     permission_required = 'expediente.view_medioingreso'
-    raise_exception = True
+    raise_exception = False
     
     def get_initial(self):
         initial = super().get_initial()
@@ -88,7 +88,7 @@ class MedioIngresoSelectView(LoginRequiredMixin, PermissionRequiredMixin, FormVi
 class ExpedienteUpdateDispatcherView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = 'core:login'
     permission_required = 'expediente.change_expediente'
-    raise_exception = True
+    raise_exception = False
 
     def get(self, request, pk):
         expediente = get_object_or_404(Expediente, pk=pk)
@@ -121,7 +121,7 @@ class ExpedienteUpdateDispatcherView(LoginRequiredMixin, PermissionRequiredMixin
 class ExpedienteDetailDispatcherView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = 'core:login'
     permission_required = 'expediente.view_expediente'
-    raise_exception = True
+    raise_exception = False
     
     def get(self, request, pk):
         expediente = get_object_or_404(Expediente, pk=pk)
@@ -158,7 +158,7 @@ class DemandaEspontaneaCreateView(LoginRequiredMixin, PermissionRequiredMixin, F
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expediente'
-    raise_exception = True
+    raise_exception = False
 
     def get_medio_id(self):
         """Obtiene medio_id desde kwargs o GET, priorizando kwargs."""
@@ -290,7 +290,7 @@ class DemandaEspontaneaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, F
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.change_expediente'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_object(self):
         return get_object_or_404(Expediente, pk=self.kwargs['pk'])
@@ -443,7 +443,7 @@ class OficioCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expediente'
-    raise_exception = True
+    raise_exception = False
 
     def get_medio_id(self):
         """Obtiene medio_id desde kwargs o GET, priorizando kwargs."""
@@ -591,7 +591,7 @@ class OficioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.change_expediente'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_object(self):
         # Obtiene el expediente por la pk de la URL
@@ -774,7 +774,7 @@ class SecretariaCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expediente'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_medio_id(self):
         """Obtiene medio_id desde kwargs o GET, priorizando kwargs."""
@@ -890,7 +890,7 @@ class SecretariaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView
     success_url = reverse_lazy('expediente:expediente_list')
     login_url = 'core:login'
     permission_required = 'expediente.change_expediente'
-    raise_exception = True
+    raise_exception = False
 
     def get_object(self):
         # Obtiene el expediente por la pk de la URL
@@ -1005,7 +1005,7 @@ class SecretariaDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVi
     context_object_name = "expediente"
     login_url = 'core:login'
     permission_required = 'expediente.view_expediente'
-    raise_exception = True
+    raise_exception = False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1094,7 +1094,7 @@ class ExpedienteDocumentoDeleteView(LoginRequiredMixin, PermissionRequiredMixin,
     success_url = reverse_lazy('expediente:expediente_detail')
     login_url = 'core:login'
     permission_required = 'expediente.delete_expedientedocumento'
-    raise_exception = True
+    raise_exception = False
 
     def post(self, request, pk, *args, **kwargs):
         documento = get_object_or_404(ExpedienteDocumento, pk=pk)
@@ -1112,7 +1112,7 @@ class ExpedienteInstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixi
     success_url = reverse_lazy('expediente:expediente_institucion_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expedienteinstitucion'
-    raise_exception = True
+    raise_exception = False
     template_name = 'expediente/expediente_institucion_form.html'
 
     def get_initial(self):
@@ -1145,7 +1145,7 @@ class ExpedientePersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, C
     success_url = reverse_lazy('expediente:expediente_persona_list')
     login_url = 'core:login'
     permission_required = 'expediente.add_expedientepersona'
-    raise_exception = True
+    raise_exception = False
     template_name = 'expediente/expediente_persona_form.html'
 
     def get_initial(self):
@@ -1177,7 +1177,7 @@ class ExpedienteInstitucionListView(LoginRequiredMixin, PermissionRequiredMixin,
     template_name = 'expediente/expediente_institucion_list.html'
     context_object_name = 'expediente_instituciones'
     permission_required = 'expediente.view_expedienteinstitucion'
-    raise_exception = True  # Lanza 403 si no tiene permiso
+    raise_exception = False  # Lanza 403 si no tiene permiso
 
     def get_queryset(self):
         user = self.request.user
@@ -1198,7 +1198,7 @@ class ExpedientePersonaListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
     template_name = 'expediente/expediente_persona_list.html'
     context_object_name = 'expediente_personas'
     permission_required = 'expediente.view_expedientepersona'
-    raise_exception = True  # Lanza 403 si no tiene permiso
+    raise_exception = False  # Lanza 403 si no tiene permiso
 
     def get_queryset(self):
         user = self.request.user

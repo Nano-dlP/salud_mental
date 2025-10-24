@@ -26,7 +26,7 @@ class InstitucionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     context_object_name = 'institucion'
     login_url = 'core:login'
     permission_required = 'institucion.add_institucion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
@@ -45,7 +45,7 @@ class InstitucionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     context_object_name = 'instituciones'
     login_url = 'core:login'
     permission_required = 'institucion.view_institucion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_queryset(self):
         return Institucion.objects.all().order_by('-estado', 'institucion')   
@@ -59,7 +59,7 @@ class InstitucionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
     context_object_name = 'institucion'
     login_url = 'core:login'
     permission_required = 'institucion.change_institucion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         form.instance.institucion = form.cleaned_data['institucion']
@@ -72,7 +72,7 @@ class InstitucionDetailView(LoginRequiredMixin, PermissionRequiredMixin, Templat
     template_name = 'institucion/institucion_detail.html'  # Tu template
     login_url = 'core:login'
     permission_required = 'institucion.view_institucion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

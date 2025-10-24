@@ -21,7 +21,7 @@ class PersonaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     context_object_name = 'persona'
     login_url = 'core:login'
     permission_required = 'persona.puede_crear_persona'  # reemplaza 'persona' por tu app_label
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     # Opcional: manejar 403 de forma personalizada
     def handle_no_permission(self):
@@ -45,7 +45,7 @@ class PersonaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'personas'
     login_url = 'core:login'
     permission_required = 'persona.puede_ver_persona'  # reemplaza 'persona' por tu app_label
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     
     def get_queryset(self):
@@ -62,7 +62,7 @@ class PersonaUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     context_object_name = 'personas'
     login_url = 'core:login'
     permission_required = 'persona.puede_editar_persona'  # reemplaza 'persona' por tu app_label
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         messages.success(self.request, "Perfil actualizado correctamente.")
@@ -74,7 +74,7 @@ class PersonaDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVie
     template_name = 'persona/persona_detail.html'  # Tu template
     login_url = 'core:login'
     permission_required = 'persona.puede_ver_persona'  # reemplaza 'persona' por tu app_label
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

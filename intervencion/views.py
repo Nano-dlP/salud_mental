@@ -18,7 +18,7 @@ class IntervencionFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView
     success_url = reverse_lazy('intervencion:intervencion_list')
     login_url = 'core:login'
     permission_required = 'intervencion.add_intervencion'
-    raise_exception = True
+    raise_exception = False
 
     def get_initial(self):
         initial = super().get_initial()
@@ -58,7 +58,7 @@ class IntevencionListView(LoginRequiredMixin, PermissionRequiredMixin, FormView)
     form_class = IntervencionForm
     login_url = 'core:login'
     permission_required = 'intervencion.view_intervencion'
-    raise_exception = True
+    raise_exception = False
     success_url = reverse_lazy('intervencion:intervencion_list')
 
     def get_context_data(self, **kwargs):

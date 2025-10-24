@@ -15,7 +15,7 @@ class ProfesionalCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     success_url = reverse_lazy("profesional:profesional_list")  # redirige al listado después de guardar
     login_url = 'core:login'
     permission_required = 'profesional.add_profesional'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
 
 class ProfesionalListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -25,7 +25,7 @@ class ProfesionalListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     queryset = Profesional.objects.all().order_by('user__first_name', 'user__last_name')
     login_url = 'core:login'
     permission_required = 'profesional.view_profesional'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
 
 class ProfesionalUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -35,7 +35,7 @@ class ProfesionalUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateV
     success_url = reverse_lazy("profesional:profesional_list")
     login_url = 'core:login'
     permission_required = 'profesional.change_profesional'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
 
 class ProfesionalDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -44,7 +44,7 @@ class ProfesionalDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteV
     success_url = reverse_lazy("profesional:profesional_list")
     login_url = 'core:login'
     permission_required = 'profesional.delete_profesional'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
 
 @login_required(login_url='core:login')

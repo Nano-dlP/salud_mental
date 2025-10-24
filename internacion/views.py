@@ -15,7 +15,7 @@ class InternacionCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
     context_object_name = 'internaciones'
     login_url = 'core:login'
     permission_required = 'internacion.add_internacion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     login_url = 'core:login'
     
@@ -30,7 +30,7 @@ class InternacionListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     context_object_name = 'internaciones'
     login_url = 'core:login'
     permission_required = 'internacion.view_internacion'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
     
     def get_queryset(self):
         return Internacion.objects.all().order_by('-fecha_internacion')

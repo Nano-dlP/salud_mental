@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secrets_casa.json') as f:
+with open(BASE_DIR / 'secrets_defe.json') as f:
     secrets = json.load(f)
 def get_secret(setting, secrets=secrets):
     """Get the secret variable or return explicit exception."""
@@ -78,31 +78,54 @@ CACHES = {
     }
 }
 
-# Parámetros para el bloqueo por IP
-IP_BLOCK_ATTEMPT_LIMIT = 3         # bloquear al tercer intento
-IP_BLOCK_ATTEMPT_WINDOW = 5 * 60   # ventana para contar intentos (5 minutos)
-IP_BLOCK_TIME = 60 * 60            # bloqueo temporal (1 hora)
-
-#
-
-# Añadir el middleware al inicio (o al menos antes de que procesen vistas)
-MIDDLEWARE = [
-    "usuario.middleware.bloqueo_ip_middleware.BlockIPMiddleware",
-    # ... otros middlewares (auth, sessions, etc.)
-]
 
 
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # Middleware para manejar sesiones
+     
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',  # Middleware para manejar tiempo de espera de sesión
+
     'core.middleware.RegistrarClienteMiddleware',  # Custom middleware to log client requests. Desactivated for performance.
+
+    'usuario.middleware.block_ip_middleware.BlockIPMiddleware',  # Añadir el middleware al inicio (o al menos antes de que procesen vistas)
+
+
+
 ]
+
+#https://pypi.org/project/django-session-timeout/
+
+SESSION_EXPIRE_SECONDS = 60 # 1 minute
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True # Reiniciar el contador cada vez que el usuario interactúa
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = 60 # Margen para agrupar requests frecuentes por minutos
+SESSION_TIMEOUT_REDIRECT = 'core:login'  # A dónde enviar al usuario cuando la sesión vence
+
+# Cuánto dura una sesión (en segundos)
+SESSION_COOKIE_AGE = 3600  # 1 hora
+
+# Si la cookie se renueva con cada request
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Si la sesión se borra al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+
+# Parámetros para el bloqueo por IP
+IP_BLOCK_ATTEMPT_LIMIT = 3         # bloquear al tercer intento
+IP_BLOCK_ATTEMPT_WINDOW = 5 * 60   # ventana para contar intentos (5 minutos)
+IP_BLOCK_TIME = 60 * 60            # bloqueo temporal (1 hora)
+
+
 
 ROOT_URLCONF = 'salud_mental.urls'
 
@@ -180,9 +203,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-LOGIN_URL = 'core:login'  # O el nombre correcto de tu login
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_URL = 'core:login'  # nombre de la URL de tu login
+LOGIN_REDIRECT_URL = '/'   # a donde se redirige tras login
+LOGOUT_REDIRECT_URL = '/login/'  # tras logout
 
 
 
@@ -221,8 +244,3 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',  # Bootstrap usa 'danger' en lugar de 'error'
 }
-
-
-
-
-

@@ -15,7 +15,7 @@ class IndexView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'core/home.html'
     login_url = 'core:login'
     permission_required = 'core.view_index'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -31,7 +31,7 @@ class ProvinciaCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     context_object_name = 'provincia'
     login_url = 'core:login'
     permission_required = 'core.add_provincia'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         form.instance.provincia = form.cleaned_data['provincia']
@@ -45,7 +45,7 @@ class ProvinciaListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'provincias'
     login_url = 'core:login'
     permission_required = 'core.view_provincia'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_queryset(self):
         return Provincia.objects.all().order_by('provincia')

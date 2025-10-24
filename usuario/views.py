@@ -18,7 +18,8 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.core.cache import cache
 
-from .blocked_ips import get_blocked_ips, remove_blocked_ip
+from .blocked_ip_helpers import get_blocked_ips, remove_blocked_ip
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class PerfilUsuarioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Updat
     success_url = reverse_lazy('usuario:editar_perfil')  # redirige a sí misma
     login_url = reverse_lazy('login')
     permission_required = 'auth.change_user'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def get_object(self, queryset=None):
         return self.request.user  # el usuario logueado
@@ -52,7 +53,7 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, Passwor
     success_url = reverse_lazy('usuario:editar_perfil')
     login_url = reverse_lazy('login')
     permission_required = 'auth.change_user'
-    raise_exception = True  # devuelve 403 Forbidden si no tiene permiso
+    raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
     def form_valid(self, form):
         messages.success(self.request, "Contraseña actualizada correctamente.")
