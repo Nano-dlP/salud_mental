@@ -34,7 +34,7 @@ class PerfilUsuarioUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Updat
     form_class = PerfilUsuarioForm
     template_name = 'usuario/usuario_edit.html'
     success_url = reverse_lazy('usuario:editar_perfil')  # redirige a sí misma
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('core:login')
     permission_required = 'auth.change_user'
     raise_exception = False  # devuelve 403 Forbidden si no tiene permiso
 
