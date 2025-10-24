@@ -2,8 +2,15 @@
 # gunicorn_stop.sh
 # Detiene Gunicorn en producción o desarrollo según parámetro --dev
 
-PROJECT_DIR="/var/www/salud_mental"
-PID_FILE="$PROJECT_DIR/gunicorn.pid"
+PROJECT_DIR="/var/www/salud_mental"          # raíz del proyecto
+LOG_DIR="$PROJECT_DIR/logs"                  # carpeta de logs
+PID_FILE="$PROJECT_DIR/gunicorn.pid"        # PID producción
+PID_FILE_DEV="$PROJECT_DIR/gunicorn_dev.pid" # PID desarrollo
+ACCESS_LOG="$LOG_DIR/gunicorn_access.log"
+ERROR_LOG="$LOG_DIR/gunicorn_error.log"
+ACCESS_LOG_DEV="$LOG_DIR/gunicorn_dev_access.log"
+ERROR_LOG_DEV="$LOG_DIR/gunicorn_dev_error.log"
+
 
 # Comprobar parámetro --dev
 if [ "$1" == "--dev" ]; then
